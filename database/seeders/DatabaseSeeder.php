@@ -89,5 +89,27 @@ class DatabaseSeeder extends Seeder
             'harga_jual_realtime' => 150000,
             'sub_total' => 300000
         ]);
+
+        // 7. Data Dummy Kas Keluar
+        \App\Models\KasKeluar::create([
+            'id_shift' => $shiftAktif->id_shift,
+            'jumlah_pengeluaran' => 75000,
+            'keterangan' => 'Biaya Listrik',
+            'tanggal' => now()->setTime(14, 20)
+        ]);
+
+        \App\Models\KasKeluar::create([
+            'id_shift' => $shiftAktif->id_shift,
+            'jumlah_pengeluaran' => 25000,
+            'keterangan' => 'Alat Tulis Kantor',
+            'tanggal' => now()->setTime(11, 45)
+        ]);
+
+        \App\Models\KasKeluar::create([
+            'id_shift' => $shiftAktif->id_shift,
+            'jumlah_pengeluaran' => 50000,
+            'keterangan' => 'Uang Makan Karyawan',
+            'tanggal' => now()->setTime(12, 10)
+        ]);
     }
 }

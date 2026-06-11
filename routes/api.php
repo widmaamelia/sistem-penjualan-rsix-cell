@@ -14,6 +14,10 @@ Route::middleware('auth:sanctum')->group(function () {
         // Load relasi cabang sebelum dikembalikan
         return $request->user()->load('cabang');
     });
-
+    //dashboard
     Route::get('/dashboard', [DashboardController::class, 'index']);
+
+    // Kas Keluar
+    Route::get('/kas-keluar', [\App\Http\Controllers\Api\KasKeluarController::class, 'index']);
+    Route::post('/kas-keluar', [\App\Http\Controllers\Api\KasKeluarController::class, 'store']);
 });
