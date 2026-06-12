@@ -15,7 +15,8 @@ class StokCabang extends Model
     protected $fillable = [
         'id_produk',
         'id_cabang',
-        'stok_sekarang'
+        'stok_sekarang',
+        'stok_minimum'
     ];
 
     public function produk()

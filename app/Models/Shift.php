@@ -17,9 +17,19 @@ class Shift extends Model
         'id_cabang',
         'saldo_awal',
         'saldo_akhir',
+        'saldo_akhir_sistem',
+        'uang_fisik_tunai',
+        'detail_channel',
+        'selisih',
         'waktu_buka',
         'waktu_tutup',
         'status'
+    ];
+
+    protected $casts = [
+        'waktu_buka' => 'datetime',
+        'waktu_tutup' => 'datetime',
+        'detail_channel' => 'array'
     ];
 
     public function user()

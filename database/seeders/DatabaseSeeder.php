@@ -86,8 +86,11 @@ class DatabaseSeeder extends Seeder
             'id_transaksi' => $transaksi->id_transaksi,
             'id_produk' => $produk->id_produk,
             'qty' => 2,
+            'harga_beli_realtime' => 100000,
             'harga_jual_realtime' => 150000,
-            'sub_total' => 300000
+            'sub_total' => 300000,
+            'nomor_tujuan' => null,
+            'kategori_layanan' => 'Fisik'
         ]);
 
         // 7. Data Dummy Kas Keluar
