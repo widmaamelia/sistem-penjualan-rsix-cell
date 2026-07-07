@@ -1,0 +1,363 @@
+@extends('layouts.admin')
+
+@section('title', 'Edit Produk - ' . $produk->nama_produk)
+
+@section('styles')
+<style>
+    /* Header Action Bar */
+    .header-action {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #e5e7eb;
+        margin-bottom: 30px;
+    }
+    
+    .page-title {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        font-size: 20px;
+        font-weight: 700;
+        color: #1a5ca6;
+        margin: 0;
+    }
+    
+    .back-btn {
+        color: #4b5563;
+        font-size: 18px;
+        transition: color 0.2s;
+    }
+    
+    .back-btn:hover {
+        color: #111827;
+    }
+
+    /* Form Container */
+    .form-section {
+        margin-bottom: 40px;
+    }
+
+    .form-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: #4b5563;
+        margin-bottom: 8px;
+    }
+    
+    .required-star {
+        color: #dc2626;
+    }
+
+    .form-control, .form-select {
+        border-radius: 8px;
+        border: 1px solid #d1d5db;
+        padding: 10px 15px;
+        font-size: 14px;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: #1a5ca6;
+        box-shadow: 0 0 0 3px rgba(26,92,166,0.1);
+    }
+
+    /* Photo Upload Box */
+    .upload-box {
+        background-color: #f8fafc;
+        border: 2px dashed #cbd5e1;
+        border-radius: 12px;
+        height: 200px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: #1a5ca6;
+        cursor: pointer;
+        transition: all 0.2s;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .upload-box:hover {
+        border-color: #1a5ca6;
+        background-color: #eff6ff;
+    }
+    
+    .upload-box i {
+        font-size: 32px;
+        margin-bottom: 10px;
+    }
+    
+    .upload-box span {
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    /* Toggle Switch Custom */
+    .form-switch {
+        padding-left: 2.5em;
+    }
+    .form-check-input {
+        cursor: pointer;
+    }
+    .form-check-input:checked {
+        background-color: #1a5ca6;
+        border-color: #1a5ca6;
+    }
+    .toggle-label {
+        font-size: 12px;
+        color: #6b7280;
+        font-weight: 600;
+    }
+
+    /* Input Group Custom */
+    .input-group-text {
+        background-color: #f9fafb;
+        border-color: #d1d5db;
+        color: #6b7280;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .btn-scan {
+        border-color: #1a5ca6;
+        color: #1a5ca6;
+        background: white;
+        font-weight: 600;
+    }
+    .btn-scan:hover {
+        background-color: #f0f7ff;
+        color: #1a5ca6;
+    }
+
+    /* Table Stok */
+    .table-stok {
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+    
+    .table-stok th {
+        background-color: #f9fafb;
+        font-size: 11px;
+        text-transform: uppercase;
+        color: #6b7280;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        padding: 15px 20px;
+        border-bottom: 1px solid #e5e7eb;
+    }
+    
+    .table-stok td {
+        padding: 15px 20px;
+        vertical-align: middle;
+        border-bottom: 1px solid #f3f4f6;
+        font-size: 13px;
+        color: #374151;
+        font-weight: 500;
+    }
+    
+    /* Quantity Input */
+    .qty-input-group {
+        display: flex;
+        width: 120px;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        overflow: hidden;
+    }
+    
+    .qty-btn {
+        background-color: #f9fafb;
+        border: none;
+        width: 35px;
+        color: #4b5563;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+    }
+    
+    .qty-btn:hover {
+        background-color: #e5e7eb;
+    }
+    
+    .qty-input {
+        border: none;
+        border-left: 1px solid #d1d5db;
+        border-right: 1px solid #d1d5db;
+        width: 50px;
+        text-align: center;
+        font-size: 13px;
+        font-weight: 600;
+    }
+    
+    .qty-input:focus {
+        outline: none;
+    }
+
+    /* Total Badge */
+    .badge-total {
+        background-color: #f0f7ff;
+        color: #1a5ca6;
+        border: 1px solid #bae6fd;
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 12px;
+    }
+</style>
+@endsection
+
+@section('content')
+
+<!-- Global Error Display -->
+@if ($errors->any())
+    <div class="alert alert-danger" style="font-size: 14px;">
+        <ul class="mb-0">
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
+<form action="{{ route('produk.update', $produk->id_produk) }}" method="POST" enctype="multipart/form-data">
+    @csrf
+    @method('PUT')
+
+    <!-- Header Action -->
+    <div class="header-action">
+        <h1 class="page-title">
+            <a href="{{ route('produk.index') }}" class="back-btn"><i class="fa-solid fa-arrow-left"></i></a>
+            Edit Produk
+        </h1>
+        <div class="d-flex gap-2">
+            <a href="{{ route('produk.index') }}" class="btn btn-outline-secondary" style="border-radius: 8px; font-weight: 500;">Batal</a>
+            <button type="submit" class="btn btn-primary" style="background-color: #1a5ca6; border-color: #1a5ca6; border-radius: 8px; font-weight: 500;">
+                <i class="fa-solid fa-floppy-disk me-1"></i> Simpan
+            </button>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- FOTO PRODUK -->
+        <div class="col-md-4 mb-4">
+            <label class="form-label text-uppercase" style="font-size:11px; letter-spacing:0.5px;">Foto Produk</label>
+            <div class="upload-box" onclick="document.getElementById('foto_produk').click()">
+                <i class="fa-regular fa-image"></i>
+                <span>Upload</span>
+                <input type="file" name="foto_produk" id="foto_produk" style="display: none;" accept="image/*">
+            </div>
+        </div>
+
+        <!-- BASIC INFO -->
+        <div class="col-md-8">
+            <!-- Row 1 -->
+            <div class="mb-4">
+                <label class="form-label">Nama Produk <span class="required-star">*</span></label>
+                <input type="text" name="nama_produk" class="form-control" placeholder="Contoh: Samsung Galaxy S24 Ultra" value="{{ old('nama_produk', $produk->nama_produk) }}" required>
+            </div>
+            
+            <!-- Row 2 -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <label class="form-label">Kategori</label>
+                    <select name="id_kategori" class="form-select">
+                        <option value="">Pilih Kategori</option>
+                        @foreach($kategoris as $kat)
+                            <option value="{{ $kat->id_kategori }}" {{ old('id_kategori', $produk->id_kategori) == $kat->id_kategori ? 'selected' : '' }}>
+                                {{ $kat->nama_kategori }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label mb-2">SKU <small class="text-muted">(Tidak dapat diubah)</small></label>
+                    <input type="text" class="form-control" value="{{ $produk->sku }}" disabled>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DIVIDER -->
+    <hr class="my-4" style="border-color: #e5e7eb;">
+
+    <!-- SECOND SECTION: BARCODE & HARGA -->
+    <div class="form-section row g-4">
+        <div class="col-md-12 mb-2">
+            <label class="form-label mb-2">Barcode / IMEI <small class="text-muted">(Tidak dapat diubah)</small></label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="fa-solid fa-barcode"></i></span>
+                <input type="text" class="form-control" value="{{ $produk->barcode_imei }}" disabled>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label">Harga Beli</label>
+            <div class="input-group">
+                <span class="input-group-text">Rp</span>
+                <input type="number" name="harga_beli" class="form-control" placeholder="0" value="{{ old('harga_beli', $produk->harga_beli) }}" required min="0">
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <label class="form-label">Harga Jual</label>
+            <div class="input-group">
+                <span class="input-group-text">Rp</span>
+                <input type="number" name="harga_jual" class="form-control" placeholder="0" value="{{ old('harga_jual', $produk->harga_jual) }}" required min="0">
+            </div>
+        </div>
+    </div>
+
+    <!-- THIRD SECTION: HARGA & STOK (PER CABANG) -->
+    <div class="d-flex justify-content-between align-items-center mb-3 mt-5">
+        <h6 class="text-uppercase fw-bold m-0" style="font-size:13px; letter-spacing:0.5px;">Harga & Stok</h6>
+        <div class="badge-total">Total Stok: <span id="totalStokLabel">0</span></div>
+    </div>
+
+    <div class="table-responsive table-stok">
+        <table class="table mb-0">
+            <thead>
+                <tr>
+                    <th style="width: 70%;">Nama Cabang</th>
+                    <th style="width: 30%;">Jumlah Stok</th>
+                </tr>
+            </thead>
+            <tbody>
+                @php $total_stok = 0; @endphp
+                @foreach($cabangs as $cabang)
+                @php
+                    // Cari stok untuk cabang ini
+                    $stok_item = $produk->stokCabangs->where('id_cabang', $cabang->id_cabang)->first();
+                    $qty = $stok_item ? $stok_item->stok_sekarang : 0;
+                    $total_stok += $qty;
+                @endphp
+                <tr>
+                    <td>{{ $cabang->nama_cabang }}</td>
+                    <td>
+                        <div class="qty-input-group" style="background-color: #f3f4f6;">
+                            <input type="number" class="qty-input w-100" value="{{ $qty }}" disabled style="background-color: transparent;">
+                        </div>
+                        <small class="text-muted" style="font-size: 11px;">(Hanya dapat diubah lewat Manajemen Stok)</small>
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+</form>
+
+<script>
+    // Set total stok pada label
+    document.getElementById('totalStokLabel').innerText = "{{ $total_stok }}";
+</script>
+
+@endsection
+
+@section('scripts')
+<script>
+    // Kosong, script toggle tidak diperlukan di form edit
+</script>
+@endsection

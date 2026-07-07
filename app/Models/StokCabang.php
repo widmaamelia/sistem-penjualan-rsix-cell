@@ -16,7 +16,8 @@ class StokCabang extends Model
         'id_produk',
         'id_cabang',
         'stok_sekarang',
-        'stok_minimum'
+        'stok_minimum',
+        'stok_maksimal'
     ];
 
     public function produk()

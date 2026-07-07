@@ -7,10 +7,21 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// Rute dashboard bawaan web (dimatikan agar tidak membingungkan)
-// Route::get('/dashboard', function () {
-//     return view('dashboard');
-// })->middleware(['auth', 'verified'])->name('dashboard');
+use App\Http\Controllers\Web\DashboardController;
+use App\Http\Controllers\Web\ProdukController;
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    
+    // Manajemen Produk
+    Route::resource('produk', ProdukController::class);
+    
+    // Master Kategori
+    Route::resource('kategori', \App\Http\Controllers\Web\KategoriController::class)->except(['show']);
+
+    // Master Cabang
+    Route::resource('cabang', \App\Http\Controllers\Web\CabangController::class);
+});
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

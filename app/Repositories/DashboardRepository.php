@@ -102,6 +102,18 @@ class DashboardRepository
                 'total_transaksi' => $totalTransaksi,
                 'produk_terjual' => $produkTerjual
             ],
+            'menu_cepat' => [
+                [
+                    'label' => 'Stok',
+                    'icon' => 'box',
+                    'route' => '/stok'
+                ],
+                [
+                    'label' => 'Kas Keluar',
+                    'icon' => 'wallet',
+                    'route' => '/kas-keluar'
+                ]
+            ],
             'aktivitas_terbaru' => $aktivitasTerbaru
         ];
     }

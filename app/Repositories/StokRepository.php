@@ -62,6 +62,7 @@ class StokRepository
                 'foto_produk' => $item->produk->foto_produk,
                 'stok_sekarang' => $item->stok_sekarang,
                 'stok_minimum' => $item->stok_minimum,
+                'stok_maksimal' => $item->stok_maksimal,
                 'status_stok' => $status_stok
             ];
         });
