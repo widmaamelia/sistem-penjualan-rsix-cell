@@ -164,15 +164,13 @@
                     <td style="padding-left: 20px;" class="fw-bold text-primary">{{ $cabang->nama_cabang }}</td>
                     <td class="text-muted">{{ Str::limit($cabang->alamat, 40) ?? '-' }}</td>
                     <td class="text-dark fw-medium">
-                        {{ $cabang->users->first()->name ?? '-' }}
+                        {{ $cabang->penanggungJawab->name ?? '-' }}
                     </td>
                     <td class="text-muted">{{ $cabang->no_hp ?? '-' }}</td>
                     <td>
-                        @if(strtolower($cabang->status) == 'aktif')
-                            <span class="badge-status badge-status-aktif">Aktif</span>
-                        @else
-                            <span class="badge-status badge-status-nonaktif">Non-aktif</span>
-                        @endif
+                        <div class="form-check form-switch" style="padding-left: 2.5em;">
+                            <input class="form-check-input toggle-status" type="checkbox" role="switch" data-id="{{ $cabang->id_cabang }}" data-type="cabang" {{ strtolower($cabang->status) == 'aktif' ? 'checked' : '' }} style="cursor: pointer; width: 40px; height: 20px;">
+                        </div>
                     </td>
                     <td>
                         <div class="action-icons">
@@ -306,7 +304,7 @@
                 .then(data => {
                     document.getElementById('detailNama').innerText = data.nama_cabang;
                     document.getElementById('detailAlamat').innerText = data.alamat || '-';
-                    document.getElementById('detailPj').innerText = (data.users && data.users.length > 0) ? data.users[0].name : '-';
+                    document.getElementById('detailPj').innerText = data.penanggung_jawab ? data.penanggung_jawab.name : '-';
                     document.getElementById('detailTelepon').innerText = data.no_hp || '-';
                     
                     const statusEl = document.getElementById('detailStatus');
@@ -320,6 +318,38 @@
                 })
                 .catch(err => {
                     document.getElementById('detailNama').innerText = "Gagal memuat data";
+                });
+            });
+        });
+
+        // Toggle Status
+        document.querySelectorAll('.toggle-status').forEach(toggle => {
+            const newToggle = toggle.cloneNode(true);
+            toggle.parentNode.replaceChild(newToggle, toggle);
+            newToggle.addEventListener('change', function() {
+                const id = this.getAttribute('data-id');
+                const type = this.getAttribute('data-type');
+                const isChecked = this.checked;
+                
+                fetch(`/${type}/${id}/toggle-status`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if(!data.success) {
+                        this.checked = !isChecked; // Revert if failed
+                        alert(data.message || 'Terjadi kesalahan.');
+                    }
+                })
+                .catch(error => {
+                    this.checked = !isChecked; // Revert if error
+                    console.error('Error:', error);
+                    alert('Gagal mengubah status.');
                 });
             });
         });

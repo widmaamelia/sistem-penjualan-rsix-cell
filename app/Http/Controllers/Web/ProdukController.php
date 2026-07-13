@@ -132,26 +132,38 @@ class ProdukController extends Controller
 
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'nama_produk' => 'required|string|max:100',
-            'id_kategori' => 'required|exists:kategori_produks,id_kategori',
-            'harga_beli' => 'required|numeric|min:0',
-            'harga_jual' => 'required|numeric|min:0',
-        ]);
+        $user = auth()->user();
+        if ($user->role === 'admin cabang') {
+            $request->validate([
+                'harga_beli' => 'required|numeric|min:0',
+            ]);
+        } else {
+            $request->validate([
+                'nama_produk' => 'required|string|max:100',
+                'id_kategori' => 'required|exists:kategori_produks,id_kategori',
+                'harga_beli' => 'required|numeric|min:0',
+                'harga_jual' => 'required|numeric|min:0',
+            ]);
+        }
 
         $produk = Produk::findOrFail($id);
 
         try {
-            // Note: SKU dan Barcode tidak diizinkan untuk diubah demi integritas data, 
-            // Namun jika ingin diubah, bisa ditambahkan logic di sini.
-            // Saat ini kita hanya mengupdate informasi dasar.
+            $hargaBeliLama = $produk->harga_beli;
+            $hargaBeliBaru = $request->harga_beli;
 
-            $dataToUpdate = [
-                'id_kategori' => $request->id_kategori,
-                'nama_produk' => $request->nama_produk,
-                'harga_beli' => $request->harga_beli,
-                'harga_jual' => $request->harga_jual,
-            ];
+            if ($user->role === 'admin cabang') {
+                $dataToUpdate = [
+                    'harga_beli' => $hargaBeliBaru,
+                ];
+            } else {
+                $dataToUpdate = [
+                    'id_kategori' => $request->id_kategori,
+                    'nama_produk' => $request->nama_produk,
+                    'harga_beli' => $hargaBeliBaru,
+                    'harga_jual' => $request->harga_jual,
+                ];
+            }
 
             // Jika user mengupload foto baru saat Edit
             if ($request->hasFile('foto_produk')) {
@@ -171,6 +183,17 @@ class ProdukController extends Controller
             }
 
             $produk->update($dataToUpdate);
+
+            // Log perubahan harga beli jika berbeda
+            if ($hargaBeliLama != $hargaBeliBaru) {
+                \App\Models\LogPerubahanHarga::create([
+                    'id_produk' => $produk->id_produk,
+                    'id_user' => $user->id_user,
+                    'harga_beli_lama' => $hargaBeliLama,
+                    'harga_beli_baru' => $hargaBeliBaru,
+                    'tanggal' => date('Y-m-d H:i:s'),
+                ]);
+            }
 
             // Untuk Stok, biasanya tidak diedit langsung dari sini melainkan lewat menu Manajemen Stok, 
             // sehingga kita biarkan saja (read-only di form).

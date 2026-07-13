@@ -21,7 +21,7 @@
 
         /* Sidebar */
         .sidebar {
-            width: 260px;
+            width: 230px;
             height: 100vh;
             position: fixed;
             top: 0;
@@ -34,64 +34,64 @@
         }
 
         .sidebar-brand {
-            padding: 20px;
+            padding: 15px 20px;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             border-bottom: 1px solid #f3f4f6;
         }
 
         .sidebar-brand .icon-box {
             background-color: #1a5ca6;
             color: white;
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
+            width: 35px;
+            height: 35px;
+            border-radius: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
+            font-size: 16px;
         }
 
         .sidebar-brand h5 {
             margin: 0;
             font-weight: 700;
             color: #111827;
-            font-size: 18px;
+            font-size: 16px;
         }
         
         .sidebar-brand p {
             margin: 0;
-            font-size: 11px;
+            font-size: 10px;
             color: #6b7280;
         }
 
         .nav-menu {
             flex: 1;
-            padding: 20px 15px;
+            padding: 15px 10px;
             overflow-y: auto;
         }
 
         .nav-item {
-            margin-bottom: 5px;
+            margin-bottom: 3px;
         }
 
         .nav-link {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 12px 15px;
+            gap: 10px;
+            padding: 9px 12px;
             color: #4b5563;
-            border-radius: 8px;
+            border-radius: 6px;
             font-weight: 500;
-            font-size: 14px;
+            font-size: 13px;
             text-decoration: none;
             transition: all 0.2s ease;
         }
 
         .nav-link i {
-            font-size: 16px;
-            width: 20px;
+            font-size: 14px;
+            width: 18px;
             text-align: center;
         }
 
@@ -111,7 +111,7 @@
         }
 
         .sidebar-footer {
-            padding: 20px 15px;
+            padding: 15px 10px;
             border-top: 1px solid #e5e7eb;
         }
 
@@ -129,7 +129,7 @@
 
         /* Main Content */
         .main-content {
-            margin-left: 260px;
+            margin-left: 230px;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -137,13 +137,13 @@
 
         /* Top Navbar */
         .topbar {
-            height: 70px;
+            height: 56px;
             background-color: #ffffff;
             border-bottom: 1px solid #e5e7eb;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 30px;
+            padding: 0 20px;
             position: sticky;
             top: 0;
             z-index: 999;
@@ -151,7 +151,7 @@
 
         .breadcrumb {
             margin: 0;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 500;
         }
 
@@ -168,7 +168,7 @@
         .topbar-right {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 15px;
         }
 
         .search-box {
@@ -177,19 +177,19 @@
 
         .search-box i {
             position: absolute;
-            left: 12px;
+            left: 10px;
             top: 50%;
             transform: translateY(-50%);
             color: #9ca3af;
         }
 
         .search-box input {
-            padding-left: 35px;
-            border-radius: 20px;
+            padding-left: 30px;
+            border-radius: 15px;
             border: 1px solid #e5e7eb;
             background-color: #f9fafb;
-            font-size: 13px;
-            width: 250px;
+            font-size: 12px;
+            width: 200px;
             transition: all 0.2s;
         }
 
@@ -204,7 +204,7 @@
             background: none;
             border: none;
             color: #4b5563;
-            font-size: 18px;
+            font-size: 16px;
             position: relative;
             cursor: pointer;
         }
@@ -213,46 +213,59 @@
             position: absolute;
             top: 0;
             right: -2px;
-            width: 8px;
-            height: 8px;
+            width: 6px;
+            height: 6px;
             background-color: #ef4444;
             border-radius: 50%;
-            border: 2px solid white;
+            border: 1.5px solid white;
         }
 
         .user-profile img {
-            width: 35px;
-            height: 35px;
+            width: 30px;
+            height: 30px;
             border-radius: 50%;
             object-fit: cover;
             cursor: pointer;
-            border: 2px solid #e5e7eb;
+            border: 1.5px solid #e5e7eb;
         }
 
         /* Content Area */
         .content-area {
-            padding: 30px;
+            padding: 20px;
             flex: 1;
         }
         
         /* Premium Card Style */
         .card {
             border: 1px solid #e5e7eb;
-            border-radius: 12px;
+            border-radius: 10px;
             box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
-            margin-bottom: 24px;
+            margin-bottom: 16px;
         }
 
         .card-header {
             background-color: white;
             border-bottom: 1px solid #f3f4f6;
-            border-radius: 12px 12px 0 0 !important;
-            padding: 15px 20px;
+            border-radius: 10px 10px 0 0 !important;
+            padding: 10px 15px;
             font-weight: 600;
             color: #111827;
             display: flex;
             justify-content: space-between;
             align-items: center;
+        }
+
+        /* Global Table Compact Rules */
+        .table th, table.table th {
+            padding: 8px 12px !important;
+            font-size: 11px !important;
+            font-weight: 600 !important;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .table td, table.table td {
+            padding: 8px 12px !important;
+            font-size: 12px !important;
         }
     </style>
     @yield('styles')
@@ -267,7 +280,7 @@
             </div>
             <div>
                 <h5>Rsix Cell</h5>
-                <p>Super Admin</p>
+                <p>{{ auth()->user()->role === 'super' ? 'Super Admin' : 'Admin Cabang' }}</p>
             </div>
         </div>
 
@@ -277,43 +290,62 @@
                     <i class="fa-solid fa-border-all"></i> Dashboard
                 </a>
             </div>
+            @if(auth()->user()->role === 'super')
             <div class="nav-item">
                 <a href="{{ route('kategori.index') }}" class="nav-link {{ request()->is('kategori*') ? 'active' : '' }}">
                     <i class="fa-solid fa-shapes"></i> Kategori
                 </a>
             </div>
+            @endif
             <div class="nav-item">
                 <a href="{{ url('/produk') }}" class="nav-link {{ request()->is('produk*') ? 'active' : '' }}">
                     <i class="fa-solid fa-box-open"></i> Produk
                 </a>
             </div>
+            @if(auth()->user()->role === 'super')
             <div class="nav-item">
                 <a href="{{ route('cabang.index') }}" class="nav-link {{ request()->is('cabang*') ? 'active' : '' }}">
                     <i class="fa-solid fa-store"></i> Cabang
                 </a>
             </div>
             <div class="nav-item">
-                <a href="#" class="nav-link">
+                <a href="{{ route('pengguna.index') }}" class="nav-link {{ request()->is('pengguna*') ? 'active' : '' }}">
                     <i class="fa-solid fa-users"></i> Pengguna
                 </a>
             </div>
+            @endif
             <div class="nav-item">
-                <a href="#" class="nav-link">
+                <a href="{{ route('stok.index') }}" class="nav-link {{ request()->is('stok') || request()->is('stok/*') && !request()->is('stok_opname*') ? 'active' : '' }}">
                     <i class="fa-solid fa-layer-group"></i> Stok Semua Cabang
                 </a>
             </div>
+            
             <div class="nav-item">
-                <a href="#" class="nav-link">
-                    <i class="fa-regular fa-clock"></i> Shift Kerja
+                <a href="{{ route('stok_opname.index') }}" class="nav-link {{ request()->is('stok_opname*') ? 'active' : '' }}">
+                    <i class="fa-solid fa-clipboard-check"></i> Stok Opname
+                </a>
+            </div>
+            @if(auth()->user()->role === 'super')
+            <div class="nav-item">
+                <a href="{{ route('master_shift.index') }}" class="nav-link {{ request()->is('master_shift*') ? 'active' : '' }}">
+                    <i class="fa-solid fa-clock"></i> Master Shift
+                </a>
+            </div>
+            @endif
+
+            <div class="nav-item">
+                <a href="{{ route('jadwal_shift.index') }}" class="nav-link {{ request()->is('jadwal_shift*') ? 'active' : '' }}">
+                    <i class="fa-regular fa-calendar-check"></i> Jadwal Shift
+                </a>
+            </div>
+
+            <div class="nav-item">
+                <a href="{{ route('kas_keluar.index') }}" class="nav-link {{ request()->is('kas_keluar*') ? 'active' : '' }}">
+                    <i class="fa-solid fa-money-bill-transfer"></i> Kas Keluar
                 </a>
             </div>
             <div class="nav-item">
-                <a href="#" class="nav-link">
-                    <i class="fa-solid fa-receipt"></i> Transaksi
-                </a>
-            </div>
-            <div class="nav-item">
-                <a href="#" class="nav-link">
+                <a href="{{ route('laporan.index') }}" class="nav-link {{ request()->is('laporan*') ? 'active' : '' }}">
                     <i class="fa-solid fa-chart-column"></i> Laporan
                 </a>
             </div>
@@ -338,7 +370,7 @@
         <!-- Top Navbar -->
         <div class="topbar">
             <div class="breadcrumb">
-                <a href="#">Main</a> <i class="fa-solid fa-chevron-right mx-2" style="font-size: 10px; color:#9ca3af;"></i> <span>@yield('title', 'Dashboard')</span>
+                <span class="fs-5 fw-bold text-dark">@yield('title', 'Dashboard')</span>
             </div>
 
             <div class="topbar-right">

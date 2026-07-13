@@ -1,0 +1,209 @@
+<?php
+
+namespace App\Http\Controllers\Web;
+
+use App\Http\Controllers\Controller;
+use App\Models\Produk;
+use App\Models\Cabang;
+use App\Models\StokCabang;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+
+class StokController extends Controller
+{
+    public function index(Request $request)
+    {
+        $cabangs = Cabang::where('status', 'aktif')->get();
+        $user = auth()->user();
+
+        if ($user->role === 'admin cabang') {
+            $id_cabang = $user->id_cabang;
+        } else {
+            $id_cabang = $request->input('id_cabang'); // Filter by branch
+        }
+        $search = $request->input('search');
+
+        // Query dasar dari Produk
+        $query = Produk::with(['kategori', 'stokCabangs' => function ($q) use ($id_cabang) {
+            if ($id_cabang) {
+                $q->where('id_cabang', $id_cabang);
+            }
+        }]);
+
+        // Filter search (SKU atau Nama)
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('nama_produk', 'like', "%{$search}%")
+                  ->orWhere('sku', 'like', "%{$search}%");
+            });
+        }
+
+        $produks = $query->orderBy('id_produk', 'desc')->paginate(10)->withQueryString();
+
+        // Calculate summaries based on current filter (not just paginated items)
+        $totalProduk = 0;
+        $stokRendah = 0;
+        $stokHabis = 0;
+
+        if ($id_cabang) {
+            // Summary untuk cabang spesifik
+            $totalProduk = StokCabang::where('id_cabang', $id_cabang)->count();
+            $stokRendah = StokCabang::where('id_cabang', $id_cabang)
+                                     ->whereColumn('stok_sekarang', '<=', 'stok_minimum')
+                                     ->where('stok_sekarang', '>', 0)
+                                     ->count();
+            $stokHabis = StokCabang::where('id_cabang', $id_cabang)->where('stok_sekarang', '<=', 0)->count();
+        } else {
+            // Summary untuk seluruh cabang secara agregat
+            $totalProduk = Produk::count();
+            
+            // Hitung agregat per produk
+            $agregatStok = StokCabang::select('id_produk', DB::raw('SUM(stok_sekarang) as total_stok'), DB::raw('MAX(stok_minimum) as max_min'))
+                                      ->groupBy('id_produk')
+                                      ->get();
+            
+            foreach ($agregatStok as $stok) {
+                if ($stok->total_stok <= 0) {
+                    $stokHabis++;
+                } elseif ($stok->total_stok <= $stok->max_min) {
+                    // Kita anggap rendah jika total stok <= max stok_minimum dari cabang-cabangnya
+                    $stokRendah++;
+                }
+            }
+        }
+
+        return view('admin.stok.index', compact('produks', 'cabangs', 'id_cabang', 'totalProduk', 'stokRendah', 'stokHabis', 'search'));
+    }
+
+    public function edit($id)
+    {
+        // Future feature: Edit manual stock
+        return redirect()->back()->with('error', 'Fitur Edit Stok sedang dalam tahap pengembangan.');
+    }
+
+    public function history(Request $request, $id)
+    {
+        $produk = Produk::findOrFail($id);
+        $user = auth()->user();
+        
+        $query = \App\Models\LogManajemenStok::with(['cabang', 'user'])
+                    ->where('id_produk', $id)
+                    ->orderBy('created_at', 'desc');
+
+        if ($user->role === 'admin cabang') {
+            $query->where('id_cabang', $user->id_cabang);
+        } elseif ($user->role === 'super' && $request->filled('id_cabang')) {
+            $query->where('id_cabang', $request->id_cabang);
+        }
+
+        $logs = $query->paginate(15)->withQueryString();
+        
+        $cabangs = Cabang::where('status', 'aktif')->get();
+
+        return view('admin.stok.history', compact('produk', 'logs', 'cabangs'));
+    }
+
+    public function tambahForm()
+    {
+        $user = auth()->user();
+        if ($user->role !== 'admin cabang') {
+            return redirect()->route('stok.index')->with('error', 'Hanya Admin Cabang yang dapat menambah stok.');
+        }
+
+        if (!$user->id_cabang) {
+            return redirect()->route('stok.index')->with('error', 'Akun Anda tidak terikat dengan cabang manapun.');
+        }
+
+        $produks = Produk::where('status', 'aktif')->orderBy('nama_produk', 'asc')->get();
+
+        return view('admin.stok.tambah', compact('produks'));
+    }
+
+    public function tambahProses(Request $request)
+    {
+        $user = auth()->user();
+        if ($user->role !== 'admin cabang' || !$user->id_cabang) {
+            return redirect()->route('stok.index')->with('error', 'Akses ditolak.');
+        }
+
+        $request->validate([
+            'items' => 'required|array|min:1',
+            'items.*.id_produk' => 'required|exists:produks,id_produk',
+            'items.*.qty_tambah' => 'required|numeric|min:1',
+            'items.*.harga_beli' => 'required|numeric|min:0',
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            $totalKasKeluar = 0;
+
+            foreach ($request->items as $item) {
+                $produk = Produk::findOrFail($item['id_produk']);
+
+                // 1. Update stok cabang
+                $stokCabang = StokCabang::firstOrCreate(
+                    ['id_cabang' => $user->id_cabang, 'id_produk' => $item['id_produk']],
+                    ['stok_sekarang' => 0, 'stok_minimum' => 5, 'stok_maksimum' => 100]
+                );
+
+                $stokSebelum = $stokCabang->stok_sekarang;
+                $stokCabang->stok_sekarang += (int) $item['qty_tambah'];
+                $stokCabang->save();
+
+                // 2. Log mutasi stok
+                \App\Models\LogManajemenStok::create([
+                    'id_cabang' => $user->id_cabang,
+                    'id_produk' => $item['id_produk'],
+                    'id_user' => $user->id_user,
+                    'qty' => $item['qty_tambah'],
+                    'jenis_transaksi' => 'masuk',
+                    'stok_sebelum' => $stokSebelum,
+                    'stok_sesudah' => $stokCabang->stok_sekarang,
+                    'keterangan' => 'Restock / Tambah Stok',
+                    'tanggal' => date('Y-m-d')
+                ]);
+
+                // 3. Log & Update harga beli jika berubah
+                if ($produk->harga_beli != $item['harga_beli']) {
+                    $hargaBeliLama = $produk->harga_beli;
+                    $produk->harga_beli = $item['harga_beli'];
+                    $produk->save();
+
+                    \App\Models\LogPerubahanHarga::create([
+                        'id_produk' => $produk->id_produk,
+                        'id_user' => $user->id_user,
+                        'harga_beli_lama' => $hargaBeliLama,
+                        'harga_beli_baru' => $item['harga_beli'],
+                        'tanggal' => date('Y-m-d H:i:s'),
+                    ]);
+                }
+
+                // 4. Hitung kas keluar
+                $totalKasKeluar += $item['qty_tambah'] * $item['harga_beli'];
+            }
+
+            // 5. Catat ke Kas Keluar
+            if ($totalKasKeluar > 0) {
+                $activeShift = \App\Models\Shift::where('id_user', $user->id_user)
+                                                ->where('id_cabang', $user->id_cabang)
+                                                ->where('status', 'buka')
+                                                ->first();
+
+                \App\Models\KasKeluar::create([
+                    'id_shift' => $activeShift ? $activeShift->id_shift : null,
+                    'id_cabang' => $user->id_cabang,
+                    'jumlah_pengeluaran' => $totalKasKeluar,
+                    'keterangan' => 'Pembelian Stok Barang (Restock)',
+                    'tanggal' => date('Y-m-d H:i:s')
+                ]);
+            }
+
+            DB::commit();
+            return redirect()->route('stok.index')->with('success', 'Stok berhasil ditambahkan dan pengeluaran kas dicatat.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Gagal menambah stok: ' . $e->getMessage())->withInput();
+        }
+    }
+}

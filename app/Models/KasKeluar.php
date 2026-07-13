@@ -14,6 +14,7 @@ class KasKeluar extends Model
 
     protected $fillable = [
         'id_shift',
+        'id_cabang',
         'jumlah_pengeluaran',
         'keterangan',
         'tanggal'
@@ -22,5 +23,10 @@ class KasKeluar extends Model
     public function shift()
     {
         return $this->belongsTo(Shift::class, 'id_shift', 'id_shift');
+    }
+
+    public function cabang()
+    {
+        return $this->belongsTo(Cabang::class, 'id_cabang', 'id_cabang');
     }
 }

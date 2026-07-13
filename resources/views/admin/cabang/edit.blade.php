@@ -101,6 +101,19 @@
         </div>
 
         <div class="mb-4">
+            <label class="form-label">Penanggung Jawab Cabang (Admin Cabang)</label>
+            <select name="id_penanggung_jawab" class="form-control">
+                <option value="">-- Pilih Penanggung Jawab --</option>
+                @foreach($adminCabangs as $admin)
+                    <option value="{{ $admin->id_user }}" {{ old('id_penanggung_jawab', $cabang->id_penanggung_jawab) == $admin->id_user ? 'selected' : '' }}>
+                        {{ $admin->name }} ({{ $admin->email }})
+                    </option>
+                @endforeach
+            </select>
+            <small class="text-muted mt-1 d-block" style="font-size: 12px;">Diambil dari pengguna dengan role Admin Cabang.</small>
+        </div>
+
+        <div class="mb-4">
             <label class="form-label">Alamat Lengkap</label>
             <textarea name="alamat" class="form-control" rows="3">{{ old('alamat', $cabang->alamat) }}</textarea>
         </div>

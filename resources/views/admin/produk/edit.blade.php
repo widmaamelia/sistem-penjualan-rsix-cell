@@ -245,11 +245,18 @@
         <!-- FOTO PRODUK -->
         <div class="col-md-4 mb-4">
             <label class="form-label text-uppercase" style="font-size:11px; letter-spacing:0.5px;">Foto Produk</label>
-            <div class="upload-box" onclick="document.getElementById('foto_produk').click()">
-                <i class="fa-regular fa-image"></i>
-                <span>Upload</span>
-                <input type="file" name="foto_produk" id="foto_produk" style="display: none;" accept="image/*">
-            </div>
+            @if(auth()->user()->role === 'admin cabang')
+                <div class="upload-box" style="cursor: not-allowed; opacity: 0.6;">
+                    <i class="fa-regular fa-image"></i>
+                    <span style="font-size: 11px;">Tidak Dapat Diubah Admin Cabang</span>
+                </div>
+            @else
+                <div class="upload-box" onclick="document.getElementById('foto_produk').click()">
+                    <i class="fa-regular fa-image"></i>
+                    <span>Upload</span>
+                    <input type="file" name="foto_produk" id="foto_produk" style="display: none;" accept="image/*">
+                </div>
+            @endif
         </div>
 
         <!-- BASIC INFO -->
@@ -257,14 +264,14 @@
             <!-- Row 1 -->
             <div class="mb-4">
                 <label class="form-label">Nama Produk <span class="required-star">*</span></label>
-                <input type="text" name="nama_produk" class="form-control" placeholder="Contoh: Samsung Galaxy S24 Ultra" value="{{ old('nama_produk', $produk->nama_produk) }}" required>
+                <input type="text" name="nama_produk" class="form-control" placeholder="Contoh: Samsung Galaxy S24 Ultra" value="{{ old('nama_produk', $produk->nama_produk) }}" required {{ auth()->user()->role === 'admin cabang' ? 'disabled' : '' }}>
             </div>
             
             <!-- Row 2 -->
             <div class="row mb-4">
                 <div class="col-md-6">
                     <label class="form-label">Kategori</label>
-                    <select name="id_kategori" class="form-select">
+                    <select name="id_kategori" class="form-select" {{ auth()->user()->role === 'admin cabang' ? 'disabled' : '' }}>
                         <option value="">Pilih Kategori</option>
                         @foreach($kategoris as $kat)
                             <option value="{{ $kat->id_kategori }}" {{ old('id_kategori', $produk->id_kategori) == $kat->id_kategori ? 'selected' : '' }}>
@@ -306,7 +313,7 @@
             <label class="form-label">Harga Jual</label>
             <div class="input-group">
                 <span class="input-group-text">Rp</span>
-                <input type="number" name="harga_jual" class="form-control" placeholder="0" value="{{ old('harga_jual', $produk->harga_jual) }}" required min="0">
+                <input type="number" name="harga_jual" class="form-control" placeholder="0" value="{{ old('harga_jual', $produk->harga_jual) }}" required min="0" {{ auth()->user()->role === 'admin cabang' ? 'disabled' : '' }}>
             </div>
         </div>
     </div>

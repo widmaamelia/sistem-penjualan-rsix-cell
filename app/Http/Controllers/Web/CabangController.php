@@ -11,7 +11,7 @@ class CabangController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Cabang::with('users'); // users() relation is defined in Cabang model
+        $query = Cabang::with('penanggungJawab');
 
         if ($request->filled('search')) {
             $query->where('nama_cabang', 'like', '%' . $request->search . '%')
@@ -20,8 +20,6 @@ class CabangController extends Controller
 
         $cabangs = $query->orderBy('id_cabang', 'desc')->paginate(10)->withQueryString();
 
-        // If AJAX request, return partial view or something, 
-        // but for now, we'll keep it simple and just do standard reload, similar to Kategori AJAX fallback
         if ($request->ajax()) {
             return view('admin.cabang.index', compact('cabangs'))->renderSections()['content'];
         }
@@ -31,7 +29,8 @@ class CabangController extends Controller
 
     public function create()
     {
-        return view('admin.cabang.create');
+        $adminCabangs = User::where('role', 'admin cabang')->where('status', 'aktif')->get();
+        return view('admin.cabang.create', compact('adminCabangs'));
     }
 
     public function store(Request $request)
@@ -39,14 +38,16 @@ class CabangController extends Controller
         $request->validate([
             'nama_cabang' => 'required|string|max:100',
             'alamat' => 'nullable|string',
+            'id_penanggung_jawab' => 'nullable|exists:users,id_user',
             'no_hp' => 'nullable|string|max:20',
         ]);
 
         Cabang::create([
             'nama_cabang' => $request->nama_cabang,
             'alamat' => $request->alamat,
+            'id_penanggung_jawab' => $request->id_penanggung_jawab,
             'no_hp' => $request->no_hp,
-            'status' => 'aktif', // Default saat tambah baru
+            'status' => 'aktif',
         ]);
 
         return redirect()->route('cabang.index')->with('success', 'Cabang baru berhasil ditambahkan!');
@@ -54,8 +55,7 @@ class CabangController extends Controller
 
     public function show($id)
     {
-        // Fitur show detail cabang jika diperlukan (untuk pop up atau halaman baru)
-        $cabang = Cabang::with('users')->findOrFail($id);
+        $cabang = Cabang::with('penanggungJawab')->findOrFail($id);
         if (request()->ajax()) {
             return response()->json($cabang);
         }
@@ -65,7 +65,8 @@ class CabangController extends Controller
     public function edit($id)
     {
         $cabang = Cabang::findOrFail($id);
-        return view('admin.cabang.edit', compact('cabang'));
+        $adminCabangs = User::where('role', 'admin cabang')->where('status', 'aktif')->get();
+        return view('admin.cabang.edit', compact('cabang', 'adminCabangs'));
     }
 
     public function update(Request $request, $id)
@@ -75,6 +76,7 @@ class CabangController extends Controller
         $request->validate([
             'nama_cabang' => 'required|string|max:100',
             'alamat' => 'nullable|string',
+            'id_penanggung_jawab' => 'nullable|exists:users,id_user',
             'no_hp' => 'nullable|string|max:20',
             'status' => 'required|in:aktif,nonaktif'
         ]);
@@ -82,11 +84,25 @@ class CabangController extends Controller
         $cabang->update([
             'nama_cabang' => $request->nama_cabang,
             'alamat' => $request->alamat,
+            'id_penanggung_jawab' => $request->id_penanggung_jawab,
             'no_hp' => $request->no_hp,
             'status' => $request->status,
         ]);
 
         return redirect()->route('cabang.index')->with('success', 'Data cabang berhasil diperbarui!');
+    }
+
+    public function toggleStatus(Request $request, $id)
+    {
+        $cabang = Cabang::findOrFail($id);
+        $cabang->status = $cabang->status === 'aktif' ? 'nonaktif' : 'aktif';
+        $cabang->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Status cabang berhasil diubah!',
+            'new_status' => $cabang->status
+        ]);
     }
 
     public function destroy($id)

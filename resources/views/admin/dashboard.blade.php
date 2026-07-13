@@ -124,10 +124,9 @@
                     <div class="summary-icon icon-blue">
                         <i class="fa-solid fa-money-bill-wave"></i>
                     </div>
-                    <span class="summary-badge badge-success">+12%</span>
                 </div>
                 <div class="summary-title">Total Pendapatan Hari Ini</div>
-                <h3 class="summary-value">Rp {{ number_format($statistik['pendapatan'] ?? 12450000, 0, ',', '.') }}</h3>
+                <h3 class="summary-value">Rp {{ number_format($statistik['pendapatan'], 0, ',', '.') }}</h3>
             </div>
         </div>
     </div>
@@ -140,10 +139,9 @@
                     <div class="summary-icon icon-purple">
                         <i class="fa-solid fa-receipt"></i>
                     </div>
-                    <span class="summary-badge badge-success">+8%</span>
                 </div>
                 <div class="summary-title">Total Transaksi</div>
-                <h3 class="summary-value">{{ $statistik['total_transaksi'] ?? 247 }}</h3>
+                <h3 class="summary-value">{{ $statistik['total_transaksi'] }}</h3>
             </div>
         </div>
     </div>
@@ -154,12 +152,11 @@
             <div class="summary-card">
                 <div class="d-flex justify-content-between align-items-start">
                     <div class="summary-icon icon-orange">
-                        <i class="fa-solid fa-store"></i>
+                        <i class="{{ auth()->user()->role === 'super' ? 'fa-solid fa-store' : 'fa-solid fa-triangle-exclamation' }}"></i>
                     </div>
-                    <span class="summary-badge badge-neutral">Tetap</span>
                 </div>
-                <div class="summary-title">Cabang Aktif</div>
-                <h3 class="summary-value">{{ $statistik['cabang_aktif'] ?? '5/6' }}</h3>
+                <div class="summary-title">{{ $statistik['label_cabang'] }}</div>
+                <h3 class="summary-value">{{ $statistik['nilai_cabang'] }}</h3>
             </div>
         </div>
     </div>
@@ -172,10 +169,9 @@
                     <div class="summary-icon icon-indigo">
                         <i class="fa-solid fa-user-tie"></i>
                     </div>
-                    <span class="summary-badge badge-danger">-2</span>
                 </div>
                 <div class="summary-title">Karyawan Bertugas</div>
-                <h3 class="summary-value">{{ $statistik['karyawan'] ?? 12 }}</h3>
+                <h3 class="summary-value">{{ $statistik['karyawan'] }}</h3>
             </div>
         </div>
     </div>
@@ -184,11 +180,11 @@
 <!-- Row 2: Charts -->
 <div class="row g-4 mb-4">
     <!-- Bar Chart -->
-    <div class="col-md-8">
+    <div class="{{ auth()->user()->role === 'super' ? 'col-md-8' : 'col-12' }}">
         <div class="card h-100 border-0 shadow-sm">
             <div class="card-header border-0 bg-white pt-4 pb-0">
-                <h6 class="mb-0 fw-bold">Penjualan 30 Hari Terakhir</h6>
-                <button class="btn btn-sm btn-outline-secondary" style="font-size: 11px;">Unduh Laporan</button>
+                <h6 class="mb-0 fw-bold">Penjualan 7 Hari Terakhir</h6>
+                <a href="{{ route('laporan.index') }}" class="btn btn-sm btn-outline-secondary" style="font-size: 11px;">Lihat Laporan Lengkap</a>
             </div>
             <div class="card-body">
                 <div id="barChart" style="min-height: 250px;"></div>
@@ -197,44 +193,47 @@
     </div>
 
     <!-- Donut Chart -->
+    @if(auth()->user()->role === 'super')
     <div class="col-md-4">
         <div class="card h-100 border-0 shadow-sm">
             <div class="card-header border-0 bg-white pt-4 pb-0">
                 <h6 class="mb-0 fw-bold">Kontribusi Per Cabang</h6>
             </div>
             <div class="card-body d-flex flex-column justify-content-center">
-                <div id="donutChart" class="d-flex justify-content-center mb-4"></div>
-                
-                <!-- Custom Legend -->
-                <div class="px-3">
-                    <div class="legend-item">
-                        <div><span class="legend-color" style="background-color: #1a5ca6;"></span> Alahan Panjang</div>
-                        <span class="fw-bold text-dark">45%</span>
+                @if($totalPendapatanGlobal > 0)
+                    <div id="donutChart" class="d-flex justify-content-center mb-4"></div>
+                    
+                    <!-- Custom Legend Dynamic -->
+                    <div class="px-3">
+                        @foreach($donutChartLabels as $index => $label)
+                            <div class="legend-item">
+                                <div><span class="legend-color" style="background-color: {{ $colorsToPass[$index] }};"></span> {{ $label }}</div>
+                                <span class="fw-bold text-dark">{{ number_format(($donutChartData[$index] / $totalPendapatanGlobal) * 100, 1) }}%</span>
+                            </div>
+                        @endforeach
                     </div>
-                    <div class="legend-item">
-                        <div><span class="legend-color" style="background-color: #6366f1;"></span> Talang Babungo</div>
-                        <span class="fw-bold text-dark">25%</span>
+                @else
+                    <div class="text-center text-muted my-5">
+                        <i class="fa-solid fa-chart-pie mb-3" style="font-size: 40px; color: #d1d5db;"></i>
+                        <p class="mb-0">Belum ada data pendapatan cabang untuk ditampilkan.</p>
                     </div>
-                    <div class="legend-item">
-                        <div><span class="legend-color" style="background-color: #92400e;"></span> Cabang Diponegoro</div>
-                        <span class="fw-bold text-dark">30%</span>
-                    </div>
-                </div>
+                @endif
             </div>
         </div>
     </div>
+    @endif
 </div>
 
-<!-- Row 3: Table -->
-<div class="row">
-    <div class="col-12">
-        <div class="card border-0 shadow-sm">
-            <div class="card-header border-0 bg-white py-3">
+<!-- Row 3: Table & Price Log -->
+<div class="row g-4">
+    <div class="{{ auth()->user()->role === 'super' ? 'col-md-8' : 'col-12' }}">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header border-0 bg-white py-3 d-flex justify-content-between align-items-center">
                 <h6 class="mb-0 fw-bold">Transaksi Terbaru</h6>
-                <a href="#" class="btn-link-action">Lihat Semua <i class="fa-solid fa-arrow-right ms-1"></i></a>
+                <a href="{{ route('laporan.index') }}" class="btn-link-action text-decoration-none" style="font-size: 12px; color: #1a5ca6;">Lihat Semua <i class="fa-solid fa-arrow-right ms-1"></i></a>
             </div>
             <div class="table-container">
-                <table class="table mb-0">
+                <table class="table mb-0 align-middle">
                     <thead>
                         <tr>
                             <th>No</th>
@@ -248,106 +247,89 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- Menggunakan data dari controller jika ada, atau fallback ke dummy untuk tampilan awal -->
-                        @forelse($transaksi_terbaru ?? [] as $index => $trx)
+                        @forelse($transaksi_terbaru as $index => $trx)
                         <tr>
                             <td>{{ $index + 1 }}</td>
                             <td class="tx-id">{{ $trx->no_transaksi }}</td>
                             <td>{{ $trx->cabang->nama_cabang ?? 'Pusat' }}</td>
-                            <td>{{ $trx->user->name ?? 'Admin' }}<br><small class="text-muted" style="font-size:11px;">Shift {{ $trx->shift->id_shift ?? '-' }}</small></td>
+                            <td>{{ $trx->user->name ?? 'Admin' }}</td>
                             <td>{{ $trx->detailTransaksis->sum('qty') }}</td>
                             <td class="fw-bold">Rp {{ number_format($trx->total_harga, 0, ',', '.') }}</td>
                             <td>{{ ucfirst($trx->metode_bayar) }}</td>
-                            <td>{{ \Carbon\Carbon::parse($trx->tanggal_transaksi)->format('H:i') }}</td>
+                            <td>{{ \Carbon\Carbon::parse($trx->tanggal_transaksi)->format('d M, H:i') }}</td>
                         </tr>
                         @empty
-                        <!-- Dummy Data jika DB kosong atau Controller belum kirim data -->
                         <tr>
-                            <td>1</td>
-                            <td class="tx-id">#TX-9921</td>
-                            <td>Alahan Panjang</td>
-                            <td>Budi Santoso</td>
-                            <td>3</td>
-                            <td class="fw-bold">Rp 450.000</td>
-                            <td>QRIS</td>
-                            <td>14:20</td>
-                        </tr>
-                        <tr>
-                            <td>2</td>
-                            <td class="tx-id">#TX-9920</td>
-                            <td>Talang Babungo</td>
-                            <td>Sari Putri</td>
-                            <td>1</td>
-                            <td class="fw-bold">Rp 1.200.000</td>
-                            <td>Tunai</td>
-                            <td>14:15</td>
-                        </tr>
-                        <tr>
-                            <td>3</td>
-                            <td class="tx-id">#TX-9919</td>
-                            <td>Talang Babungo</td>
-                            <td>Sari Putri</td>
-                            <td>2</td>
-                            <td class="fw-bold">Rp 85.000</td>
-                            <td>Tunai</td>
-                            <td>14:02</td>
-                        </tr>
-                        <tr>
-                            <td>4</td>
-                            <td class="tx-id">#TX-9918</td>
-                            <td>Alahan Panjang</td>
-                            <td>Ani Wijaya</td>
-                            <td>5</td>
-                            <td class="fw-bold">Rp 2.150.000</td>
-                            <td>Debit BCA</td>
-                            <td>13:55</td>
-                        </tr>
-                        <tr>
-                            <td>5</td>
-                            <td class="tx-id">#TX-9917</td>
-                            <td>Cabang Diponegoro</td>
-                            <td>Rian Hidayat</td>
-                            <td>1</td>
-                            <td class="fw-bold">Rp 15.000</td>
-                            <td>Tunai</td>
-                            <td>13:48</td>
+                            <td colspan="8" class="text-center py-5 text-muted">
+                                Belum ada transaksi terbaru hari ini.
+                            </td>
                         </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
-            
-            <!-- Pagination Footer -->
-            <div class="card-footer bg-white border-top py-3 d-flex justify-content-between align-items-center" style="font-size: 13px; color: #6b7280;">
-                <div>Menampilkan <strong>1-5</strong> dari <strong>124</strong> transaksi</div>
-                
-                <nav>
-                    <ul class="pagination pagination-sm mb-0">
-                        <li class="page-item disabled">
-                            <a class="page-link border-0 text-muted" href="#"><i class="fa-solid fa-chevron-left"></i></a>
-                        </li>
-                        <li class="page-item active"><a class="page-link border-0" href="#" style="background-color: #1a5ca6;">1</a></li>
-                        <li class="page-item"><a class="page-link border-0 text-dark" href="#">2</a></li>
-                        <li class="page-item"><a class="page-link border-0 text-dark" href="#">3</a></li>
-                        <li class="page-item">
-                            <a class="page-link border-0 text-dark" href="#"><i class="fa-solid fa-chevron-right"></i></a>
-                        </li>
-                    </ul>
-                </nav>
+        </div>
+    </div>
+
+    @if(auth()->user()->role === 'super')
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header border-0 bg-white py-3">
+                <h6 class="mb-0 fw-bold">Log Perubahan Harga Beli</h6>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0 align-middle">
+                        <thead class="bg-light">
+                            <tr>
+                                <th style="font-size: 11px; padding: 12px 15px;">Produk</th>
+                                <th style="font-size: 11px; padding: 12px 15px;">Harga Beli</th>
+                                <th style="font-size: 11px; padding: 12px 15px;">Pengubah</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($perubahan_harga as $log)
+                                <tr>
+                                    <td style="padding: 12px 15px; font-size: 12px;">
+                                        <span class="fw-bold text-dark">{{ Str::limit($log->produk->nama_produk ?? 'Produk', 20) }}</span>
+                                    </td>
+                                    <td style="padding: 12px 15px; font-size: 12px;">
+                                        <span class="text-muted text-decoration-line-through text-nowrap" style="font-size: 11px;">Rp {{ number_format($log->harga_beli_lama, 0, ',', '.') }}</span>
+                                        <br>
+                                        <i class="fa-solid fa-arrow-right text-success" style="font-size: 10px;"></i>
+                                        <span class="fw-bold text-success text-nowrap">Rp {{ number_format($log->harga_beli_baru, 0, ',', '.') }}</span>
+                                    </td>
+                                    <td style="padding: 12px 15px; font-size: 11px;">
+                                        <div class="fw-semibold text-secondary">{{ $log->user->name ?? '-' }}</div>
+                                        <small class="text-muted">{{ \Carbon\Carbon::parse($log->tanggal)->format('d/m, H:i') }}</small>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="3" class="text-center py-5 text-muted" style="font-size: 12px;">
+                                        <i class="fa-solid fa-clock-rotate-left mb-2 fs-4 text-muted opacity-50"></i>
+                                        <div>Belum ada riwayat perubahan harga beli.</div>
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
+    @endif
 </div>
 @endsection
 
 @section('scripts')
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-    // 1. Bar Chart (Penjualan 30 Hari Terakhir)
+    // 1. Bar Chart (Penjualan 7 Hari Terakhir)
     var barOptions = {
         series: [{
-            name: 'Penjualan',
-            data: [120, 90, 150, 110, 140] // Data dummy sesuai grafik desain
+            name: 'Pendapatan',
+            data: @json($barChartData)
         }],
         chart: {
             type: 'bar',
@@ -359,7 +341,7 @@ document.addEventListener("DOMContentLoaded", function() {
         plotOptions: {
             bar: {
                 borderRadius: 2,
-                columnWidth: '85%',
+                columnWidth: '60%',
             }
         },
         dataLabels: { enabled: false },
@@ -369,30 +351,44 @@ document.addEventListener("DOMContentLoaded", function() {
             colors: ['#6366f1'] // Garis batas atas seperti di desain
         },
         xaxis: {
-            categories: ['Minggu 1', 'Minggu 2', 'Minggu 3', 'Minggu 4', 'Minggu 5'],
+            categories: @json($barChartLabels),
             labels: {
                 style: { colors: '#9ca3af', fontSize: '11px' }
             },
             axisBorder: { show: false },
             axisTicks: { show: false }
         },
-        yaxis: { show: false },
-        grid: { show: false }
+        yaxis: {
+            labels: {
+                formatter: function (value) {
+                    return "Rp " + new Intl.NumberFormat('id-ID').format(value);
+                },
+                style: { colors: '#9ca3af', fontSize: '11px' }
+            }
+        },
+        grid: {
+            borderColor: '#f3f4f6',
+            strokeDashArray: 4,
+            yaxis: {
+                lines: { show: true }
+            }
+        }
     };
 
     var barChart = new ApexCharts(document.querySelector("#barChart"), barOptions);
     barChart.render();
 
     // 2. Donut Chart (Kontribusi Cabang)
+    @if(auth()->user()->role === 'super' && $totalPendapatanGlobal > 0)
     var donutOptions = {
-        series: [45, 25, 30],
+        series: @json($donutChartData),
         chart: {
             type: 'donut',
             height: 220,
             fontFamily: 'Inter, sans-serif'
         },
-        labels: ['Alahan Panjang', 'Talang Babungo', 'Cabang Diponegoro'],
-        colors: ['#1a5ca6', '#6366f1', '#92400e'],
+        labels: @json($donutChartLabels),
+        colors: @json($colorsToPass),
         plotOptions: {
             pie: {
                 donut: {
@@ -420,6 +416,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     var donutChart = new ApexCharts(document.querySelector("#donutChart"), donutOptions);
     donutChart.render();
+    @endif
 });
 </script>
 @endsection

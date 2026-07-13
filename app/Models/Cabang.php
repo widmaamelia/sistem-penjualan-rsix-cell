@@ -15,6 +15,7 @@ class Cabang extends Model
     protected $fillable = [
         'nama_cabang',
         'alamat',
+        'id_penanggung_jawab',
         'no_hp',
         'status',
     ];
@@ -22,5 +23,10 @@ class Cabang extends Model
     public function users()
     {
         return $this->hasMany(User::class, 'id_cabang', 'id_cabang');
+    }
+
+    public function penanggungJawab()
+    {
+        return $this->belongsTo(User::class, 'id_penanggung_jawab', 'id_user');
     }
 }
