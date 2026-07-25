@@ -315,6 +315,9 @@
                 <span class="input-group-text">Rp</span>
                 <input type="number" name="harga_jual" class="form-control" placeholder="0" value="{{ old('harga_jual', $produk->harga_jual) }}" required min="0" {{ auth()->user()->role === 'admin cabang' ? 'disabled' : '' }}>
             </div>
+            @if(auth()->user()->role === 'admin cabang')
+                <small class="text-danger mt-1" style="font-size: 11px;">*Hanya Super Admin yang dapat menentukan/mengubah Harga Jual</small>
+            @endif
         </div>
     </div>
 

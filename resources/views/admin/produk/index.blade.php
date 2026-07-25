@@ -11,6 +11,7 @@
         align-items: center;
         margin-bottom: 20px;
         gap: 15px;
+        flex-wrap: wrap;
     }
 
     .filter-group {
@@ -200,12 +201,42 @@
             <option value="nonaktif" {{ request('status') == 'nonaktif' ? 'selected' : '' }}>Non-aktif</option>
         </select>
     </form>
-    <div>
-        <a href="{{ route('produk.create') }}" class="btn btn-primary-custom text-decoration-none">
+    <div class="d-flex align-items-center gap-2 flex-shrink-0">
+        <button type="button" onclick="cetakMassal()" class="btn btn-secondary text-decoration-none text-nowrap" style="padding: 8px 16px; border-radius: 8px;">
+            <i class="fa-solid fa-print me-1"></i> Cetak Barcode
+        </button>
+        <a href="{{ route('produk.create') }}" class="btn btn-primary-custom text-decoration-none text-nowrap">
             <i class="fa-solid fa-plus me-1"></i> Tambah Produk
         </a>
     </div>
 </div>
+
+<script>
+    function cetakMassal() {
+        const checkboxes = document.querySelectorAll('.print-check:checked');
+        if (checkboxes.length > 0) {
+            // Jika ada yang dicentang, kirim spesifik item & quantity
+            const items = [];
+            checkboxes.forEach(cb => {
+                const id = cb.value;
+                const qtyInput = document.getElementById(`print-qty-${id}`);
+                const qty = qtyInput ? qtyInput.value : 1;
+                items.push({ id: id, qty: qty });
+            });
+            
+            // Build URL
+            const url = `{{ route('produk.barcode.massal') }}?items=${encodeURIComponent(JSON.stringify(items))}`;
+            window.open(url, '_blank');
+        } else {
+            // Jika tidak ada yang dicentang, gunakan filter pencarian yang ada (semua masing-masing 1)
+            if(confirm('Anda tidak mencentang produk apapun. Ingin mencetak semua produk berdasarkan filter saat ini?')) {
+                const urlParams = new URLSearchParams(window.location.search);
+                const printUrl = `{{ route('produk.barcode.massal') }}?${urlParams.toString()}`;
+                window.open(printUrl, '_blank');
+            }
+        }
+    }
+</script>
 
 <!-- Table -->
 <div class="table-container">
@@ -218,6 +249,7 @@
                 <th>Harga</th>
                 <th>Stok</th>
                 <th>Status</th>
+                <th>Cetak</th>
                 <th>Aksi</th>
             </tr>
         </thead>
@@ -256,7 +288,14 @@
                         @endif
                     </td>
                     <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <input type="checkbox" class="form-check-input print-check" value="{{ $produk->id_produk }}" style="width: 18px; height: 18px; margin-top: 0;">
+                            <input type="number" id="print-qty-{{ $produk->id_produk }}" class="form-control form-control-sm text-center px-1" value="1" min="1" style="width: 50px;">
+                        </div>
+                    </td>
+                    <td>
                         <div class="action-icons">
+                            <a href="{{ route('produk.barcode', $produk->id_produk) }}" target="_blank" title="Cetak Barcode" class="text-secondary"><i class="fa-solid fa-barcode"></i></a>
                             <a href="{{ route('produk.show', $produk->id_produk) }}" title="Lihat"><i class="fa-regular fa-eye"></i></a>
                             <a href="{{ route('produk.edit', $produk->id_produk) }}" title="Edit" class="text-primary"><i class="fa-solid fa-pen-to-square"></i></a>
                             <button type="button" class="text-danger btn-delete-produk border-0 bg-transparent p-0" title="Hapus"

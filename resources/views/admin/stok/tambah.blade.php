@@ -40,6 +40,18 @@
     <form action="{{ route('stok.tambah-proses') }}" method="POST" id="restockForm">
         @csrf
         
+        @if(auth()->user()->role === 'super')
+        <div class="mb-4" style="max-width: 400px;">
+            <label class="form-label fw-bold">Pilih Cabang Target</label>
+            <select name="id_cabang" class="form-select" required>
+                <option value="">-- Pilih Cabang --</option>
+                @foreach($cabangs as $cabang)
+                    <option value="{{ $cabang->id_cabang }}">{{ $cabang->nama_cabang }}</option>
+                @endforeach
+            </select>
+        </div>
+        @endif
+
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h5 class="fw-bold m-0">Daftar Barang Belanja Stok</h5>
             <button type="button" class="btn btn-outline-primary btn-sm" id="addRowBtn" style="border-radius: 6px; font-weight: 600;">

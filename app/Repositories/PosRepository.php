@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\Shift;
 use App\Models\StokCabang;
+use App\Models\LogManajemenStok;
 use App\Models\Transaksi;
 use App\Models\DetailTransaksi;
 use Exception;
@@ -32,8 +33,10 @@ class PosRepository
 
         // Filter Kategori (Misal: "Aksesoris", "Smartphone")
         if (!empty($kategori) && strtolower($kategori) !== 'semua') {
-            $query->whereHas('produk.kategori', function ($q) use ($kategori) {
-                $q->where('nama_kategori', 'like', "%{$kategori}%");
+            $query->whereHas('produk', function ($q) use ($kategori) {
+                $q->whereHas('kategori', function ($q2) use ($kategori) {
+                    $q2->where('nama_kategori', 'like', "%{$kategori}%");
+                });
             });
         }
 
@@ -95,8 +98,8 @@ class PosRepository
                 'tanggal_transaksi' => now(),
                 'total_harga' => 0, // Akan diupdate nanti
                 'metode_bayar' => $metodeBayar,
-                'uang_bayar' => 0, // Asumsi
-                'kembalian' => 0, // Asumsi
+                'uang_bayar' => $data['uang_bayar'] ?? 0,
+                'kembalian' => $data['kembalian'] ?? 0,
             ]);
 
             $totalHargaSistem = 0;
@@ -120,7 +123,21 @@ class PosRepository
                     }
 
                     // Potong Stok
+                    $stokSebelum = $stokCabang->stok_sekarang;
                     $stokCabang->decrement('stok_sekarang', $item['qty']);
+                    
+                    // Buat Log Manajemen Stok
+                    LogManajemenStok::create([
+                        'id_cabang' => $user->id_cabang,
+                        'id_produk' => $item['id_produk'],
+                        'id_user' => $user->id_user,
+                        'qty' => $item['qty'],
+                        'jenis_transaksi' => 'Keluar',
+                        'stok_sebelum' => $stokSebelum,
+                        'stok_sesudah' => $stokSebelum - $item['qty'],
+                        'keterangan' => 'Penjualan POS ' . $noTransaksi,
+                        'tanggal' => now(),
+                    ]);
 
                     $hargaBeli = $stokCabang->produk->harga_beli;
                     $hargaJual = $stokCabang->produk->harga_jual;

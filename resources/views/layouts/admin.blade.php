@@ -316,7 +316,7 @@
             @endif
             <div class="nav-item">
                 <a href="{{ route('stok.index') }}" class="nav-link {{ request()->is('stok') || request()->is('stok/*') && !request()->is('stok_opname*') ? 'active' : '' }}">
-                    <i class="fa-solid fa-layer-group"></i> Stok Semua Cabang
+                    <i class="fa-solid fa-layer-group"></i> {{ auth()->user()->role === 'super' ? 'Stok Semua Cabang' : 'Stok Cabang' }}
                 </a>
             </div>
             

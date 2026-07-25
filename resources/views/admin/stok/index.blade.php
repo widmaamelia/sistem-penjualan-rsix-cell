@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Stok Semua Cabang')
+@section('title', auth()->user()->role === 'super' ? 'Stok Semua Cabang' : 'Stok Cabang')
 
 @section('styles')
 <style>
@@ -175,7 +175,7 @@
 
 <div class="d-flex justify-content-end align-items-center mb-3">
     <div class="d-flex gap-2">
-        @if(auth()->user()->role === 'admin cabang')
+        @if(in_array(auth()->user()->role, ['super', 'admin cabang']))
             <a href="{{ route('stok.tambah-form') }}" class="btn btn-primary text-decoration-none" style="background-color: #1a5ca6; border-color: #1a5ca6; border-radius: 8px; font-weight: 500; font-size: 13px;">
                 <i class="fa-solid fa-plus me-1"></i> Tambah Stok (Restock)
             </a>

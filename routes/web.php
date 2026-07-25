@@ -4,7 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('login');
 });
 
 use App\Http\Controllers\Web\DashboardController;
@@ -33,6 +33,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Rute untuk Super Admin & Admin Cabang
     Route::middleware('role:super,admin cabang')->group(function () {
         // Manajemen Produk
+        Route::get('/produk/cetak-barcode-massal', [ProdukController::class, 'printMassalBarcode'])->name('produk.barcode.massal');
+        Route::get('/produk/{id}/barcode', [ProdukController::class, 'printBarcode'])->name('produk.barcode');
         Route::resource('produk', ProdukController::class);
 
         // Kas Keluar

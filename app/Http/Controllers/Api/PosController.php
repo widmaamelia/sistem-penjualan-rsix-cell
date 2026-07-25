@@ -38,6 +38,16 @@ class PosController extends Controller
         }
     }
 
+    public function kategori()
+    {
+        try {
+            $kategori = \App\Models\KategoriProduk::select('id_kategori', 'nama_kategori')->get();
+            return $this->successResponse($kategori, "Data kategori berhasil dimuat");
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), 500);
+        }
+    }
+
     /**
      * Memproses keranjang belanja kasir
      */

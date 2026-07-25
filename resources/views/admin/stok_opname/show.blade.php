@@ -32,7 +32,7 @@
         <a href="{{ route('stok_opname.index') }}" class="btn btn-outline-secondary me-3" style="border-radius: 50%; width: 40px; height: 40px; padding: 0; display: flex; align-items: center; justify-content: center;">
             <i class="fa-solid fa-arrow-left"></i>
         </a>
-        <h4 class="m-0 fw-bold">Detail Stok Opname #{{ str_pad($opname->id_stok_opname, 4, '0', STR_PAD_LEFT) }}</h4>
+        <h4 class="m-0 fw-bold">Detail Stok Opname</h4>
     </div>
     
     @if(auth()->user()->role === 'super' && $opname->status === 'pending')

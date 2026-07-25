@@ -40,7 +40,7 @@
         <table class="table mb-0 align-middle">
             <thead class="bg-light">
                 <tr>
-                    <th class="py-3 px-4 text-muted" style="font-size: 12px;">ID</th>
+                    <th class="py-3 px-4 text-muted" style="font-size: 12px;">NO</th>
                     <th class="py-3 px-4 text-muted" style="font-size: 12px;">TANGGAL</th>
                     <th class="py-3 px-4 text-muted" style="font-size: 12px;">CABANG</th>
                     <th class="py-3 px-4 text-muted" style="font-size: 12px;">PEMBUAT</th>
@@ -51,7 +51,7 @@
             <tbody>
                 @forelse($opnames as $opname)
                     <tr>
-                        <td class="px-4 fw-bold">#{{ str_pad($opname->id_stok_opname, 4, '0', STR_PAD_LEFT) }}</td>
+                        <td class="px-4 fw-bold">{{ ($opnames->currentPage() - 1) * $opnames->perPage() + $loop->iteration }}</td>
                         <td class="px-4">{{ \Carbon\Carbon::parse($opname->tanggal_opname)->format('d M Y') }}</td>
                         <td class="px-4 text-primary fw-medium">{{ $opname->cabang->nama_cabang }}</td>
                         <td class="px-4">{{ $opname->user->name }}</td>

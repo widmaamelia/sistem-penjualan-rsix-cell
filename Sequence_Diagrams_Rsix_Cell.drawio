@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net">
+  <diagram id="seq_login" name="1. Sequence - Login">
+    <mxGraphModel dx="1000" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="800" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="u1" value="Pengguna" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;participant=umlActor;verticalAlign=bottom;verticalLabelPosition=bottom;align=center;" vertex="1" parent="1">
+          <mxGeometry x="100" y="40" width="60" height="500" as="geometry" />
+        </mxCell>
+        <mxCell id="u1_a1" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="u1">
+          <mxGeometry x="25" y="60" width="10" height="380" as="geometry" />
+        </mxCell>
+        <mxCell id="v1" value="View (Login Page)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;participant=umlBoundary;verticalAlign=bottom;verticalLabelPosition=bottom;align=center;" vertex="1" parent="1">
+          <mxGeometry x="300" y="40" width="60" height="500" as="geometry" />
+        </mxCell>
+        <mxCell id="v1_a1" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="v1">
+          <mxGeometry x="25" y="80" width="10" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="v1_a2" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="v1">
+          <mxGeometry x="25" y="380" width="10" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="c1" value="LoginController" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;participant=umlControl;verticalAlign=bottom;verticalLabelPosition=bottom;align=center;" vertex="1" parent="1">
+          <mxGeometry x="500" y="40" width="60" height="500" as="geometry" />
+        </mxCell>
+        <mxCell id="c1_a1" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="c1">
+          <mxGeometry x="25" y="100" width="10" height="300" as="geometry" />
+        </mxCell>
+        <mxCell id="db1" value="Database" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;participant=umlEntity;verticalAlign=bottom;verticalLabelPosition=bottom;align=center;" vertex="1" parent="1">
+          <mxGeometry x="700" y="40" width="60" height="500" as="geometry" />
+        </mxCell>
+        <mxCell id="db1_a1" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="db1">
+          <mxGeometry x="25" y="120" width="10" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="seq_login_msg_1" value="1. Input Username &amp; Password" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;" edge="1" parent="1" source="u1_a1" target="v1_a1">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="0" y="120" /></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="seq_login_msg_2" value="2. Submit Data Login (POST)" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;" edge="1" parent="1" source="v1_a1" target="c1_a1">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="0" y="140" /></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="seq_login_msg_3" value="3. Query User by Username" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;" edge="1" parent="1" source="c1_a1" target="db1_a1">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="0" y="160" /></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="seq_login_msg_4" value="4. Return Data User" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;dashed=1;" edge="1" parent="1" source="db1_a1" target="c1_a1">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="0" y="200" /></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="seq_login_msg_5" value="5. Verify Password Hash" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=orthogonalEdgeStyle;curved=0;rounded=0;" edge="1" parent="1" source="c1_a1" target="c1_a1">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="40" y="240" /><mxPoint x="40" y="270" /></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="seq_login_msg_6" value="6. Set Session &amp; Role" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=orthogonalEdgeStyle;curved=0;rounded=0;" edge="1" parent="1" source="c1_a1" target="c1_a1">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="40" y="300" /><mxPoint x="40" y="330" /></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="seq_login_msg_7" value="7. Redirect ke Dashboard / Home" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;" edge="1" parent="1" source="c1_a1" target="v1_a2">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="0" y="400" /></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="seq_login_msg_8" value="8. Tampilkan Halaman Utama" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;dashed=1;" edge="1" parent="1" source="v1_a2" target="u1_a1">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="0" y="440" /></Array></mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="seq_pos" name="2. Sequence - Transaksi POS">
+    <mxGraphModel dx="1000" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="800" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="u2" value="Karyawan / Kasir" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;participant=umlActor;verticalAlign=bottom;verticalLabelPosition=bottom;align=center;" vertex="1" parent="1">
+          <mxGeometry x="100" y="40" width="60" height="700" as="geometry" />
+        </mxCell>
+        <mxCell id="u2_a1" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="u2">
+          <mxGeometry x="25" y="60" width="10" height="580" as="geometry" />
+        </mxCell>
+        <mxCell id="v2" value="View (POS / Kasir)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;participant=umlBoundary;verticalAlign=bottom;verticalLabelPosition=bottom;align=center;" vertex="1" parent="1">
+          <mxGeometry x="300" y="40" width="60" height="700" as="geometry" />
+        </mxCell>
+        <mxCell id="v2_a1" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="v2">
+          <mxGeometry x="25" y="80" width="10" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="v2_a2" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="v2">
+          <mxGeometry x="25" y="220" width="10" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="v2_a3" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="v2">
+          <mxGeometry x="25" y="560" width="10" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="c2" value="TransaksiController" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;participant=umlControl;verticalAlign=bottom;verticalLabelPosition=bottom;align=center;" vertex="1" parent="1">
+          <mxGeometry x="500" y="40" width="60" height="700" as="geometry" />
+        </mxCell>
+        <mxCell id="c2_a1" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="c2">
+          <mxGeometry x="25" y="100" width="10" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="c2_a2" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="c2">
+          <mxGeometry x="25" y="240" width="10" height="320" as="geometry" />
+        </mxCell>
+        <mxCell id="db2" value="Database" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;participant=umlEntity;verticalAlign=bottom;verticalLabelPosition=bottom;align=center;" vertex="1" parent="1">
+          <mxGeometry x="700" y="40" width="60" height="700" as="geometry" />
+        </mxCell>
+        <mxCell id="db2_a1" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="db2">
+          <mxGeometry x="25" y="120" width="10" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="db2_a2" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="db2">
+          <mxGeometry x="25" y="280" width="10" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="db2_a3" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="db2">
+          <mxGeometry x="25" y="400" width="10" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="db2_a4" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="db2">
+          <mxGeometry x="25" y="480" width="10" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="seq_pos_msg_1" value="1. Scan Barcode / Input Manual" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;" edge="1" parent="1" source="u2_a1" target="v2_a1">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="0" y="120" /></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="seq_pos_msg_2" value="2. Request Data Produk" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;" edge="1" parent="1" source="v2_a1" target="c2_a1">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="0" y="140" /></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="seq_pos_msg_3" value="3. Query Harga &amp; Stok" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;" edge="1" parent="1" source="c2_a1" target="db2_a1">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="0" y="160" /></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="seq_pos_msg_4" value="4. Return Data Produk" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;dashed=1;" edge="1" parent="1" source="db2_a1" target="c2_a1">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="0" y="180" /></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="seq_pos_msg_5" value="5. Update Keranjang di Layar" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;dashed=1;" edge="1" parent="1" source="c2_a1" target="v2_a1">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="0" y="200" /></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="seq_pos_msg_6" value="6. Input Pembayaran &amp; Klik Bayar" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;" edge="1" parent="1" source="u2_a1" target="v2_a2">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="0" y="260" /></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="seq_pos_msg_7" value="7. Submit Transaksi (POST)" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;" edge="1" parent="1" source="v2_a2" target="c2_a2">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="0" y="280" /></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="seq_pos_msg_8" value="8. Validasi Stok &amp; Hitung Total" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=orthogonalEdgeStyle;curved=0;rounded=0;" edge="1" parent="1" source="c2_a2" target="c2_a2">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="40" y="300" /><mxPoint x="40" y="330" /></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="seq_pos_msg_9" value="9. Simpan Data Transaksi (Header)" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;" edge="1" parent="1" source="c2_a2" target="db2_a2">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="0" y="360" /></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="seq_pos_msg_10" value="10. Return Transaksi ID" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;dashed=1;" edge="1" parent="1" source="db2_a2" target="c2_a2">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="0" y="380" /></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="seq_pos_msg_11" value="11. Simpan Detail Transaksi (Items)" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;" edge="1" parent="1" source="c2_a2" target="db2_a3">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="0" y="440" /></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="seq_pos_msg_12" value="12. Success" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;dashed=1;" edge="1" parent="1" source="db2_a3" target="c2_a2">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="0" y="460" /></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="seq_pos_msg_13" value="13. Kurangi Stok Produk" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;" edge="1" parent="1" source="c2_a2" target="db2_a4">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="0" y="520" /></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="seq_pos_msg_14" value="14. Stok Updated" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;dashed=1;" edge="1" parent="1" source="db2_a4" target="c2_a2">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="0" y="540" /></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="seq_pos_msg_15" value="15. Return Data Struk (JSON/HTML)" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;" edge="1" parent="1" source="c2_a2" target="v2_a3">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="0" y="600" /></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="seq_pos_msg_16" value="16. Tampilkan Struk &amp; Buka Laci Uang" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;dashed=1;" edge="1" parent="1" source="v2_a3" target="u2_a1">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="0" y="620" /></Array></mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

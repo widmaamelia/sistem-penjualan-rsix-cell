@@ -106,32 +106,41 @@ class StokController extends Controller
     public function tambahForm()
     {
         $user = auth()->user();
-        if ($user->role !== 'admin cabang') {
-            return redirect()->route('stok.index')->with('error', 'Hanya Admin Cabang yang dapat menambah stok.');
+        if (!in_array($user->role, ['super', 'admin cabang'])) {
+            return redirect()->route('stok.index')->with('error', 'Akses ditolak.');
         }
 
-        if (!$user->id_cabang) {
+        if ($user->role === 'admin cabang' && !$user->id_cabang) {
             return redirect()->route('stok.index')->with('error', 'Akun Anda tidak terikat dengan cabang manapun.');
         }
 
         $produks = Produk::where('status', 'aktif')->orderBy('nama_produk', 'asc')->get();
+        $cabangs = Cabang::where('status', 'aktif')->get();
 
-        return view('admin.stok.tambah', compact('produks'));
+        return view('admin.stok.tambah', compact('produks', 'cabangs'));
     }
 
     public function tambahProses(Request $request)
     {
         $user = auth()->user();
-        if ($user->role !== 'admin cabang' || !$user->id_cabang) {
+        if (!in_array($user->role, ['super', 'admin cabang'])) {
             return redirect()->route('stok.index')->with('error', 'Akses ditolak.');
         }
 
-        $request->validate([
+        $rules = [
             'items' => 'required|array|min:1',
             'items.*.id_produk' => 'required|exists:produks,id_produk',
             'items.*.qty_tambah' => 'required|numeric|min:1',
             'items.*.harga_beli' => 'required|numeric|min:0',
-        ]);
+        ];
+
+        if ($user->role === 'super') {
+            $rules['id_cabang'] = 'required|exists:cabangs,id_cabang';
+        }
+
+        $request->validate($rules);
+
+        $id_cabang = $user->role === 'super' ? $request->id_cabang : $user->id_cabang;
 
         try {
             DB::beginTransaction();
@@ -143,7 +152,7 @@ class StokController extends Controller
 
                 // 1. Update stok cabang
                 $stokCabang = StokCabang::firstOrCreate(
-                    ['id_cabang' => $user->id_cabang, 'id_produk' => $item['id_produk']],
+                    ['id_cabang' => $id_cabang, 'id_produk' => $item['id_produk']],
                     ['stok_sekarang' => 0, 'stok_minimum' => 5, 'stok_maksimum' => 100]
                 );
 
@@ -153,7 +162,7 @@ class StokController extends Controller
 
                 // 2. Log mutasi stok
                 \App\Models\LogManajemenStok::create([
-                    'id_cabang' => $user->id_cabang,
+                    'id_cabang' => $id_cabang,
                     'id_produk' => $item['id_produk'],
                     'id_user' => $user->id_user,
                     'qty' => $item['qty_tambah'],
@@ -186,13 +195,13 @@ class StokController extends Controller
             // 5. Catat ke Kas Keluar
             if ($totalKasKeluar > 0) {
                 $activeShift = \App\Models\Shift::where('id_user', $user->id_user)
-                                                ->where('id_cabang', $user->id_cabang)
+                                                ->where('id_cabang', $id_cabang)
                                                 ->where('status', 'buka')
                                                 ->first();
 
                 \App\Models\KasKeluar::create([
                     'id_shift' => $activeShift ? $activeShift->id_shift : null,
-                    'id_cabang' => $user->id_cabang,
+                    'id_cabang' => $id_cabang,
                     'jumlah_pengeluaran' => $totalKasKeluar,
                     'keterangan' => 'Pembelian Stok Barang (Restock)',
                     'tanggal' => date('Y-m-d H:i:s')

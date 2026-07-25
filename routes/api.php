@@ -32,6 +32,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Mesin Kasir / POS
     Route::get('/pos/produk', [\App\Http\Controllers\Api\PosController::class, 'produk']);
+    Route::get('/pos/kategori', [\App\Http\Controllers\Api\PosController::class, 'kategori']);
     Route::post('/pos/checkout', [\App\Http\Controllers\Api\PosController::class, 'checkout']);
 
     // Riwayat Transaksi

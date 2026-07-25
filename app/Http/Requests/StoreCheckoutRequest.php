@@ -30,6 +30,10 @@ class StoreCheckoutRequest extends FormRequest
             
             // Umum
             'items.*.qty' => 'required|integer|min:1',
+            
+            // Pembayaran
+            'uang_bayar' => 'nullable|numeric|min:0',
+            'kembalian' => 'nullable|numeric|min:0',
         ];
     }
 

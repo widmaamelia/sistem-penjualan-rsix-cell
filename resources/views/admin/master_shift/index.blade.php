@@ -41,8 +41,8 @@
                     <tr>
                         <td class="px-4 text-muted">{{ $index + 1 }}</td>
                         <td class="px-4 fw-bold text-dark">{{ $shift->nama_shift }}</td>
-                        <td class="px-4"><span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 fs-6">{{ substr($shift->jam_mulai, 0, 5) }}</span></td>
-                        <td class="px-4"><span class="badge bg-danger bg-opacity-10 text-danger px-3 py-2 fs-6">{{ substr($shift->jam_selesai, 0, 5) }}</span></td>
+                        <td class="px-4"><span class="badge bg-primary bg-opacity-10 text-primary px-2 py-1">{{ substr($shift->jam_mulai, 0, 5) }}</span></td>
+                        <td class="px-4"><span class="badge bg-danger bg-opacity-10 text-danger px-2 py-1">{{ substr($shift->jam_selesai, 0, 5) }}</span></td>
                         <td class="px-4">
                             <button class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="modal" data-bs-target="#modalEdit{{ $shift->id_master_shift }}">
                                 <i class="fa-solid fa-pen-to-square"></i>

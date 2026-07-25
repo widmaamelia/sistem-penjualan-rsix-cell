@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cetak Massal Barcode</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f3f4f6;
+        }
+        .controls {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .btn {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            margin: 0 5px;
+        }
+        .btn-primary { background: #1a5ca6; color: white; }
+        .btn-secondary { background: #6c757d; color: white; }
+        
+        .page {
+            background: white;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            align-content: flex-start;
+            box-sizing: border-box;
+        }
+        
+        /* A4 Layout (Default) */
+        .layout-a4 {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 10mm;
+            gap: 5mm;
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+        }
+        .layout-a4 .barcode-item {
+            width: calc(33.333% - 3.4mm);
+            height: 120px;
+        }
+
+        /* Thermal 2 Column (e.g. 80x30mm) */
+        .layout-thermal-2 {
+            width: 80mm; /* Lebar kertas thermal */
+            padding: 2mm;
+            gap: 2mm;
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+        }
+        .layout-thermal-2 .barcode-item {
+            width: calc(50% - 1mm);
+            height: 30mm;
+        }
+
+        /* Thermal 1 Column (e.g. 50x30mm) */
+        .layout-thermal-1 {
+            width: 50mm;
+            padding: 2mm;
+            gap: 2mm;
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+        }
+        .layout-thermal-1 .barcode-item {
+            width: 100%;
+            height: 30mm;
+        }
+        
+        .barcode-item {
+            border: 1px dashed #ccc;
+            padding: 5px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: white;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+        
+        .product-name {
+            font-weight: bold;
+            font-size: 11px;
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 100%;
+        }
+        
+        .product-price {
+            font-size: 11px;
+            margin-top: 2px;
+            font-weight: bold;
+        }
+        
+        @media print {
+            @page {
+                margin: 0;
+            }
+            body {
+                background: none;
+                padding: 0;
+            }
+            .controls {
+                display: none;
+            }
+            .page {
+                box-shadow: none;
+                margin: 0;
+            }
+            .barcode-item {
+                border: 1px solid #ddd; /* Thermal printers need a slight border or no border */
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="controls">
+        <div style="margin-bottom: 10px;">
+            <label for="layout-select" style="font-weight: bold; font-size: 14px;">Pilih Ukuran Kertas:</label>
+            <select id="layout-select" onchange="changeLayout(this.value)" style="padding: 5px; border-radius: 4px;">
+                <option value="layout-thermal-2">Thermal 2 Kolom (Cocok untuk Xprinter label)</option>
+                <option value="layout-thermal-1">Thermal 1 Kolom (Label Kecil)</option>
+                <option value="layout-a4">Kertas A4 Biasa (3 Kolom)</option>
+            </select>
+        </div>
+        <button onclick="window.print()" class="btn btn-primary">Print Sekarang</button>
+        <button onclick="window.close()" class="btn btn-secondary">Tutup</button>
+    </div>
+
+    @if($produks->count() > 0)
+        <div class="page layout-thermal-2" id="print-page">
+            @foreach($produks as $produk)
+                <div class="barcode-item">
+                    <div class="product-name">{{ $produk->nama_produk }}</div>
+                    <svg class="barcode" data-value="{{ $produk->barcode_imei ?? $produk->sku }}"></svg>
+                    <div class="product-price">Rp {{ number_format($produk->harga_jual, 0, ',', '.') }}</div>
+                </div>
+            @endforeach
+        </div>
+    @else
+        <div style="text-align: center; padding: 50px; background: white;">
+            Tidak ada produk untuk dicetak.
+        </div>
+    @endif
+
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+    <script>
+        function changeLayout(layoutClass) {
+            const page = document.getElementById('print-page');
+            if (page) {
+                // Hapus semua class layout-
+                page.classList.remove('layout-a4', 'layout-thermal-1', 'layout-thermal-2');
+                // Tambahkan layout terpilih
+                page.classList.add(layoutClass);
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const barcodes = document.querySelectorAll('.barcode');
+            
+            barcodes.forEach(function(svg) {
+                const value = svg.getAttribute('data-value');
+                if (value) {
+                    try {
+                        JsBarcode(svg, value, {
+                            format: "CODE128",
+                            lineColor: "#000",
+                            width: 1.5,
+                            height: 40,
+                            displayValue: true,
+                            fontSize: 12,
+                            margin: 0
+                        });
+                    } catch (e) {
+                        svg.outerHTML = "<p style='color:red; font-size:10px; margin:0;'>Invalid Barcode Format</p>";
+                    }
+                } else {
+                    svg.outerHTML = "<p style='color:red; font-size:10px; margin:0;'>No Barcode/SKU</p>";
+                }
+            });
+
+            // Auto print if not empty
+            @if($produks->count() > 0)
+            setTimeout(function() {
+                window.print();
+            }, 800);
+            @endif
+        });
+    </script>
+</body>
+</html>

@@ -19,27 +19,27 @@ class ShiftRepository
         $bulan = $bulan ?? date('m');
         $tahun = $tahun ?? date('Y');
 
-        // 1. Ambil Shift Aktif (milik cabang ini yang statusnya 'buka')
-        // Asumsi: Hanya melihat shift dari cabang tempat user berada
+        // 1. Ambil Shift Aktif milik user yang sedang login
+        // Setiap kasir hanya melihat shift-nya sendiri
         $shiftAktif = Shift::with('user:id_user,name')
-            ->where('id_cabang', $id_cabang)
+            ->where('id_user', $user->id_user)
             ->where('status', 'buka')
             ->first();
 
         $dataShiftAktif = null;
         if ($shiftAktif) {
             $dataShiftAktif = [
-                'id_shift' => $shiftAktif->id_shift,
-                'status' => 'Shift Aktif',
+                'id_shift'      => $shiftAktif->id_shift,
+                'status'        => 'Shift Aktif',
                 'dimulai_sejak' => Carbon::parse($shiftAktif->waktu_buka)->format('H:i') . ' WIB',
-                'kasir' => $shiftAktif->user->name ?? 'Admin',
-                'saldo_awal' => $shiftAktif->saldo_awal
+                'kasir'         => $shiftAktif->user->name ?? 'Admin',
+                'saldo_awal'    => $shiftAktif->saldo_awal
             ];
         }
 
-        // 2. Ambil Riwayat Shift Selesai
+        // 2. Ambil Riwayat Shift Selesai milik user yang sedang login
         $riwayatShift = Shift::with('user:id_user,name')
-            ->where('id_cabang', $id_cabang)
+            ->where('id_user', $user->id_user)
             ->where('status', 'tutup')
             ->whereMonth('waktu_tutup', $bulan)
             ->whereYear('waktu_tutup', $tahun)
@@ -56,9 +56,18 @@ class ShiftRepository
                 ];
             });
 
+        // 3. Ambil Saldo Akhir dari shift cabang ini yang terakhir kali tutup (untuk modal awal otomatis)
+        $shiftCabangTerakhir = Shift::where('id_cabang', $id_cabang)
+            ->where('status', 'tutup')
+            ->orderBy('waktu_tutup', 'desc')
+            ->first();
+        
+        $saldoAkhirShiftSebelumnya = $shiftCabangTerakhir ? $shiftCabangTerakhir->saldo_akhir : 0;
+
         return [
             'shift_aktif' => $dataShiftAktif,
-            'riwayat_shift' => $riwayatShift
+            'riwayat_shift' => $riwayatShift,
+            'saldo_akhir_shift_sebelumnya' => $saldoAkhirShiftSebelumnya
         ];
     }
 

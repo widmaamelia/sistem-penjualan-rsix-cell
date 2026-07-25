@@ -14,6 +14,57 @@ use Illuminate\Support\Facades\DB;
 
 class ProdukController extends Controller
 {
+    public function printBarcode($id)
+    {
+        $produk = Produk::findOrFail($id);
+        return view('admin.produk.print_barcode', compact('produk'));
+    }
+
+    public function printMassalBarcode(Request $request)
+    {
+        $produksCetak = collect();
+
+        if ($request->filled('items')) {
+            // Format: [{"id": 1, "qty": 10}, {"id": 2, "qty": 5}]
+            $items = json_decode($request->items, true);
+            
+            if (is_array($items)) {
+                foreach ($items as $item) {
+                    $produk = Produk::find($item['id']);
+                    if ($produk) {
+                        $qty = isset($item['qty']) ? (int)$item['qty'] : 1;
+                        for ($i = 0; $i < $qty; $i++) {
+                            $produksCetak->push($produk);
+                        }
+                    }
+                }
+            }
+        } else {
+            // Fallback: cetak semua sesuai filter (masing-masing 1)
+            $query = Produk::query();
+            
+            if ($request->filled('search')) {
+                $query->where(function($q) use ($request) {
+                    $q->where('nama_produk', 'like', '%' . $request->search . '%')
+                      ->orWhere('sku', 'like', '%' . $request->search . '%')
+                      ->orWhere('barcode_imei', 'like', '%' . $request->search . '%');
+                });
+            }
+
+            if ($request->filled('kategori')) {
+                $query->where('id_kategori', $request->kategori);
+            }
+
+            if ($request->filled('status')) {
+                $query->where('status', $request->status);
+            }
+
+            $produksCetak = $query->orderBy('id_produk', 'desc')->get();
+        }
+
+        return view('admin.produk.print_massal_barcode', ['produks' => $produksCetak]);
+    }
+
     public function index(Request $request)
     {
         $query = Produk::with(['kategori', 'stokCabangs']);

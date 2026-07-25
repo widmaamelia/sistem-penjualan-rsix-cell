@@ -318,8 +318,11 @@
             <label class="form-label">Harga Jual</label>
             <div class="input-group">
                 <span class="input-group-text">Rp</span>
-                <input type="number" name="harga_jual" class="form-control" placeholder="0" value="{{ old('harga_jual', 0) }}" required min="0">
+                <input type="number" name="harga_jual" class="form-control {{ auth()->user()->role === 'admin cabang' ? 'bg-light text-muted' : '' }}" placeholder="0" value="{{ old('harga_jual', 0) }}" required min="0" {{ auth()->user()->role === 'admin cabang' ? 'readonly tabindex="-1"' : '' }}>
             </div>
+            @if(auth()->user()->role === 'admin cabang')
+                <small class="text-danger mt-1" style="font-size: 11px;">*Hanya Super Admin yang dapat menentukan/mengubah Harga Jual</small>
+            @endif
         </div>
     </div>
 
