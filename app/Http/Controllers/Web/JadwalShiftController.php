@@ -25,11 +25,12 @@ class JadwalShiftController extends Controller
                 ->where('status', 'aktif')
                 ->get();
 
-            // Dapatkan jadwal shift karyawan di cabang ini pada tanggal terpilih
+            // Dapatkan jadwal shift terbaru karyawan di cabang ini (mengabaikan tanggal)
             $schedules = JadwalShift::with(['masterShift'])
                 ->where('id_cabang', $user->id_cabang)
-                ->whereDate('tanggal', $tanggal)
+                ->orderBy('created_at', 'desc')
                 ->get()
+                ->unique('id_user')
                 ->keyBy('id_user');
 
             // Susun data agar menampilkan seluruh karyawan beserta status jadwalnya
@@ -45,14 +46,10 @@ class JadwalShiftController extends Controller
             return view('admin.jadwal_shift.index', compact('karyawanSchedules', 'masterShifts', 'tanggal', 'karyawans'));
         } else {
             // Super Admin: Tampilkan riwayat jadwal secara global
-            $query = JadwalShift::with(['user', 'masterShift', 'cabang'])->orderBy('tanggal', 'desc');
+            $query = JadwalShift::with(['user', 'masterShift', 'cabang'])->orderBy('created_at', 'desc');
 
             if ($request->filled('id_cabang')) {
                 $query->where('id_cabang', $request->id_cabang);
-            }
-
-            if ($request->filled('tanggal')) {
-                $query->whereDate('tanggal', $request->tanggal);
             }
 
             $jadwalShifts = $query->paginate(15)->withQueryString();
@@ -69,12 +66,7 @@ class JadwalShiftController extends Controller
         $request->validate([
             'id_user' => 'required|exists:users,id_user',
             'id_master_shift' => 'required|exists:master_shifts,id_master_shift',
-            'tanggal_mulai' => 'required|date',
-            'tanggal_selesai' => 'required|date|after_or_equal:tanggal_mulai',
-            'hari' => 'required|array|min:1',
-            'hari.*' => 'integer|between:1,7',
-            'tipe' => 'nullable|in:biasa,lembur,izin',
-            'keterangan' => 'nullable|string|max:255',
+            'tanggal' => 'required|date',
         ]);
 
         $karyawan = User::findOrFail($request->id_user);
@@ -82,56 +74,29 @@ class JadwalShiftController extends Controller
             return redirect()->back()->with('error', 'Karyawan tidak valid atau bukan berasal dari cabang Anda.');
         }
 
-        $startDate = Carbon::parse($request->tanggal_mulai);
-        $endDate = Carbon::parse($request->tanggal_selesai);
-        $selectedDays = $request->input('hari', []);
+        $tanggal = Carbon::parse($request->tanggal)->format('Y-m-d');
 
-        $period = \Carbon\CarbonPeriod::create($startDate, $endDate);
-        
-        $insertedCount = 0;
-        $skippedCount = 0;
+        // Cek bentrok
+        $ada = JadwalShift::where('id_user', $request->id_user)
+            ->where('tanggal', $tanggal)
+            ->where('id_master_shift', $request->id_master_shift)
+            ->exists();
 
-        foreach ($period as $date) {
-            $dayOfWeek = $date->dayOfWeekIso; // 1 (Senin) - 7 (Minggu)
-
-            if (in_array($dayOfWeek, $selectedDays)) {
-                $formattedDate = $date->format('Y-m-d');
-
-                // Cek bentrok (karyawan yang sama pada tanggal dan shift yang sama)
-                $exists = JadwalShift::where('id_user', $request->id_user)
-                    ->where('tanggal', $formattedDate)
-                    ->where('id_master_shift', $request->id_master_shift)
-                    ->exists();
-
-                if ($exists) {
-                    $skippedCount++;
-                    continue;
-                }
-
-                JadwalShift::create([
-                    'id_cabang' => $user->id_cabang,
-                    'id_user' => $request->id_user,
-                    'id_master_shift' => $request->id_master_shift,
-                    'tanggal' => $formattedDate,
-                    'tipe' => $request->input('tipe', 'biasa'),
-                    'keterangan' => $request->keterangan,
-                    'status' => $request->input('tipe') === 'izin' ? 'dibatalkan' : 'terjadwal'
-                ]);
-
-                $insertedCount++;
-            }
+        if ($ada) {
+            return redirect()->back()->with('error', 'Jadwal bentrok: Karyawan sudah memiliki shift ini pada tanggal tersebut.');
         }
 
-        if ($insertedCount === 0) {
-            return redirect()->back()->with('error', 'Tidak ada jadwal baru yang ditambahkan (jadwal bentrok atau hari tidak terpilih).');
-        }
+        JadwalShift::create([
+            'id_user' => $request->id_user,
+            'id_cabang' => $user->id_cabang,
+            'id_master_shift' => $request->id_master_shift,
+            'tanggal' => $tanggal,
+            'status' => 'terjadwal',
+            'tipe' => 'biasa',
+            'keterangan' => null
+        ]);
 
-        $message = "Berhasil menjadwalkan {$insertedCount} shift kerja.";
-        if ($skippedCount > 0) {
-            $message .= " ({$skippedCount} jadwal dilewati karena bentrok).";
-        }
-
-        return redirect()->route('jadwal_shift.index')->with('success', $message);
+        return redirect()->back()->with('success', 'Jadwal shift berhasil ditambahkan.');
     }
 
     public function setIzin(Request $request, $id)

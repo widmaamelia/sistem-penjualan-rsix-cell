@@ -14,20 +14,16 @@
 @endsection
 
 @section('content')
-<div class="d-flex align-items-center mb-4">
-    <a href="{{ route('stok_opname.index') }}" class="btn btn-outline-secondary me-3" style="border-radius: 50%; width: 40px; height: 40px; padding: 0; display: flex; align-items: center; justify-content: center;">
+<div class="mb-4">
+    <a href="{{ route('stok_opname.index') }}" class="btn btn-light" style="border-radius: 8px; border: 1px solid #e5e7eb; color: #4b5563; padding: 8px 14px;" title="Kembali">
         <i class="fa-solid fa-arrow-left"></i>
     </a>
-    <h4 class="m-0 fw-bold">Buat Stok Opname Baru</h4>
 </div>
 
 <div class="form-container shadow-sm">
+    <h6 class="text-uppercase fw-bold mb-4" style="font-size:12px; color: #1a5ca6; letter-spacing:0.5px;">Buat Stok Opname Baru</h6>
     <form action="{{ route('stok_opname.store') }}" method="POST">
         @csrf
-        <div class="mb-4">
-            <label class="form-label fw-bold">Keterangan Umum (Opsional)</label>
-            <textarea name="keterangan_umum" class="form-control" rows="2" placeholder="Catatan untuk opname kali ini..."></textarea>
-        </div>
 
         <h5 class="fw-bold mb-3">Daftar Produk</h5>
         <div class="alert alert-info py-2" style="font-size: 13px;">

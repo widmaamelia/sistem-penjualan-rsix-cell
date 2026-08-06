@@ -34,11 +34,13 @@
         }
 
         .sidebar-brand {
-            padding: 15px 20px;
+            height: 56px;
+            padding: 0 20px;
             display: flex;
             align-items: center;
-            gap: 10px;
-            border-bottom: 1px solid #f3f4f6;
+            justify-content: center;
+            gap: 12px;
+            border-bottom: 1px solid #e5e7eb;
         }
 
         .sidebar-brand .icon-box {
@@ -68,8 +70,23 @@
 
         .nav-menu {
             flex: 1;
-            padding: 15px 10px;
+            padding: 10px;
             overflow-y: auto;
+        }
+
+        .nav-section-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: #9ca3af;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 10px 12px 5px 12px;
+            margin-top: 5px;
+        }
+
+        .nav-menu .nav-section-title:first-child {
+            padding-top: 5px;
+            margin-top: 0;
         }
 
         .nav-item {
@@ -267,6 +284,45 @@
             padding: 8px 12px !important;
             font-size: 12px !important;
         }
+        /* Custom Pagination */
+        nav p.small.text-muted {
+            display: none !important;
+        }
+        nav .pagination {
+            margin-bottom: 0 !important;
+        }
+
+        /* Responsive Layout */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%) !important;
+                z-index: 1050 !important;
+            }
+            .sidebar.show {
+                transform: translateX(0) !important;
+            }
+            .main-content {
+                margin-left: 0 !important;
+                width: 100% !important;
+            }
+            .sidebar-overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                background-color: rgba(0, 0, 0, 0.4);
+                z-index: 1040;
+                backdrop-filter: blur(2px);
+            }
+            .sidebar-overlay.show {
+                display: block;
+            }
+            .topbar {
+                padding: 0 15px;
+            }
+        }
     </style>
     @yield('styles')
 </head>
@@ -275,21 +331,20 @@
     <!-- Sidebar -->
     <div class="sidebar">
         <div class="sidebar-brand">
-            <div class="icon-box">
-                <i class="fa-solid fa-tower-cell"></i>
-            </div>
-            <div>
-                <h5>Rsix Cell</h5>
-                <p>{{ auth()->user()->role === 'super' ? 'Super Admin' : 'Admin Cabang' }}</p>
-            </div>
+            <!-- Ganti src di bawah dengan path gambar PNG Anda, misalnya asset('logo.png') jika ditaruh di folder public -->
+            <img src="{{ asset('logo.jpeg') }}" alt="Logo Rsix Cell" style="width: 35px; height: 35px; border-radius: 8px; object-fit: contain;">
+            <h5 class="mb-0 fw-bold" style="line-height: 1; padding-top: 2px;">Rsix Cell</h5>
         </div>
 
         <div class="nav-menu">
+            <div class="nav-section-title">UTAMA</div>
             <div class="nav-item">
                 <a href="{{ url('/dashboard') }}" class="nav-link {{ request()->is('dashboard') ? 'active' : '' }}">
                     <i class="fa-solid fa-border-all"></i> Dashboard
                 </a>
             </div>
+
+            <div class="nav-section-title">MASTER DATA</div>
             @if(auth()->user()->role === 'super')
             <div class="nav-item">
                 <a href="{{ route('kategori.index') }}" class="nav-link {{ request()->is('kategori*') ? 'active' : '' }}">
@@ -314,17 +369,20 @@
                 </a>
             </div>
             @endif
+
+            <div class="nav-section-title">MANAJEMEN STOK</div>
             <div class="nav-item">
                 <a href="{{ route('stok.index') }}" class="nav-link {{ request()->is('stok') || request()->is('stok/*') && !request()->is('stok_opname*') ? 'active' : '' }}">
                     <i class="fa-solid fa-layer-group"></i> {{ auth()->user()->role === 'super' ? 'Stok Semua Cabang' : 'Stok Cabang' }}
                 </a>
             </div>
-            
             <div class="nav-item">
                 <a href="{{ route('stok_opname.index') }}" class="nav-link {{ request()->is('stok_opname*') ? 'active' : '' }}">
                     <i class="fa-solid fa-clipboard-check"></i> Stok Opname
                 </a>
             </div>
+
+            <div class="nav-section-title">OPERASIONAL</div>
             @if(auth()->user()->role === 'super')
             <div class="nav-item">
                 <a href="{{ route('master_shift.index') }}" class="nav-link {{ request()->is('master_shift*') ? 'active' : '' }}">
@@ -332,18 +390,18 @@
                 </a>
             </div>
             @endif
-
             <div class="nav-item">
                 <a href="{{ route('jadwal_shift.index') }}" class="nav-link {{ request()->is('jadwal_shift*') ? 'active' : '' }}">
                     <i class="fa-regular fa-calendar-check"></i> Jadwal Shift
                 </a>
             </div>
-
             <div class="nav-item">
                 <a href="{{ route('kas_keluar.index') }}" class="nav-link {{ request()->is('kas_keluar*') ? 'active' : '' }}">
                     <i class="fa-solid fa-money-bill-transfer"></i> Kas Keluar
                 </a>
             </div>
+
+            <div class="nav-section-title">LAPORAN & ANALISIS</div>
             <div class="nav-item">
                 <a href="{{ route('laporan.index') }}" class="nav-link {{ request()->is('laporan*') ? 'active' : '' }}">
                     <i class="fa-solid fa-chart-column"></i> Laporan
@@ -352,9 +410,7 @@
         </div>
 
         <div class="sidebar-footer">
-            <a href="#" class="nav-link">
-                <i class="fa-regular fa-user-circle"></i> Profil
-            </a>
+
             <!-- Form Logout -->
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
@@ -367,21 +423,29 @@
 
     <!-- Main Content -->
     <div class="main-content">
+        <!-- Overlay untuk Mobile -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
         <!-- Top Navbar -->
         <div class="topbar">
-            <div class="breadcrumb">
+            <div class="breadcrumb d-flex align-items-center">
+                <!-- Mobile Toggle Button -->
+                <button class="btn btn-sm text-dark d-md-none me-2 p-0 border-0 shadow-none" id="sidebarToggle" style="background: transparent;">
+                    <i class="fa-solid fa-bars fs-5"></i>
+                </button>
                 <span class="fs-5 fw-bold text-dark">@yield('title', 'Dashboard')</span>
             </div>
 
-            <div class="topbar-right">
-                <button class="notification-btn">
-                    <i class="fa-regular fa-bell"></i>
-                    <span class="notification-badge"></span>
-                </button>
-
+            <div class="topbar-right d-flex align-items-center gap-3">
+                <div class="text-end d-none d-sm-block">
+                    <div class="text-muted" style="font-size: 13.5px;">{{ auth()->user()->role === 'super' ? 'Super Admin' : 'Admin Cabang' }}</div>
+                    @if(auth()->user()->role === 'admin cabang' && auth()->user()->cabang)
+                        <div style="font-size: 11px; font-weight: bold; color: #1a5ca6; margin-top: -2px;">{{ auth()->user()->cabang->nama_cabang }}</div>
+                    @endif
+                </div>
                 <div class="user-profile">
                     <!-- Placeholder avatar -->
-                    <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name ?? 'Admin') }}&background=1a5ca6&color=fff" alt="Profile">
+                    <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name ?? 'Admin') }}&background=1a5ca6&color=fff" alt="Profile" style="width: 38px; height: 38px;">
                 </div>
             </div>
         </div>
@@ -396,6 +460,30 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <!-- ApexCharts CDN -->
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+    <!-- Sidebar Mobile Toggle Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.querySelector('.sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            const toggleBtn = document.getElementById('sidebarToggle');
+            
+            if(toggleBtn) {
+                toggleBtn.addEventListener('click', function() {
+                    sidebar.classList.add('show');
+                    overlay.classList.add('show');
+                });
+            }
+            
+            if(overlay) {
+                overlay.addEventListener('click', function() {
+                    sidebar.classList.remove('show');
+                    overlay.classList.remove('show');
+                });
+            }
+        });
+    </script>
+
     @yield('scripts')
 </body>
 </html>

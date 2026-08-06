@@ -72,13 +72,9 @@
 
 <!-- Header -->
 <div class="mb-4">
-    <div class="text-muted" style="font-size: 13px; margin-bottom: 10px;">
-        <a href="{{ route('produk.index') }}" class="text-decoration-none text-muted">Produk</a> &rsaquo; 
-        <a href="{{ route('kategori.index') }}" class="text-decoration-none text-muted">Kelola Kategori</a> &rsaquo; 
-        <strong class="text-primary" style="color: #1a5ca6 !important;">Edit Kategori</strong>
-    </div>
-    <h1 class="page-title">Edit Kategori: {{ $kategori->nama_kategori }}</h1>
-    <p class="page-desc">Lakukan perubahan pada data kategori melalui form di bawah ini.</p>
+    <a href="{{ route('kategori.index') }}" class="btn btn-light" style="border-radius: 8px; border: 1px solid #e5e7eb; color: #4b5563; padding: 8px 14px;" title="Kembali">
+        <i class="fa-solid fa-arrow-left"></i>
+    </a>
 </div>
 
 <!-- Form Container -->

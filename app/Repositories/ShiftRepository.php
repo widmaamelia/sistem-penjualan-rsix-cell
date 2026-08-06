@@ -110,10 +110,20 @@ class ShiftRepository
         }
 
         $totalPenjualan = Transaksi::where('id_shift', $shiftAktif->id_shift)->sum('total_harga');
-        $totalKasKeluar = KasKeluar::where('id_shift', $shiftAktif->id_shift)->sum('jumlah_pengeluaran');
         
-        // Kalkulasi Saldo Akhir Sistem
-        $saldoAkhirSistem = $shiftAktif->saldo_awal + $totalPenjualan - $totalKasKeluar;
+        // Hitung khusus penjualan tunai (fisik)
+        $totalPenjualanTunai = Transaksi::where('id_shift', $shiftAktif->id_shift)
+            ->where('metode_bayar', 'tunai')
+            ->sum('total_harga');
+
+        $totalKasKeluar = KasKeluar::where('id_shift', $shiftAktif->id_shift)->sum('jumlah_pengeluaran');
+
+        // Kalkulasi Saldo Akhir Sistem (HANYA MENGHITUNG FISIK TUNAI)
+        // Laci fisik = Saldo Awal + Penjualan Tunai - Kas Keluar
+        $saldoAkhirSistem = $shiftAktif->saldo_awal + $totalPenjualanTunai - $totalKasKeluar;
+        
+        // Hitung Kenaikan Saldo Laci (Hanya Fisik)
+        $kenaikanSaldo = $totalPenjualanTunai - $totalKasKeluar;
 
         return [
             'id_shift_formatted' => '#SHF-' . $shiftAktif->id_shift . date('Ymd', strtotime($shiftAktif->waktu_buka)),
@@ -121,7 +131,8 @@ class ShiftRepository
             'kasir' => $shiftAktif->user->name ?? 'Admin',
             'saldo_awal' => $shiftAktif->saldo_awal,
             'total_penjualan_terhitung' => $totalPenjualan,
-            'estimasi_saldo_akhir' => $saldoAkhirSistem
+            'estimasi_saldo_akhir' => $saldoAkhirSistem,
+            'kenaikan_saldo' => $kenaikanSaldo
         ];
     }
 
@@ -138,37 +149,54 @@ class ShiftRepository
             throw new Exception("Tidak ada shift aktif yang bisa ditutup.");
         }
 
-        // Hitung Saldo Akhir Sistem
-        $totalPenjualan = Transaksi::where('id_shift', $shiftAktif->id_shift)->sum('total_harga');
-        $totalKasKeluar = KasKeluar::where('id_shift', $shiftAktif->id_shift)->sum('jumlah_pengeluaran');
-        $saldoAkhirSistem = $shiftAktif->saldo_awal + $totalPenjualan - $totalKasKeluar;
+        // Hitung Penjualan Tunai dan Non-Tunai terpisah
+        $totalPenjualanTunai = Transaksi::where('id_shift', $shiftAktif->id_shift)
+            ->where('metode_bayar', 'tunai')
+            ->sum('total_harga');
 
-        // Ambil Inputan Aktual Kasir
+        $totalPenjualanNonTunai = Transaksi::where('id_shift', $shiftAktif->id_shift)
+            ->where('metode_bayar', '!=', 'tunai')
+            ->sum('total_harga');
+
+        $totalKasKeluar = KasKeluar::where('id_shift', $shiftAktif->id_shift)->sum('jumlah_pengeluaran');
+        
+        // Saldo Akhir Sistem (Fisik Laci Saja)
+        // Laci fisik = Saldo Awal + Penjualan Tunai - Kas Keluar
+        $saldoAkhirSistemTunai = $shiftAktif->saldo_awal + $totalPenjualanTunai - $totalKasKeluar;
+
+        // Ambil Inputan Aktual Kasir (Keseluruhan Uang Fisik di Laci)
         $uangFisikTunai = $data['uang_fisik_tunai'];
         $detailChannel = $data['detail_channel'] ?? [];
 
-        // Hitung total nominal di channel (BRI, BNI, dll)
+        // Hitung total nominal di channel (BRI, BNI, dll) dari kasir
         $totalNominalChannel = 0;
         foreach ($detailChannel as $channel => $nominal) {
             $totalNominalChannel += (float) $nominal;
         }
 
-        // Hitung Selisih
-        // Rumus: (uang_fisik + total_channel) - saldo_sistem
-        $selisih = ($uangFisikTunai + $totalNominalChannel) - $saldoAkhirSistem;
+        // Hitung Selisih Tunai (Seluruh Fisik Laci Kasir vs Sistem)
+        $selisihTunai = $uangFisikTunai - $saldoAkhirSistemTunai;
+        
+        // Hitung Selisih Non-Tunai (Bank/EDC)
+        $selisihNonTunai = $totalNominalChannel - $totalPenjualanNonTunai;
 
-        // Saldo akhir aktual yang di-store
-        $saldoAkhirAktual = $uangFisikTunai + $totalNominalChannel;
+        // Total Selisih (Keseluruhan)
+        $selisihTotal = $selisihTunai + $selisihNonTunai;
+
+        // Saldo akhir laci (HANYA UANG FISIK) untuk jadi saldo_awal shift besok
+        $saldoAkhirAktual = $uangFisikTunai;
 
         $shiftAktif->update([
             'waktu_tutup' => now(),
-            'saldo_akhir_sistem' => $saldoAkhirSistem,
+            'saldo_akhir_sistem' => $saldoAkhirSistemTunai, // Info saldo sistem fisik laci
             'uang_fisik_tunai' => $uangFisikTunai,
             'detail_channel' => $detailChannel,
-            'saldo_akhir' => $saldoAkhirAktual,
-            'selisih' => $selisih,
+            'saldo_akhir' => $saldoAkhirAktual, // CRITICAL FIX: Hanya simpan uang fisik laci
+            'selisih' => $selisihTotal, // Selisih gabungan untuk laporan
             'status' => 'tutup'
         ]);
+        
+        $shiftAktif->kenaikan_saldo = $totalPenjualanTunai - $totalKasKeluar;
 
         return $shiftAktif;
     }

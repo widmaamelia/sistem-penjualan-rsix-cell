@@ -73,10 +73,10 @@
     }
 
     .filter-select {
-        border-radius: 8px;
+        border-radius: 6px;
         border: 1px solid #d1d5db;
-        padding: 8px 15px;
-        font-size: 14px;
+        padding: 6px 12px;
+        font-size: 13.5px;
         min-width: 200px;
         background-color: #f9fafb;
     }
@@ -176,13 +176,11 @@
 <div class="d-flex justify-content-end align-items-center mb-3">
     <div class="d-flex gap-2">
         @if(in_array(auth()->user()->role, ['super', 'admin cabang']))
-            <a href="{{ route('stok.tambah-form') }}" class="btn btn-primary text-decoration-none" style="background-color: #1a5ca6; border-color: #1a5ca6; border-radius: 8px; font-weight: 500; font-size: 13px;">
+            <a href="{{ route('stok.tambah-form') }}" class="btn btn-primary text-decoration-none" style="background-color: #1a5ca6; border-color: #1a5ca6; border-radius: 6px; font-weight: 500; padding: 6px 14px; font-size: 13.5px;">
                 <i class="fa-solid fa-plus me-1"></i> Tambah Stok (Restock)
             </a>
         @endif
-        <button class="btn btn-primary" style="background-color: #1a5ca6; border-color: #1a5ca6; border-radius: 8px; font-weight: 500;">
-            <i class="fa-solid fa-download me-1"></i> Ekspor Laporan
-        </button>
+
     </div>
 </div>
 

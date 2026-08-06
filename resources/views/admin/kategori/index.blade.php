@@ -27,9 +27,10 @@
     }
 
     .search-input input {
-        padding-left: 40px;
-        border-radius: 8px;
+        padding: 6px 12px 6px 36px;
+        border-radius: 6px;
         border: 1px solid #e5e7eb;
+        font-size: 13.5px;
     }
 
     .btn-primary-custom {
@@ -37,8 +38,9 @@
         border-color: #1a5ca6;
         color: white;
         font-weight: 500;
-        border-radius: 8px;
-        padding: 8px 16px;
+        border-radius: 6px;
+        padding: 6px 14px;
+        font-size: 13.5px;
     }
 
     .btn-primary-custom:hover {

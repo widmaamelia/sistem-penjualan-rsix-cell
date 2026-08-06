@@ -5,11 +5,11 @@
     <title>Laporan Keuangan - Rsix Cell</title>
     <style>
         @page {
-            size: A4 landscape;
+            size: A4 portrait;
             margin: 12mm;
         }
         body {
-            font-family: 'Times New Roman', Times, serif;
+            font-family: Arial, Helvetica, sans-serif;
             color: #000;
             font-size: 10px;
             line-height: 1.4;
@@ -191,18 +191,25 @@
     <table class="data-table">
         <thead>
             <tr>
-                <th style="width: 5%;" class="text-center">No</th>
+                <th style="width: 4%;" class="text-center">No</th>
                 <th style="width: 30%;">Produk</th>
-                <th style="width: 15%;">Tanggal/Waktu</th>
-                <th style="width: 20%;">Kasir</th>
-                <th style="width: 15%;" class="text-center">Metode</th>
-                <th style="width: 15%;" class="text-end">Total Harga</th>
+                <th style="width: 12%;">Tanggal/Waktu</th>
+                <th style="width: 14%;">Kasir</th>
+                <th style="width: 10%;" class="text-center">Metode</th>
+                <th style="width: 10%;" class="text-end">Modal</th>
+                <th style="width: 10%;" class="text-end">Laba</th>
+                <th style="width: 10%;" class="text-end">Total</th>
             </tr>
         </thead>
         <tbody>
-            @php $totalKeseluruhan = 0; @endphp
             @forelse($transaksis as $index => $t)
-                @php $totalKeseluruhan += $t->total_harga; @endphp
+                @php
+                    $modalTransaksi = 0;
+                    foreach ($t->detailTransaksis as $d) {
+                        $modalTransaksi += $d->harga_beli_realtime * $d->qty;
+                    }
+                    $labaTransaksi = $t->total_harga - $modalTransaksi;
+                @endphp
                 <tr>
                     <td class="text-center">{{ $index + 1 }}</td>
                     <td>
@@ -211,29 +218,38 @@
                                 {{ $d->produk->nama_produk ?? $d->nama_item_manual ?? 'Produk' }}
                                 <span style="font-weight: normal; color: #555;">(x{{ $d->qty }})</span>
                             </div>
+                            <div style="font-size: 8px; color: #555;">
+                                Jual Rp {{ number_format($d->harga_jual_realtime, 0, ',', '.') }}
+                                &minus; Beli Rp {{ number_format($d->harga_beli_realtime, 0, ',', '.') }}
+                                = Laba Rp {{ number_format(($d->harga_jual_realtime - $d->harga_beli_realtime) * $d->qty, 0, ',', '.') }}
+                            </div>
                         @endforeach
                     </td>
                     <td>{{ \Carbon\Carbon::parse($t->tanggal_transaksi)->format('d/m/Y H:i') }}</td>
                     <td>{{ $t->user->name ?? '-' }}</td>
                     <td class="text-center text-uppercase">{{ $t->metode_bayar }}</td>
+                    <td class="text-end">Rp {{ number_format($modalTransaksi, 0, ',', '.') }}</td>
+                    <td class="text-end fw-bold">Rp {{ number_format($labaTransaksi, 0, ',', '.') }}</td>
                     <td class="text-end">Rp {{ number_format($t->total_harga, 0, ',', '.') }}</td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="6" class="text-center" style="color: #666;">Tidak ada data transaksi.</td>
+                    <td colspan="8" class="text-center" style="color: #666;">Tidak ada data transaksi.</td>
                 </tr>
             @endforelse
         </tbody>
         <tfoot>
             <tr class="fw-bold" style="background-color: #f9f9f9;">
-                <td colspan="5" class="text-end">TOTAL OMZET PENJUALAN (KAS MASUK)</td>
-                <td class="text-end">Rp {{ number_format($totalKeseluruhan, 0, ',', '.') }}</td>
+                <td colspan="5" class="text-end">TOTAL KESELURUHAN ({{ number_format($totalTransaksi, 0, ',', '.') }} transaksi)</td>
+                <td class="text-end">Rp {{ number_format($totalOmzet - $labaKotor, 0, ',', '.') }}</td>
+                <td class="text-end">Rp {{ number_format($labaKotor, 0, ',', '.') }}</td>
+                <td class="text-end">Rp {{ number_format($totalOmzet, 0, ',', '.') }}</td>
             </tr>
         </tfoot>
     </table>
 
-    <!-- 2. Detail Pengeluaran (Uang Keluar) -->
-    <div class="section-title">Rincian Pengeluaran Kas (Kas Keluar)</div>
+    <!-- 2. Pengeluaran Operasional -->
+    <div class="section-title">Pengeluaran Operasional</div>
     <table class="data-table">
         <thead>
             <tr>
@@ -245,43 +261,90 @@
             </tr>
         </thead>
         <tbody>
-            @forelse($kasKeluars as $index => $kk)
+            @forelse($operasionals as $index => $kk)
                 <tr>
                     <td class="text-center">{{ $index + 1 }}</td>
                     <td>{{ \Carbon\Carbon::parse($kk->tanggal)->format('d/m/Y H:i') }}</td>
                     <td>{{ $kk->shift?->user?->name ?? '-' }}</td>
                     <td>{{ $kk->keterangan }}</td>
-                    <td class="text-end text-danger fw-bold">Rp {{ number_format($kk->jumlah_pengeluaran, 0, ',', '.') }}</td>
+                    <td class="text-end fw-bold">Rp {{ number_format($kk->jumlah_pengeluaran, 0, ',', '.') }}</td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="5" class="text-center" style="color: #666;">Tidak ada pengeluaran kas pada periode ini.</td>
+                    <td colspan="5" class="text-center" style="color: #666;">Tidak ada pengeluaran operasional pada periode ini.</td>
                 </tr>
             @endforelse
         </tbody>
         <tfoot>
             <tr class="fw-bold" style="background-color: #f9f9f9;">
-                <td colspan="4" class="text-end">TOTAL KAS KELUAR</td>
-                <td class="text-end text-danger">Rp {{ number_format($totalUangKeluar, 0, ',', '.') }}</td>
+                <td colspan="4" class="text-end">TOTAL PENGELUARAN OPERASIONAL</td>
+                <td class="text-end">Rp {{ number_format($totalOperasional, 0, ',', '.') }}</td>
             </tr>
         </tfoot>
     </table>
 
-    <!-- 3. Ringkasan Keuangan Formal -->
+    <!-- 3. Pembelian Barang Stok -->
+    <div class="section-title">Pembelian Barang Stok</div>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th style="width: 5%;" class="text-center">No</th>
+                <th style="width: 20%;">Tanggal/Waktu</th>
+                <th style="width: 25%;">Kasir</th>
+                <th style="width: 35%;">Keterangan Pembelian</th>
+                <th style="width: 15%;" class="text-end">Nominal</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse($pembelianStoks as $index => $kk)
+                <tr>
+                    <td class="text-center">{{ $index + 1 }}</td>
+                    <td>{{ \Carbon\Carbon::parse($kk->tanggal)->format('d/m/Y H:i') }}</td>
+                    <td>{{ $kk->shift?->user?->name ?? '-' }}</td>
+                    <td>{{ $kk->keterangan }}</td>
+                    <td class="text-end fw-bold">Rp {{ number_format($kk->jumlah_pengeluaran, 0, ',', '.') }}</td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="5" class="text-center" style="color: #666;">Tidak ada pembelian stok pada periode ini.</td>
+                </tr>
+            @endforelse
+        </tbody>
+        <tfoot>
+            <tr class="fw-bold" style="background-color: #f9f9f9;">
+                <td colspan="4" class="text-end">TOTAL PEMBELIAN BARANG STOK</td>
+                <td class="text-end">Rp {{ number_format($totalPembelianStok, 0, ',', '.') }}</td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <!-- 4. Ringkasan Keuangan Formal -->
     <div class="section-title">Ikhtisar Keuangan</div>
     <div class="summary-box">
         <table>
             <tr>
-                <td>Total Uang Masuk (Pemasukan Penjualan)</td>
+                <td>Total Uang Masuk (Penjualan)</td>
                 <td class="text-end fw-bold" style="color: green;">Rp {{ number_format($totalUangMasuk, 0, ',', '.') }}</td>
             </tr>
             <tr>
-                <td>Total Uang Keluar (Restok & Operasional)</td>
-                <td class="text-end fw-bold" style="color: red;">- Rp {{ number_format($totalUangKeluar, 0, ',', '.') }}</td>
+                <td>Modal Barang Terjual (HPP)</td>
+                <td class="text-end">- Rp {{ number_format($totalOmzet - $labaKotor, 0, ',', '.') }}</td>
             </tr>
             <tr class="fw-bold">
-                <td>Margin Laba Kotor Penjualan</td>
+                <td>Laba Kotor Penjualan</td>
                 <td class="text-end">Rp {{ number_format($labaKotor, 0, ',', '.') }}</td>
+            </tr>
+            <tr>
+                <td>Pengeluaran Operasional</td>
+                <td class="text-end" style="color: red;">- Rp {{ number_format($totalOperasional, 0, ',', '.') }}</td>
+            </tr>
+            <tr>
+                <td>Pembelian Barang Stok</td>
+                <td class="text-end" style="color: red;">- Rp {{ number_format($totalPembelianStok, 0, ',', '.') }}</td>
+            </tr>
+            <tr class="fw-bold">
+                <td>Total Uang Keluar</td>
+                <td class="text-end" style="color: red;">Rp {{ number_format($totalUangKeluar, 0, ',', '.') }}</td>
             </tr>
         </table>
     </div>

@@ -72,13 +72,9 @@
 
 <!-- Header -->
 <div class="mb-4">
-    <div class="text-muted" style="font-size: 13px; margin-bottom: 10px;">
-        <a href="{{ route('produk.index') }}" class="text-decoration-none text-muted">Produk</a> &rsaquo; 
-        <a href="{{ route('kategori.index') }}" class="text-decoration-none text-muted">Kelola Kategori</a> &rsaquo; 
-        <strong class="text-primary" style="color: #1a5ca6 !important;">Tambah Kategori</strong>
-    </div>
-    <h1 class="page-title">Tambah Kategori Baru</h1>
-    <p class="page-desc">Gunakan form di bawah ini untuk menambahkan kategori produk baru ke dalam sistem inventaris Rsix Cell.</p>
+    <a href="{{ route('kategori.index') }}" class="btn btn-light" style="border-radius: 8px; border: 1px solid #e5e7eb; color: #4b5563; padding: 8px 14px;" title="Kembali">
+        <i class="fa-solid fa-arrow-left"></i>
+    </a>
 </div>
 
 <!-- Form Container -->

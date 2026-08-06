@@ -34,17 +34,18 @@
     }
 
     .search-input input {
-        padding-left: 40px;
-        border-radius: 8px;
+        padding: 6px 12px 6px 36px;
+        border-radius: 6px;
         border: 1px solid #e5e7eb;
+        font-size: 13.5px;
     }
 
     .filter-select {
-        border-radius: 8px;
+        border-radius: 6px;
         border: 1px solid #e5e7eb;
         color: #4b5563;
-        padding-left: 15px;
-        padding-right: 30px;
+        padding: 6px 30px 6px 12px;
+        font-size: 13.5px;
     }
 
     .btn-primary-custom {
@@ -52,8 +53,9 @@
         border-color: #1a5ca6;
         color: white;
         font-weight: 500;
-        border-radius: 8px;
-        padding: 8px 16px;
+        border-radius: 6px;
+        padding: 6px 14px;
+        font-size: 13.5px;
     }
 
     .btn-primary-custom:hover {
@@ -200,10 +202,22 @@
             <option value="aktif" {{ request('status') == 'aktif' ? 'selected' : '' }}>Aktif</option>
             <option value="nonaktif" {{ request('status') == 'nonaktif' ? 'selected' : '' }}>Non-aktif</option>
         </select>
+        @if(request('tipe'))
+            <input type="hidden" name="tipe" value="{{ request('tipe') }}">
+        @endif
     </form>
     <div class="d-flex align-items-center gap-2 flex-shrink-0">
-        <button type="button" onclick="cetakMassal()" class="btn btn-secondary text-decoration-none text-nowrap" style="padding: 8px 16px; border-radius: 8px;">
-            <i class="fa-solid fa-print me-1"></i> Cetak Barcode
+        @if(request('tipe') == 'manual')
+            <a href="{{ route('produk.index') }}" class="btn btn-outline-secondary text-decoration-none" style="padding: 6px 12px; border-radius: 6px;" title="Lihat Produk Fisik">
+                <i class="fa-solid fa-box-open"></i>
+            </a>
+        @else
+            <a href="{{ route('produk.index', ['tipe' => 'manual']) }}" class="btn btn-outline-info text-decoration-none" style="padding: 6px 12px; border-radius: 6px;" title="Lihat Produk Manual / Digital">
+                <i class="fa-solid fa-mobile-screen-button"></i>
+            </a>
+        @endif
+        <button type="button" onclick="cetakMassal()" class="btn btn-secondary text-decoration-none" style="padding: 6px 12px; border-radius: 6px;" title="Cetak Barcode">
+            <i class="fa-solid fa-print"></i>
         </button>
         <a href="{{ route('produk.create') }}" class="btn btn-primary-custom text-decoration-none text-nowrap">
             <i class="fa-solid fa-plus me-1"></i> Tambah Produk
@@ -265,13 +279,22 @@
                     } elseif ($totalStok <= 10) {
                         $stokClass = 'badge-stok-menipis';
                     }
+
+                    // Cek apakah produk digital
+                    $namaKategori = strtolower($produk->kategori->nama_kategori ?? '');
+                    $isDigital = in_array($namaKategori, ['pulsa', 'paket data', 'e-wallet', 'token pln', 'manual', 'digital']) || str_contains($namaKategori, 'digital') || str_contains($namaKategori, 'manual');
                 @endphp
                 <tr>
                     <td style="padding-left: 20px;">
                         <div class="product-cell">
                             <!-- Fallback image -->
                             <img src="{{ $produk->foto_produk ?? 'https://via.placeholder.com/40' }}" alt="{{ $produk->nama_produk }}" class="product-img">
-                            <span class="fw-medium text-dark">{{ $produk->nama_produk }}</span>
+                            <div class="d-flex flex-column">
+                                <span class="fw-medium text-dark">{{ $produk->nama_produk }}</span>
+                                @if($isDigital)
+                                    <span class="badge bg-info text-white mt-1" style="font-size: 9px; width: fit-content;">Manual / Digital</span>
+                                @endif
+                            </div>
                         </div>
                     </td>
                     <td>{{ $produk->kategori->nama_kategori ?? '-' }}</td>
@@ -288,14 +311,20 @@
                         @endif
                     </td>
                     <td>
+                        @if(!$isDigital)
                         <div class="d-flex align-items-center gap-2">
                             <input type="checkbox" class="form-check-input print-check" value="{{ $produk->id_produk }}" style="width: 18px; height: 18px; margin-top: 0;">
                             <input type="number" id="print-qty-{{ $produk->id_produk }}" class="form-control form-control-sm text-center px-1" value="1" min="1" style="width: 50px;">
                         </div>
+                        @else
+                        <span class="text-muted" style="font-size: 12px;">-</span>
+                        @endif
                     </td>
                     <td>
                         <div class="action-icons">
+                            @if(!$isDigital)
                             <a href="{{ route('produk.barcode', $produk->id_produk) }}" target="_blank" title="Cetak Barcode" class="text-secondary"><i class="fa-solid fa-barcode"></i></a>
+                            @endif
                             <a href="{{ route('produk.show', $produk->id_produk) }}" title="Lihat"><i class="fa-regular fa-eye"></i></a>
                             <a href="{{ route('produk.edit', $produk->id_produk) }}" title="Edit" class="text-primary"><i class="fa-solid fa-pen-to-square"></i></a>
                             <button type="button" class="text-danger btn-delete-produk border-0 bg-transparent p-0" title="Hapus"

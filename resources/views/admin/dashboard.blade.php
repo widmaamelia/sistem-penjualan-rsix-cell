@@ -115,63 +115,63 @@
 
 @section('content')
 <!-- Row 1: Summary Cards -->
-<div class="row g-4 mb-4">
+<div class="row g-3 mb-4">
     <!-- Card 1 -->
-    <div class="col-md-3">
-        <div class="card h-100 border-0 shadow-sm">
-            <div class="summary-card">
-                <div class="d-flex justify-content-between align-items-start">
-                    <div class="summary-icon icon-blue">
-                        <i class="fa-solid fa-money-bill-wave"></i>
-                    </div>
+    <div class="col-lg col-md-6">
+        <div class="card border-0 shadow-sm rounded-3 h-100">
+            <div class="card-body p-3 d-flex align-items-center justify-content-between">
+                <div>
+                    <h6 class="text-muted text-uppercase fw-bold mb-1" style="font-size: 11px;">Total Pendapatan Hari Ini</h6>
+                    <h5 class="m-0 fw-bold" style="font-size: 18px; color: #1a5ca6;">Rp {{ number_format($statistik['pendapatan'], 0, ',', '.') }}</h5>
                 </div>
-                <div class="summary-title">Total Pendapatan Hari Ini</div>
-                <h3 class="summary-value">Rp {{ number_format($statistik['pendapatan'], 0, ',', '.') }}</h3>
+                <div class="summary-icon icon-blue fs-4" style="width: 45px; height: 45px; flex-shrink: 0; border-radius: 12px;">
+                    <i class="fa-solid fa-money-bill-wave"></i>
+                </div>
             </div>
         </div>
     </div>
     
     <!-- Card 2 -->
-    <div class="col-md-3">
-        <div class="card h-100 border-0 shadow-sm">
-            <div class="summary-card">
-                <div class="d-flex justify-content-between align-items-start">
-                    <div class="summary-icon icon-purple">
-                        <i class="fa-solid fa-receipt"></i>
-                    </div>
+    <div class="col-lg col-md-6">
+        <div class="card border-0 shadow-sm rounded-3 h-100">
+            <div class="card-body p-3 d-flex align-items-center justify-content-between">
+                <div>
+                    <h6 class="text-muted text-uppercase fw-bold mb-1" style="font-size: 11px;">Total Transaksi Hari Ini</h6>
+                    <h5 class="m-0 fw-bold" style="font-size: 18px; color: #1a5ca6;">{{ $statistik['total_transaksi'] }}</h5>
                 </div>
-                <div class="summary-title">Total Transaksi</div>
-                <h3 class="summary-value">{{ $statistik['total_transaksi'] }}</h3>
+                <div class="summary-icon icon-purple fs-4" style="width: 45px; height: 45px; flex-shrink: 0; border-radius: 12px;">
+                    <i class="fa-solid fa-receipt"></i>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Card 3 -->
-    <div class="col-md-3">
-        <div class="card h-100 border-0 shadow-sm">
-            <div class="summary-card">
-                <div class="d-flex justify-content-between align-items-start">
-                    <div class="summary-icon icon-orange">
-                        <i class="{{ auth()->user()->role === 'super' ? 'fa-solid fa-store' : 'fa-solid fa-triangle-exclamation' }}"></i>
-                    </div>
+    <div class="col-lg col-md-6">
+        <div class="card border-0 shadow-sm rounded-3 h-100">
+            <div class="card-body p-3 d-flex align-items-center justify-content-between">
+                <div>
+                    <h6 class="text-muted text-uppercase fw-bold mb-1" style="font-size: 11px;">{{ $statistik['label_cabang'] }}</h6>
+                    <h5 class="m-0 fw-bold" style="font-size: 18px; color: #1a5ca6;">{{ $statistik['nilai_cabang'] }}</h5>
                 </div>
-                <div class="summary-title">{{ $statistik['label_cabang'] }}</div>
-                <h3 class="summary-value">{{ $statistik['nilai_cabang'] }}</h3>
+                <div class="summary-icon icon-orange fs-4" style="width: 45px; height: 45px; flex-shrink: 0; border-radius: 12px;">
+                    <i class="{{ auth()->user()->role === 'super' ? 'fa-solid fa-store' : 'fa-solid fa-triangle-exclamation' }}"></i>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Card 4 -->
-    <div class="col-md-3">
-        <div class="card h-100 border-0 shadow-sm">
-            <div class="summary-card">
-                <div class="d-flex justify-content-between align-items-start">
-                    <div class="summary-icon icon-indigo">
-                        <i class="fa-solid fa-user-tie"></i>
-                    </div>
+    <div class="col-lg col-md-6">
+        <div class="card border-0 shadow-sm rounded-3 h-100">
+            <div class="card-body p-3 d-flex align-items-center justify-content-between">
+                <div>
+                    <h6 class="text-muted text-uppercase fw-bold mb-1" style="font-size: 11px;">Karyawan Bertugas</h6>
+                    <h5 class="m-0 fw-bold" style="font-size: 18px; color: #1a5ca6;">{{ $statistik['karyawan'] }}</h5>
                 </div>
-                <div class="summary-title">Karyawan Bertugas</div>
-                <h3 class="summary-value">{{ $statistik['karyawan'] }}</h3>
+                <div class="summary-icon icon-indigo fs-4" style="width: 45px; height: 45px; flex-shrink: 0; border-radius: 12px;">
+                    <i class="fa-solid fa-user-tie"></i>
+                </div>
             </div>
         </div>
     </div>
@@ -182,12 +182,12 @@
     <!-- Bar Chart -->
     <div class="{{ auth()->user()->role === 'super' ? 'col-md-8' : 'col-12' }}">
         <div class="card h-100 border-0 shadow-sm">
-            <div class="card-header border-0 bg-white pt-4 pb-0">
-                <h6 class="mb-0 fw-bold">Penjualan 7 Hari Terakhir</h6>
-                <a href="{{ route('laporan.index') }}" class="btn btn-sm btn-outline-secondary" style="font-size: 11px;">Lihat Laporan Lengkap</a>
+            <div class="card-header border-0 bg-white pt-4 pb-0 d-flex justify-content-between align-items-center">
+                <h6 class="mb-0 fw-bold" style="font-size: 15px;">Penjualan 7 Hari Terakhir</h6>
+                <a href="{{ route('laporan.index') }}" class="btn btn-outline-secondary" style="border-radius: 6px; font-weight: 500; padding: 4px 10px; font-size: 11.5px;">Lihat Laporan Lengkap</a>
             </div>
-            <div class="card-body">
-                <div id="barChart" style="min-height: 250px;"></div>
+            <div class="card-body pb-0 d-flex flex-column justify-content-center">
+                <div id="barChart"></div>
             </div>
         </div>
     </div>
@@ -197,7 +197,7 @@
     <div class="col-md-4">
         <div class="card h-100 border-0 shadow-sm">
             <div class="card-header border-0 bg-white pt-4 pb-0">
-                <h6 class="mb-0 fw-bold">Kontribusi Per Cabang</h6>
+                <h6 class="mb-0 fw-bold" style="font-size: 15px;">Kontribusi Per Cabang</h6>
             </div>
             <div class="card-body d-flex flex-column justify-content-center">
                 @if($totalPendapatanGlobal > 0)
@@ -229,11 +229,11 @@
     <div class="{{ auth()->user()->role === 'super' ? 'col-md-8' : 'col-12' }}">
         <div class="card border-0 shadow-sm h-100">
             <div class="card-header border-0 bg-white py-3 d-flex justify-content-between align-items-center">
-                <h6 class="mb-0 fw-bold">Transaksi Terbaru</h6>
+                <h6 class="mb-0 fw-bold" style="font-size: 15px;">Transaksi Terbaru</h6>
                 <a href="{{ route('laporan.index') }}" class="btn-link-action text-decoration-none" style="font-size: 12px; color: #1a5ca6;">Lihat Semua <i class="fa-solid fa-arrow-right ms-1"></i></a>
             </div>
             <div class="table-container">
-                <table class="table mb-0 align-middle">
+                <table class="table mb-0 align-middle table-hover">
                     <thead>
                         <tr>
                             <th>No</th>
@@ -255,7 +255,13 @@
                             <td>{{ $trx->user->name ?? 'Admin' }}</td>
                             <td>{{ $trx->detailTransaksis->sum('qty') }}</td>
                             <td class="fw-bold">Rp {{ number_format($trx->total_harga, 0, ',', '.') }}</td>
-                            <td>{{ ucfirst($trx->metode_bayar) }}</td>
+                            <td>
+                                @if(strtolower($trx->metode_bayar) === 'tunai')
+                                    <span class="badge bg-success bg-opacity-10 text-success" style="font-size: 10px; padding: 4px 8px;">{{ ucfirst($trx->metode_bayar) }}</span>
+                                @else
+                                    <span class="badge bg-primary bg-opacity-10 text-primary" style="font-size: 10px; padding: 4px 8px;">{{ ucfirst($trx->metode_bayar) }}</span>
+                                @endif
+                            </td>
                             <td>{{ \Carbon\Carbon::parse($trx->tanggal_transaksi)->format('d M, H:i') }}</td>
                         </tr>
                         @empty
@@ -274,8 +280,9 @@
     @if(auth()->user()->role === 'super')
     <div class="col-md-4">
         <div class="card border-0 shadow-sm h-100">
-            <div class="card-header border-0 bg-white py-3">
-                <h6 class="mb-0 fw-bold">Log Perubahan Harga Beli</h6>
+            <div class="card-header border-0 bg-white py-3 d-flex justify-content-between align-items-center">
+                <h6 class="mb-0 fw-bold" style="font-size: 15px;">Log Perubahan Harga Beli</h6>
+                <a href="{{ route('produk.index') }}" class="btn-link-action text-decoration-none" style="font-size: 11px; color: #1a5ca6;">Semua Produk <i class="fa-solid fa-arrow-right ms-1"></i></a>
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
@@ -333,42 +340,70 @@ document.addEventListener("DOMContentLoaded", function() {
         }],
         chart: {
             type: 'bar',
-            height: 250,
+            height: 240,
             toolbar: { show: false },
-            fontFamily: 'Inter, sans-serif'
+            fontFamily: 'Inter, sans-serif',
+            animations: {
+                enabled: true,
+                easing: 'easeinout',
+                speed: 800
+            }
         },
-        colors: ['#a5b4fc'], // Light blue-purple
+        colors: ['#1a5ca6'], // Vibrant Rsix Primary Blue
         plotOptions: {
             bar: {
-                borderRadius: 2,
-                columnWidth: '60%',
+                borderRadius: 4,
+                columnWidth: '45%',
+                distributed: false,
+            }
+        },
+        fill: {
+            type: 'gradient',
+            gradient: {
+                shade: 'light',
+                type: 'vertical',
+                shadeIntensity: 0.3,
+                gradientToColors: ['#3b82f6'], // Smooth blue gradient
+                inverseColors: false,
+                opacityFrom: 1,
+                opacityTo: 0.85,
+                stops: [0, 100]
             }
         },
         dataLabels: { enabled: false },
         stroke: {
             show: true,
-            width: 2,
-            colors: ['#6366f1'] // Garis batas atas seperti di desain
+            width: 0,
+            colors: ['transparent']
         },
         xaxis: {
             categories: @json($barChartLabels),
             labels: {
-                style: { colors: '#9ca3af', fontSize: '11px' }
+                style: { colors: '#6b7280', fontSize: '12px', fontWeight: 600 }
             },
             axisBorder: { show: false },
             axisTicks: { show: false }
+        },
+        tooltip: {
+            theme: 'light',
+            y: {
+                formatter: function (val) {
+                    return "Rp " + new Intl.NumberFormat('id-ID').format(val);
+                }
+            }
         },
         yaxis: {
             labels: {
                 formatter: function (value) {
                     return "Rp " + new Intl.NumberFormat('id-ID').format(value);
                 },
-                style: { colors: '#9ca3af', fontSize: '11px' }
+                style: { colors: '#6b7280', fontSize: '11px', fontWeight: 500 }
             }
         },
         grid: {
             borderColor: '#f3f4f6',
             strokeDashArray: 4,
+            padding: { bottom: 0, left: 10, right: 10 },
             yaxis: {
                 lines: { show: true }
             }
@@ -384,7 +419,7 @@ document.addEventListener("DOMContentLoaded", function() {
         series: @json($donutChartData),
         chart: {
             type: 'donut',
-            height: 220,
+            height: 190,
             fontFamily: 'Inter, sans-serif'
         },
         labels: @json($donutChartLabels),
@@ -392,7 +427,7 @@ document.addEventListener("DOMContentLoaded", function() {
         plotOptions: {
             pie: {
                 donut: {
-                    size: '75%',
+                    size: '65%',
                     labels: {
                         show: true,
                         name: { show: false },

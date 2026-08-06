@@ -85,6 +85,27 @@ class ProdukController extends Controller
             $query->where('status', $request->status);
         }
 
+        // Filter berdasarkan Tipe (Fisik / Manual)
+        $digitalCategories = ['pulsa', 'paket data', 'e-wallet', 'token pln', 'manual', 'digital'];
+        if ($request->query('tipe') == 'manual') {
+            $query->whereHas('kategori', function($q) use ($digitalCategories) {
+                $q->where(function($q2) use ($digitalCategories) {
+                    foreach($digitalCategories as $cat) {
+                        $q2->orWhere('nama_kategori', 'like', '%' . $cat . '%');
+                    }
+                });
+            });
+        } else {
+            // Tampilkan fisik (selain manual)
+            $query->whereHas('kategori', function($q) use ($digitalCategories) {
+                $q->where(function($q2) use ($digitalCategories) {
+                    foreach($digitalCategories as $cat) {
+                        $q2->where('nama_kategori', 'not like', '%' . $cat . '%');
+                    }
+                });
+            })->orWhereDoesntHave('kategori'); // Produk tanpa kategori dianggap fisik
+        }
+
         $produks = $query->orderBy('id_produk', 'desc')->paginate(10)->withQueryString();
         $kategoris = KategoriProduk::all();
 
@@ -94,7 +115,12 @@ class ProdukController extends Controller
     public function create()
     {
         $kategoris = KategoriProduk::all();
-        $cabangs = Cabang::where('status', 'aktif')->get();
+        $user = auth()->user();
+        if ($user->role === 'admin cabang') {
+            $cabangs = Cabang::where('id_cabang', $user->id_cabang)->get();
+        } else {
+            $cabangs = Cabang::where('status', 'aktif')->get();
+        }
         return view('admin.produk.create', compact('kategoris', 'cabangs'));
     }
 
@@ -177,7 +203,12 @@ class ProdukController extends Controller
     {
         $produk = Produk::with('stokCabangs.cabang')->findOrFail($id);
         $kategoris = KategoriProduk::all();
-        $cabangs = Cabang::where('status', 'aktif')->get();
+        $user = auth()->user();
+        if ($user->role === 'admin cabang') {
+            $cabangs = Cabang::where('id_cabang', $user->id_cabang)->get();
+        } else {
+            $cabangs = Cabang::where('status', 'aktif')->get();
+        }
         return view('admin.produk.edit', compact('produk', 'kategoris', 'cabangs'));
     }
 

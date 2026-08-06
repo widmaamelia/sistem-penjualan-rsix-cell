@@ -57,7 +57,9 @@
                         <td class="px-4">{{ $opname->user->name }}</td>
                         <td class="px-4">
                             <span class="badge-status badge-status-{{ $opname->status }}">
-                                {{ $opname->status }}
+                                @if($opname->status == 'approved') DISETUJUI
+                                @elseif($opname->status == 'rejected') DITOLAK
+                                @else PENDING @endif
                             </span>
                         </td>
                         <td class="px-4">

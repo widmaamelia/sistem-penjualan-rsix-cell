@@ -41,14 +41,65 @@ class KasKeluarController extends Controller
             $query->where('keterangan', 'like', '%' . $request->search . '%');
         }
 
-        $kasKeluars = $query->orderBy('tanggal', 'desc')->paginate(15)->withQueryString();
-        
+        // Filter tanggal spesifik. Jika diisi, filter bulan/tahun diabaikan.
+        if ($request->filled('tanggal')) {
+            $query->whereDate('tanggal', $request->tanggal);
+        } else {
+            if ($request->filled('bulan')) {
+                $query->whereMonth('tanggal', $request->bulan);
+            }
+
+            if ($request->filled('tahun')) {
+                $query->whereYear('tanggal', $request->tahun);
+            }
+        }
+
+        // Dihitung sebelum paginate agar totalnya mencakup seluruh data
+        // hasil filter, bukan hanya 15 baris yang tampil di halaman ini.
+        // Pemisahan otomatis vs manual memakai pola keterangan yang sama
+        // dengan badge "Tipe Pengeluaran" di tabel.
+        $filterOtomatis = function ($q) {
+            $q->where('keterangan', 'like', '%restock%')
+              ->orWhere('keterangan', 'like', '%opname%');
+        };
+
+        $totalPengeluaran = (clone $query)->sum('jumlah_pengeluaran');
+        $totalOtomatis = (clone $query)->where($filterOtomatis)->sum('jumlah_pengeluaran');
+        $jumlahOtomatis = (clone $query)->where($filterOtomatis)->count();
+        $jumlahSemua = (clone $query)->count();
+
+        $ringkasan = [
+            'total' => $totalPengeluaran,
+            'otomatis' => $totalOtomatis,
+            'manual' => $totalPengeluaran - $totalOtomatis,
+            'jumlah_semua' => $jumlahSemua,
+            'jumlah_otomatis' => $jumlahOtomatis,
+            'jumlah_manual' => $jumlahSemua - $jumlahOtomatis,
+            'terbesar' => (clone $query)->max('jumlah_pengeluaran') ?? 0,
+            'rata_rata' => $jumlahSemua > 0 ? $totalPengeluaran / $jumlahSemua : 0,
+        ];
+
+        $kasKeluars = $query->orderBy('tanggal', 'desc')->paginate(10)->withQueryString();
+
         $cabangs = [];
         if ($user->role === 'super') {
             $cabangs = Cabang::all();
         }
 
-        return view('admin.kas_keluar.index', compact('kasKeluars', 'cabangs'));
+        return view('admin.kas_keluar.index', compact('kasKeluars', 'cabangs', 'ringkasan'));
+    }
+    public function create()
+    {
+        $user = auth()->user();
+        if (!in_array($user->role, ['super', 'admin cabang'])) {
+            return abort(403);
+        }
+        
+        $cabangs = [];
+        if ($user->role === 'super') {
+            $cabangs = Cabang::all();
+        }
+        return view('admin.kas_keluar.create', compact('cabangs'));
     }
 
     public function store(Request $request)
@@ -77,6 +128,22 @@ class KasKeluarController extends Controller
         ]);
 
         return redirect()->route('kas_keluar.index')->with('success', 'Catatan kas keluar berhasil ditambahkan.');
+    }
+
+    public function show($id)
+    {
+        $kasKeluar = KasKeluar::with(['shift.user', 'cabang'])->findOrFail($id);
+        $user = auth()->user();
+
+        // Validasi hak akses cabang
+        if ($user->role === 'admin cabang') {
+            $ownerCabangId = $kasKeluar->id_cabang ?? ($kasKeluar->shift->id_cabang ?? null);
+            if ($ownerCabangId !== $user->id_cabang) {
+                return abort(403);
+            }
+        }
+
+        return view('admin.kas_keluar.show', compact('kasKeluar'));
     }
 
     public function destroy($id)

@@ -229,133 +229,135 @@
 
     <!-- Header Action -->
     <div class="header-action">
-        <h1 class="page-title">
-            <a href="{{ route('produk.index') }}" class="back-btn"><i class="fa-solid fa-arrow-left"></i></a>
-            Edit Produk
-        </h1>
+        <a href="{{ route('produk.index') }}" class="btn btn-light" style="border-radius: 8px; border: 1px solid #e5e7eb; color: #4b5563; padding: 8px 14px;" title="Kembali">
+            <i class="fa-solid fa-arrow-left"></i>
+        </a>
         <div class="d-flex gap-2">
-            <a href="{{ route('produk.index') }}" class="btn btn-outline-secondary" style="border-radius: 8px; font-weight: 500;">Batal</a>
-            <button type="submit" class="btn btn-primary" style="background-color: #1a5ca6; border-color: #1a5ca6; border-radius: 8px; font-weight: 500;">
+            <a href="{{ route('produk.index') }}" class="btn btn-outline-secondary" style="border-radius: 6px; font-weight: 500; padding: 6px 16px; font-size: 13.5px;">Batal</a>
+            <button type="submit" class="btn btn-primary" style="background-color: #1a5ca6; border-color: #1a5ca6; border-radius: 6px; font-weight: 500; padding: 6px 16px; font-size: 13.5px;">
                 <i class="fa-solid fa-floppy-disk me-1"></i> Simpan
             </button>
         </div>
     </div>
 
-    <div class="row">
-        <!-- FOTO PRODUK -->
-        <div class="col-md-4 mb-4">
-            <label class="form-label text-uppercase" style="font-size:11px; letter-spacing:0.5px;">Foto Produk</label>
-            @if(auth()->user()->role === 'admin cabang')
-                <div class="upload-box" style="cursor: not-allowed; opacity: 0.6;">
-                    <i class="fa-regular fa-image"></i>
-                    <span style="font-size: 11px;">Tidak Dapat Diubah Admin Cabang</span>
-                </div>
-            @else
-                <div class="upload-box" onclick="document.getElementById('foto_produk').click()">
-                    <i class="fa-regular fa-image"></i>
-                    <span>Upload</span>
-                    <input type="file" name="foto_produk" id="foto_produk" style="display: none;" accept="image/*">
-                </div>
-            @endif
-        </div>
-
-        <!-- BASIC INFO -->
-        <div class="col-md-8">
-            <!-- Row 1 -->
-            <div class="mb-4">
-                <label class="form-label">Nama Produk <span class="required-star">*</span></label>
-                <input type="text" name="nama_produk" class="form-control" placeholder="Contoh: Samsung Galaxy S24 Ultra" value="{{ old('nama_produk', $produk->nama_produk) }}" required {{ auth()->user()->role === 'admin cabang' ? 'disabled' : '' }}>
-            </div>
-            
-            <!-- Row 2 -->
-            <div class="row mb-4">
-                <div class="col-md-6">
-                    <label class="form-label">Kategori</label>
-                    <select name="id_kategori" class="form-select" {{ auth()->user()->role === 'admin cabang' ? 'disabled' : '' }}>
-                        <option value="">Pilih Kategori</option>
-                        @foreach($kategoris as $kat)
-                            <option value="{{ $kat->id_kategori }}" {{ old('id_kategori', $produk->id_kategori) == $kat->id_kategori ? 'selected' : '' }}>
-                                {{ $kat->nama_kategori }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label mb-2">SKU <small class="text-muted">(Tidak dapat diubah)</small></label>
-                    <input type="text" class="form-control" value="{{ $produk->sku }}" disabled>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- DIVIDER -->
-    <hr class="my-4" style="border-color: #e5e7eb;">
-
-    <!-- SECOND SECTION: BARCODE & HARGA -->
-    <div class="form-section row g-4">
-        <div class="col-md-12 mb-2">
-            <label class="form-label mb-2">Barcode / IMEI <small class="text-muted">(Tidak dapat diubah)</small></label>
-            <div class="input-group">
-                <span class="input-group-text"><i class="fa-solid fa-barcode"></i></span>
-                <input type="text" class="form-control" value="{{ $produk->barcode_imei }}" disabled>
-            </div>
-        </div>
-
-        <div class="col-md-6">
-            <label class="form-label">Harga Beli</label>
-            <div class="input-group">
-                <span class="input-group-text">Rp</span>
-                <input type="number" name="harga_beli" class="form-control" placeholder="0" value="{{ old('harga_beli', $produk->harga_beli) }}" required min="0">
-            </div>
-        </div>
-        
-        <div class="col-md-6">
-            <label class="form-label">Harga Jual</label>
-            <div class="input-group">
-                <span class="input-group-text">Rp</span>
-                <input type="number" name="harga_jual" class="form-control" placeholder="0" value="{{ old('harga_jual', $produk->harga_jual) }}" required min="0" {{ auth()->user()->role === 'admin cabang' ? 'disabled' : '' }}>
-            </div>
-            @if(auth()->user()->role === 'admin cabang')
-                <small class="text-danger mt-1" style="font-size: 11px;">*Hanya Super Admin yang dapat menentukan/mengubah Harga Jual</small>
-            @endif
-        </div>
-    </div>
-
-    <!-- THIRD SECTION: HARGA & STOK (PER CABANG) -->
-    <div class="d-flex justify-content-between align-items-center mb-3 mt-5">
-        <h6 class="text-uppercase fw-bold m-0" style="font-size:13px; letter-spacing:0.5px;">Harga & Stok</h6>
-        <div class="badge-total">Total Stok: <span id="totalStokLabel">0</span></div>
-    </div>
-
-    <div class="table-responsive table-stok">
-        <table class="table mb-0">
-            <thead>
-                <tr>
-                    <th style="width: 70%;">Nama Cabang</th>
-                    <th style="width: 30%;">Jumlah Stok</th>
-                </tr>
-            </thead>
-            <tbody>
-                @php $total_stok = 0; @endphp
-                @foreach($cabangs as $cabang)
-                @php
-                    // Cari stok untuk cabang ini
-                    $stok_item = $produk->stokCabangs->where('id_cabang', $cabang->id_cabang)->first();
-                    $qty = $stok_item ? $stok_item->stok_sekarang : 0;
-                    $total_stok += $qty;
-                @endphp
-                <tr>
-                    <td>{{ $cabang->nama_cabang }}</td>
-                    <td>
-                        <div class="qty-input-group" style="background-color: #f3f4f6;">
-                            <input type="number" class="qty-input w-100" value="{{ $qty }}" disabled style="background-color: transparent;">
+    <div class="form-card p-3 bg-white" style="border-radius: 12px; border: 1px solid #e5e7eb;">
+        <div class="row">
+            <!-- FOTO PRODUK -->
+            <div class="col-md-2 mb-2 text-center">
+                <label class="form-label" style="font-size:11px; margin-bottom: 4px;">Foto Produk</label>
+                @if(auth()->user()->role === 'admin cabang')
+                    <div class="upload-box mx-auto position-relative" style="height: 120px; width: 120px; border-radius: 10px; padding: 10px; cursor: not-allowed; opacity: 0.6;">
+                        @if($produk->foto_produk)
+                            <img src="{{ $produk->foto_produk }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px; position: absolute; top: 0; left: 0;">
+                        @else
+                            <div class="d-flex flex-column align-items-center justify-content-center h-100 w-100">
+                                <i class="fa-regular fa-image" style="font-size: 24px; margin-bottom: 5px;"></i>
+                                <span style="font-size: 10px; text-align: center;">Tidak Ada<br>Foto</span>
+                            </div>
+                        @endif
+                    </div>
+                @else
+                    <div class="upload-box mx-auto position-relative" style="height: 120px; width: 120px; border-radius: 10px; padding: 10px;" onclick="document.getElementById('foto_produk').click()">
+                        <!-- Placeholder State -->
+                        <div id="uploadPlaceholder" class="d-flex flex-column align-items-center justify-content-center h-100 w-100" style="{{ $produk->foto_produk ? 'display: none !important;' : '' }}">
+                            <i class="fa-regular fa-image" style="font-size: 24px; margin-bottom: 5px;"></i>
+                            <span style="font-size: 10px;">Ganti Foto</span>
                         </div>
-                        <small class="text-muted" style="font-size: 11px;">(Hanya dapat diubah lewat Manajemen Stok)</small>
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
+                        
+                        <!-- Preview Image -->
+                        <img id="imagePreview" src="{{ $produk->foto_produk ?? '' }}" alt="Preview" style="{{ $produk->foto_produk ? 'display: block;' : 'display: none;' }} width: 100%; height: 100%; object-fit: cover; border-radius: 8px; position: absolute; top: 0; left: 0;">
+                        
+                        <input type="file" name="foto_produk" id="foto_produk" style="display: none;" accept="image/*" onchange="previewImage(event)">
+                    </div>
+                @endif
+            </div>
+
+            <!-- ALL INFO -->
+            <div class="col-md-10">
+                <!-- Baris 1: Nama, Kategori, SKU -->
+                <div class="row mb-2">
+                    <div class="col-md-5 mb-2">
+                        <label class="form-label" style="font-size: 11px; margin-bottom: 4px;">Nama Produk <span class="required-star">*</span></label>
+                        <input type="text" name="nama_produk" class="form-control form-control-sm" placeholder="Contoh: Samsung Galaxy S24 Ultra" value="{{ old('nama_produk', $produk->nama_produk) }}" required {{ auth()->user()->role === 'admin cabang' ? 'disabled' : '' }}>
+                    </div>
+                    
+                    <div class="col-md-4 mb-2">
+                        <label class="form-label" style="font-size: 11px; margin-bottom: 4px;">Kategori</label>
+                        <select name="id_kategori" class="form-select form-select-sm" {{ auth()->user()->role === 'admin cabang' ? 'disabled' : '' }}>
+                            <option value="">Pilih Kategori</option>
+                            @foreach($kategoris as $kat)
+                                <option value="{{ $kat->id_kategori }}" {{ old('id_kategori', $produk->id_kategori) == $kat->id_kategori ? 'selected' : '' }}>
+                                    {{ $kat->nama_kategori }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="col-md-3 mb-2">
+                        <label class="form-label" style="font-size: 11px; margin-bottom: 4px;">SKU <small class="text-muted">(Paten)</small></label>
+                        <input type="text" class="form-control form-control-sm" value="{{ $produk->sku }}" disabled>
+                    </div>
+                </div>
+
+                <!-- Baris 2: Barcode, Harga Beli, Harga Jual -->
+                <div class="row mb-2">
+                    <div class="col-md-5 mb-2">
+                        <label class="form-label" style="font-size: 11px; margin-bottom: 4px;">Barcode / IMEI <small class="text-muted">(Paten)</small></label>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text"><i class="fa-solid fa-barcode"></i></span>
+                            <input type="text" class="form-control form-control-sm" value="{{ $produk->barcode_imei }}" disabled>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3 mb-2">
+                        <label class="form-label" style="font-size: 11px; margin-bottom: 4px;">Harga Beli</label>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text">Rp</span>
+                            <input type="number" name="harga_beli" class="form-control form-control-sm" placeholder="0" value="{{ old('harga_beli', $produk->harga_beli) }}" required min="0">
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 mb-2">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <label class="form-label" style="font-size: 11px; margin-bottom: 4px;">Harga Jual</label>
+                            @if(auth()->user()->role === 'admin cabang')
+                                <small class="text-danger" style="font-size: 9px;">*Hanya Super Admin</small>
+                            @endif
+                        </div>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text">Rp</span>
+                            <input type="number" name="harga_jual" class="form-control form-control-sm {{ auth()->user()->role === 'admin cabang' ? 'bg-light text-muted' : '' }}" placeholder="0" value="{{ old('harga_jual', $produk->harga_jual) }}" required min="0" {{ auth()->user()->role === 'admin cabang' ? 'readonly tabindex="-1"' : '' }}>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr class="my-2" style="border-color: #f3f4f6;">
+
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h6 class="text-uppercase fw-bold m-0" style="font-size:11px; color: #1a5ca6; letter-spacing:0.5px;">Stok Cabang</h6>
+            <div class="badge-total" style="background-color: #f0f7ff; color: #1a5ca6; padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 600;">
+                Total: <span id="totalStokLabel">0</span>
+            </div>
+        </div>
+
+        <div class="row">
+            @php $total_stok = 0; @endphp
+            @foreach($cabangs as $cabang)
+            @php
+                $stok_item = $produk->stokCabangs->where('id_cabang', $cabang->id_cabang)->first();
+                $qty = $stok_item ? $stok_item->stok_sekarang : 0;
+                $total_stok += $qty;
+            @endphp
+            <div class="col-md-2 col-sm-4 col-6 mb-2">
+                <label class="form-label text-muted d-block text-truncate" style="font-size:10px; margin-bottom: 3px;" title="{{ $cabang->nama_cabang }}">{{ $cabang->nama_cabang }}</label>
+                <div class="qty-input-group d-flex w-100" style="border: 1px solid #d1d5db; border-radius: 4px; overflow: hidden; height: 28px; background-color: #f3f4f6;">
+                    <input type="number" class="form-control form-control-sm border-0 text-center w-100 p-1" value="{{ $qty }}" disabled style="background-color: transparent; font-size: 11px;">
+                </div>
+            </div>
+            @endforeach
+        </div>
     </div>
 </form>
 
@@ -368,6 +370,21 @@
 
 @section('scripts')
 <script>
-    // Kosong, script toggle tidak diperlukan di form edit
+    // Preview Image Logic
+    function previewImage(event) {
+        var input = event.target;
+        var preview = document.getElementById('imagePreview');
+        var placeholder = document.getElementById('uploadPlaceholder');
+        
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+                placeholder.style.display = 'none';
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
 </script>
 @endsection

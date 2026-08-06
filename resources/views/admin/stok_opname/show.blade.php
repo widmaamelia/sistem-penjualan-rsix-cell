@@ -28,60 +28,53 @@
 @endif
 
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <div class="d-flex align-items-center">
-        <a href="{{ route('stok_opname.index') }}" class="btn btn-outline-secondary me-3" style="border-radius: 50%; width: 40px; height: 40px; padding: 0; display: flex; align-items: center; justify-content: center;">
-            <i class="fa-solid fa-arrow-left"></i>
-        </a>
-        <h4 class="m-0 fw-bold">Detail Stok Opname</h4>
-    </div>
+    <a href="{{ route('stok_opname.index') }}" class="btn btn-light bg-white" style="border-radius: 8px; border: 1px solid #e5e7eb; color: #4b5563; padding: 8px 14px; box-shadow: 0 1px 2px rgba(0,0,0,0.02);" title="Kembali">
+        <i class="fa-solid fa-arrow-left"></i>
+    </a>
     
     @if(auth()->user()->role === 'super' && $opname->status === 'pending')
         <div class="d-flex gap-2">
-            <form action="{{ route('stok_opname.reject', $opname->id_stok_opname) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menolak stok opname ini?');">
-                @csrf
-                <button type="submit" class="btn btn-danger fw-bold"><i class="fa-solid fa-xmark me-1"></i> Reject</button>
-            </form>
-            <form action="{{ route('stok_opname.approve', $opname->id_stok_opname) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menyetujui stok opname ini? Stok pada sistem akan langsung berubah mengikuti stok fisik.');">
-                @csrf
-                <button type="submit" class="btn btn-success fw-bold"><i class="fa-solid fa-check me-1"></i> Approve</button>
-            </form>
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalTolak" style="border-radius: 6px; font-weight: 500; padding: 6px 16px; font-size: 13.5px;">
+                <i class="fa-solid fa-xmark me-1"></i> Tolak
+            </button>
+            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalSetujui" style="border-radius: 6px; font-weight: 500; padding: 6px 16px; font-size: 13.5px;">
+                <i class="fa-solid fa-check me-1"></i> Setujui
+            </button>
         </div>
     @endif
 </div>
 
-<div class="row mb-4">
-    <div class="col-md-8">
-        <div class="card border-0 shadow-sm rounded-3">
-            <div class="card-body">
-                <h6 class="text-muted mb-3 fw-bold text-uppercase" style="font-size: 13px;">Informasi Opname</h6>
-                <table class="table table-borderless mb-0">
-                    <tr>
-                        <td class="text-muted" style="width: 150px;">Tanggal</td>
-                        <td class="fw-bold">: {{ \Carbon\Carbon::parse($opname->tanggal_opname)->format('d M Y') }}</td>
-                    </tr>
-                    <tr>
-                        <td class="text-muted">Cabang</td>
-                        <td class="fw-bold text-primary">: {{ $opname->cabang->nama_cabang }}</td>
-                    </tr>
-                    <tr>
-                        <td class="text-muted">Pembuat</td>
-                        <td class="fw-bold">: {{ $opname->user->name }}</td>
-                    </tr>
-                    <tr>
-                        <td class="text-muted">Keterangan Umum</td>
-                        <td class="fw-medium">: {{ $opname->keterangan ?? '-' }}</td>
-                    </tr>
-                </table>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card border-0 shadow-sm rounded-3 h-100 d-flex flex-column justify-content-center align-items-center">
-            <h6 class="text-muted mb-3 fw-bold text-uppercase" style="font-size: 13px;">Status Saat Ini</h6>
-            <div class="badge-status badge-status-{{ $opname->status }} fs-5 py-2 px-4">
-                {{ $opname->status }}
-            </div>
-        </div>
+<div class="card border-0 shadow-sm rounded-3 mb-4">
+    <div class="card-body">
+        <h6 class="text-muted mb-3 fw-bold text-uppercase" style="font-size: 13px;">Informasi Opname</h6>
+        <table class="table table-borderless mb-0">
+            <tr>
+                <td class="text-muted" style="width: 150px;">Tanggal</td>
+                <td class="fw-bold">: {{ \Carbon\Carbon::parse($opname->tanggal_opname)->format('d M Y') }}</td>
+            </tr>
+            <tr>
+                <td class="text-muted">Cabang</td>
+                <td class="fw-bold text-primary">: {{ $opname->cabang->nama_cabang }}</td>
+            </tr>
+            <tr>
+                <td class="text-muted">Pembuat</td>
+                <td class="fw-bold">: {{ $opname->user->name }}</td>
+            </tr>
+            <tr>
+                <td class="text-muted">Keterangan Umum</td>
+                <td class="fw-medium">: {{ $opname->keterangan ?? '-' }}</td>
+            </tr>
+            <tr>
+                <td class="text-muted">Status Saat Ini</td>
+                <td>
+                    : <span class="badge-status badge-status-{{ $opname->status }}" style="padding: 4px 10px; font-size: 11px;">
+                        @if($opname->status == 'approved') DISETUJUI
+                        @elseif($opname->status == 'rejected') DITOLAK
+                        @else PENDING @endif
+                    </span>
+                </td>
+            </tr>
+        </table>
     </div>
 </div>
 
@@ -129,4 +122,51 @@
         </table>
     </div>
 </div>
+
+@if(auth()->user()->role === 'super' && $opname->status === 'pending')
+<!-- Modal Tolak -->
+<div class="modal fade" id="modalTolak" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content" style="border-radius: 12px; border: none;">
+            <div class="modal-body text-center p-4">
+                <div class="mb-3">
+                    <i class="fa-solid fa-circle-xmark text-danger" style="font-size: 40px;"></i>
+                </div>
+                <h5 class="fw-bold mb-2">Tolak Opname?</h5>
+                <p class="text-muted" style="font-size: 13px; margin-bottom: 0;">Apakah Anda yakin ingin menolak stok opname ini?</p>
+            </div>
+            <div class="modal-footer justify-content-center border-0 pt-0 pb-4">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" style="border-radius: 8px; font-weight: 500;">Batal</button>
+                <form action="{{ route('stok_opname.reject', $opname->id_stok_opname) }}" method="POST" style="display: inline;">
+                    @csrf
+                    <button type="submit" class="btn btn-danger" style="border-radius: 8px; font-weight: 500;">Ya, Tolak</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Setujui -->
+<div class="modal fade" id="modalSetujui" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content" style="border-radius: 12px; border: none;">
+            <div class="modal-body text-center p-4">
+                <div class="mb-3">
+                    <i class="fa-solid fa-circle-check text-success" style="font-size: 40px;"></i>
+                </div>
+                <h5 class="fw-bold mb-2">Setujui Opname?</h5>
+                <p class="text-muted" style="font-size: 13px; margin-bottom: 0;">Apakah Anda yakin ingin menyetujui stok opname ini? Stok pada sistem akan langsung berubah mengikuti stok fisik.</p>
+            </div>
+            <div class="modal-footer justify-content-center border-0 pt-0 pb-4">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" style="border-radius: 8px; font-weight: 500;">Batal</button>
+                <form action="{{ route('stok_opname.approve', $opname->id_stok_opname) }}" method="POST" style="display: inline;">
+                    @csrf
+                    <button type="submit" class="btn btn-success" style="border-radius: 8px; font-weight: 500;">Ya, Setujui</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@endif
+
 @endsection

@@ -87,8 +87,101 @@
         cursor: pointer;
     }
     
+    .action-icons button.text-primary:hover {
+        color: #1a5ca6 !important;
+    }
+    
     .action-icons button.text-danger:hover {
         color: #dc2626 !important;
+    }
+
+    /* Ringkasan di bawah tabel */
+    .summary-panel {
+        border-top: 1px solid #e5e7eb;
+        background-color: #f9fafb;
+        padding: 18px 20px 0 20px;
+    }
+    .summary-panel .summary-label {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #6b7280;
+    }
+    .summary-panel .summary-total {
+        font-size: 26px;
+        font-weight: 700;
+        color: #dc2626;
+        line-height: 1.2;
+        margin-top: 2px;
+    }
+    .summary-panel .summary-meta {
+        font-size: 12px;
+        color: #6b7280;
+        margin-top: 4px;
+    }
+    .summary-panel .summary-breakdown {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 28px;
+        margin-top: 16px;
+        padding-top: 14px;
+        border-top: 1px dashed #e5e7eb;
+    }
+    .summary-panel .summary-item {
+        min-width: 170px;
+    }
+    .summary-panel .summary-item-head {
+        font-size: 11px;
+        font-weight: 600;
+        color: #4b5563;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .summary-panel .summary-item-head .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        display: inline-block;
+    }
+    .summary-panel .summary-item-value {
+        font-size: 16px;
+        font-weight: 700;
+        margin-top: 3px;
+    }
+    .summary-panel .summary-item-note {
+        font-size: 11px;
+        color: #9ca3af;
+        margin-top: 1px;
+    }
+    .summary-panel .summary-bar {
+        display: flex;
+        height: 6px;
+        border-radius: 3px;
+        overflow: hidden;
+        background-color: #e5e7eb;
+        margin-top: 16px;
+    }
+
+    @media (min-width: 992px) {
+        .summary-panel {
+            display: grid;
+            grid-template-columns: minmax(240px, 1fr) auto;
+            grid-template-areas: "main breakdown" "bar bar";
+            column-gap: 32px;
+            align-items: center;
+        }
+        .summary-panel .summary-main { grid-area: main; }
+        .summary-panel .summary-breakdown {
+            grid-area: breakdown;
+            margin-top: 0;
+            padding-top: 0;
+            border-top: 0;
+        }
+        .summary-panel .summary-bar { grid-area: bar; }
     }
 </style>
 @endsection
@@ -122,41 +215,52 @@
 @endif
 
 <!-- Header -->
-<div class="mb-4">
-    <div class="text-muted" style="font-size: 13px; margin-bottom: 10px;">
-        Keuangan &rsaquo; <strong class="text-primary" style="color: #1a5ca6 !important;">Kas Keluar</strong>
-    </div>
-    <div class="d-flex justify-content-between align-items-center">
-        <div>
-            <h1 class="h3 fw-bold mb-0 text-dark">Kas Keluar (Uang Keluar)</h1>
-            <p class="text-muted mb-0" style="font-size: 14px;">Kelola pengeluaran kas operasional cabang seperti listrik, air, dan belanja kebutuhan toko.</p>
-        </div>
-        @if(auth()->user()->role === 'admin cabang' || auth()->user()->role === 'super')
-        <button class="btn btn-primary-custom" data-bs-toggle="modal" data-bs-target="#modalTambah">
-            <i class="fa-solid fa-file-invoice-dollar me-1"></i> Catat Kas Keluar
-        </button>
-        @endif
-    </div>
+<div class="d-flex justify-content-end align-items-center mb-3">
+    @if(auth()->user()->role === 'admin cabang' || auth()->user()->role === 'super')
+    <a href="{{ route('kas_keluar.create') }}" class="btn btn-primary" style="background-color: #1a5ca6; border-color: #1a5ca6; border-radius: 6px; font-weight: 500; padding: 6px 14px; font-size: 13.5px;">
+        <i class="fa-solid fa-plus me-1"></i> Catat Kas Keluar
+    </a>
+    @endif
 </div>
 
 <!-- Action Bar -->
-<div class="action-bar">
-    <form action="{{ route('kas_keluar.index') }}" method="GET" class="d-flex gap-2 m-0 flex-wrap">
-        <div class="search-input">
-            <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" name="search" class="form-control" placeholder="Cari keterangan..." value="{{ request('search') }}">
+<div class="action-bar mb-3">
+    <form action="{{ route('kas_keluar.index') }}" method="GET" class="d-flex gap-2 m-0 flex-wrap align-items-center w-100">
+        <div class="search-input" style="width: 220px; position: relative;">
+            <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #9ca3af; font-size: 13px;"></i>
+            <input type="text" name="search" class="form-control" placeholder="Cari keterangan..." value="{{ request('search') }}" style="border-radius: 6px; padding: 6px 12px 6px 32px; font-size: 13.5px;">
         </div>
         @if(auth()->user()->role === 'super')
-            <select name="id_cabang" class="form-select" style="width: 200px;" onchange="this.form.submit()">
+            <select name="id_cabang" class="form-select" style="width: 170px; border-radius: 6px; font-size: 13.5px; padding: 6px 32px 6px 12px;">
                 <option value="">-- Semua Cabang --</option>
                 @foreach($cabangs as $cabang)
                     <option value="{{ $cabang->id_cabang }}" {{ request('id_cabang') == $cabang->id_cabang ? 'selected' : '' }}>{{ $cabang->nama_cabang }}</option>
                 @endforeach
             </select>
         @endif
-        <button type="submit" class="btn btn-outline-secondary px-3" style="border-radius: 8px;">Filter</button>
-        @if(request()->filled('search') || request()->filled('id_cabang'))
-            <a href="{{ route('kas_keluar.index') }}" class="btn btn-light border px-3" style="border-radius: 8px;">Reset</a>
+
+        <select name="bulan" class="form-select" style="width: 160px; border-radius: 6px; font-size: 13.5px; padding: 6px 32px 6px 12px;">
+            <option value="">-- Semua Bulan --</option>
+            @foreach(['01' => 'Januari', '02' => 'Februari', '03' => 'Maret', '04' => 'April',
+                      '05' => 'Mei', '06' => 'Juni', '07' => 'Juli', '08' => 'Agustus',
+                      '09' => 'September', '10' => 'Oktober', '11' => 'November', '12' => 'Desember'] as $angka => $nama)
+                <option value="{{ $angka }}" {{ request('bulan') === $angka ? 'selected' : '' }}>{{ $nama }}</option>
+            @endforeach
+        </select>
+
+        <select name="tahun" class="form-select" style="width: 150px; border-radius: 6px; font-size: 13.5px; padding: 6px 32px 6px 12px;">
+            <option value="">-- Semua Tahun --</option>
+            @for($i = date('Y'); $i >= date('Y') - 5; $i--)
+                <option value="{{ $i }}" {{ request('tahun') == $i ? 'selected' : '' }}>{{ $i }}</option>
+            @endfor
+        </select>
+
+        <input type="date" name="tanggal" class="form-control" style="width: 145px; border-radius: 6px; font-size: 13.5px; padding: 6px 12px;"
+               value="{{ request('tanggal') }}" title="Tanggal spesifik">
+
+        <button type="submit" class="btn btn-outline-secondary" style="border-radius: 6px; font-weight: 500; padding: 6px 14px; font-size: 13.5px;">Filter</button>
+        @if(request()->hasAny(['search', 'id_cabang', 'bulan', 'tahun', 'tanggal']))
+            <a href="{{ route('kas_keluar.index') }}" class="btn btn-light border" style="border-radius: 6px; font-weight: 500; padding: 6px 14px; font-size: 13.5px;">Reset</a>
         @endif
     </form>
 </div>
@@ -170,7 +274,6 @@
                 <th>Tanggal & Waktu</th>
                 <th>Cabang</th>
                 <th>Jumlah Pengeluaran</th>
-                <th>Keterangan / Keperluan</th>
                 <th>Tipe Pengeluaran</th>
                 @if(auth()->user()->role === 'admin cabang' || auth()->user()->role === 'super')
                 <th style="width: 80px;">Aksi</th>
@@ -196,7 +299,6 @@
                     <td class="fw-bold text-danger">
                         Rp {{ number_format($item->jumlah_pengeluaran, 0, ',', '.') }}
                     </td>
-                    <td>{{ $item->keterangan }}</td>
                     <td>
                         @if($isAutoRestock)
                             <span class="badge bg-info bg-opacity-10 text-info px-2 py-1" style="font-size: 11px;">Sistem (Restock)</span>
@@ -208,8 +310,12 @@
                     </td>
                     @if(auth()->user()->role === 'admin cabang' || auth()->user()->role === 'super')
                     <td>
-                        @if($isManual)
-                            <div class="action-icons">
+                        <div class="action-icons align-items-center">
+                            <a href="{{ route('kas_keluar.show', $item->id_kas_keluar) }}" class="text-primary" title="Detail">
+                                <i class="fa-regular fa-eye"></i>
+                            </a>
+
+                            @if($isManual)
                                 <form action="{{ route('kas_keluar.destroy', $item->id_kas_keluar) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus catatan pengeluaran ini?')">
                                     @csrf
                                     @method('DELETE')
@@ -217,20 +323,59 @@
                                         <i class="fa-regular fa-trash-can"></i>
                                     </button>
                                 </form>
-                            </div>
-                        @else
-                            <span class="text-muted" style="font-size: 11px;">Terkunci</span>
-                        @endif
+                            @else
+                                <span class="text-muted ms-1" style="font-size: 11px;" title="Terkunci (Sistem)"><i class="fa-solid fa-lock"></i></span>
+                            @endif
+                        </div>
                     </td>
                     @endif
                 </tr>
             @empty
                 <tr>
-                    <td colspan="7" class="text-center py-4 text-muted">Belum ada catatan pengeluaran kas.</td>
+                    <td colspan="6" class="text-center py-4 text-muted">Belum ada catatan pengeluaran kas.</td>
                 </tr>
             @endforelse
         </tbody>
     </table>
+
+    @if($ringkasan['jumlah_semua'] > 0)
+    @php
+        $namaBulan = ['01' => 'Januari', '02' => 'Februari', '03' => 'Maret', '04' => 'April',
+                      '05' => 'Mei', '06' => 'Juni', '07' => 'Juli', '08' => 'Agustus',
+                      '09' => 'September', '10' => 'Oktober', '11' => 'November', '12' => 'Desember'];
+
+        if (request('tanggal')) {
+            $periode = \Carbon\Carbon::parse(request('tanggal'))->translatedFormat('d F Y');
+        } elseif (request('bulan') && request('tahun')) {
+            $periode = ($namaBulan[request('bulan')] ?? '') . ' ' . request('tahun');
+        } elseif (request('bulan')) {
+            $periode = 'Bulan ' . ($namaBulan[request('bulan')] ?? '') . ' (semua tahun)';
+        } elseif (request('tahun')) {
+            $periode = 'Tahun ' . request('tahun');
+        } else {
+            $periode = 'Semua periode';
+        }
+
+        $persenOtomatis = $ringkasan['total'] > 0 ? round($ringkasan['otomatis'] / $ringkasan['total'] * 100) : 0;
+        $persenManual = $ringkasan['total'] > 0 ? 100 - $persenOtomatis : 0;
+    @endphp
+
+    <div class="bg-light border-top p-3 d-flex justify-content-between align-items-center" style="font-size: 13px;">
+        <div>
+            <span class="text-muted">Total Pengeluaran ({{ $periode }}):</span>
+            <strong class="text-danger ms-1 fs-6">Rp {{ number_format($ringkasan['total'], 0, ',', '.') }}</strong>
+            <span class="text-muted ms-2">({{ number_format($ringkasan['jumlah_semua'], 0, ',', '.') }} catatan)</span>
+            
+            @if(request()->filled('search'))
+                <span class="text-muted ms-1">&middot; Pencarian "{{ request('search') }}"</span>
+            @endif
+        </div>
+        <div class="text-muted">
+            <span class="me-3"><i class="fa-solid fa-circle text-info" style="font-size: 8px; vertical-align: middle;"></i> Sistem: Rp {{ number_format($ringkasan['otomatis'], 0, ',', '.') }}</span>
+            <span><i class="fa-solid fa-circle text-success" style="font-size: 8px; vertical-align: middle;"></i> Manual: Rp {{ number_format($ringkasan['manual'], 0, ',', '.') }}</span>
+        </div>
+    </div>
+    @endif
 
     <!-- Pagination -->
     <div class="bg-white border-top py-3 px-4 d-flex justify-content-between align-items-center" style="font-size: 13px; color: #6b7280;">
@@ -245,56 +390,5 @@
     </div>
 </div>
 
-<!-- Modal Tambah Kas Keluar -->
-@if(auth()->user()->role === 'admin cabang' || auth()->user()->role === 'super')
-<div class="modal fade" id="modalTambah" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow" style="border-radius: 12px;">
-            <form action="{{ route('kas_keluar.store') }}" method="POST">
-                @csrf
-                <div class="modal-header border-bottom-0 pb-0 pt-4 px-4">
-                    <h5 class="fw-bold mb-0">Catat Kas Keluar Baru</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body p-4">
-                    @if(auth()->user()->role === 'super')
-                    <div class="mb-3">
-                        <label class="form-label fw-medium text-muted" style="font-size: 13px;">Cabang <span class="text-danger">*</span></label>
-                        <select name="id_cabang" class="form-select" required>
-                            <option value="">-- Pilih Cabang --</option>
-                            @foreach($cabangs as $cabang)
-                                <option value="{{ $cabang->id_cabang }}">{{ $cabang->nama_cabang }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    @endif
-                    <div class="mb-3">
-                        <label class="form-label fw-medium text-muted" style="font-size: 13px;">Jumlah Pengeluaran (Rupiah) <span class="text-danger">*</span></label>
-                        <div class="input-group">
-                            <span class="input-group-text border-end-0 bg-light text-muted fw-bold">Rp</span>
-                            <input type="number" name="jumlah_pengeluaran" class="form-control border-start-0" placeholder="Contoh: 150000" min="0" required>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-medium text-muted" style="font-size: 13px;">Keperluan / Keterangan <span class="text-danger">*</span></label>
-                        <textarea name="keterangan" class="form-control" rows="3" placeholder="Contoh: Bayar tagihan listrik cabang Juli 2026 atau Pembelian sapu & alat pembersih toko" required></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-medium text-muted" style="font-size: 13px;">Tanggal Catat (Opsional)</label>
-                        <input type="datetime-local" name="tanggal" class="form-control" value="{{ date('Y-m-d\TH:i') }}">
-                        <div class="form-text text-muted" style="font-size: 11px;">Biarkan kosong untuk mencatat dengan waktu saat ini.</div>
-                    </div>
-                </div>
-                <div class="modal-footer border-top-0 pt-0 pb-4 px-4">
-                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" style="border-radius: 8px;">Batal</button>
-                    <button type="submit" class="btn btn-primary" style="background-color: #1a5ca6; border-color: #1a5ca6; border-radius: 8px;">
-                        <i class="fa-solid fa-floppy-disk me-1"></i> Simpan Catatan
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-@endif
 
 @endsection

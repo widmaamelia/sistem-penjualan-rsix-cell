@@ -228,133 +228,131 @@
 
     <!-- Header Action -->
     <div class="header-action">
-        <h1 class="page-title">
-            <a href="{{ route('produk.index') }}" class="back-btn"><i class="fa-solid fa-arrow-left"></i></a>
-            Tambah Produk Baru
-        </h1>
+        <a href="{{ route('produk.index') }}" class="btn btn-light" style="border-radius: 8px; border: 1px solid #e5e7eb; color: #4b5563; padding: 8px 14px;" title="Kembali">
+            <i class="fa-solid fa-arrow-left"></i>
+        </a>
         <div class="d-flex gap-2">
-            <a href="{{ route('produk.index') }}" class="btn btn-outline-secondary" style="border-radius: 8px; font-weight: 500;">Batal</a>
-            <button type="submit" class="btn btn-primary" style="background-color: #1a5ca6; border-color: #1a5ca6; border-radius: 8px; font-weight: 500;">
+            <a href="{{ route('produk.index') }}" class="btn btn-outline-secondary" style="border-radius: 6px; font-weight: 500; padding: 6px 16px; font-size: 13.5px;">Batal</a>
+            <button type="submit" class="btn btn-primary" style="background-color: #1a5ca6; border-color: #1a5ca6; border-radius: 6px; font-weight: 500; padding: 6px 16px; font-size: 13.5px;">
                 <i class="fa-solid fa-floppy-disk me-1"></i> Simpan
             </button>
         </div>
     </div>
 
-    <div class="row">
-        <!-- FOTO PRODUK -->
-        <div class="col-md-4 mb-4">
-            <label class="form-label text-uppercase" style="font-size:11px; letter-spacing:0.5px;">Foto Produk</label>
-            <div class="upload-box" onclick="document.getElementById('foto_produk').click()">
-                <i class="fa-regular fa-image"></i>
-                <span>Upload</span>
-                <input type="file" name="foto_produk" id="foto_produk" style="display: none;" accept="image/*">
-            </div>
-        </div>
-
-        <!-- BASIC INFO -->
-        <div class="col-md-8">
-            <!-- Row 1 -->
-            <div class="mb-4">
-                <label class="form-label">Nama Produk <span class="required-star">*</span></label>
-                <input type="text" name="nama_produk" class="form-control" placeholder="Contoh: Samsung Galaxy S24 Ultra" value="{{ old('nama_produk') }}" required>
-            </div>
-            
-            <!-- Row 2 -->
-            <div class="row mb-4">
-                <div class="col-md-6">
-                    <label class="form-label">Kategori</label>
-                    <select name="id_kategori" class="form-select">
-                        <option value="">Pilih Kategori</option>
-                        @foreach($kategoris as $kat)
-                            <option value="{{ $kat->id_kategori }}" {{ old('id_kategori') == $kat->id_kategori ? 'selected' : '' }}>
-                                {{ $kat->nama_kategori }}
-                            </option>
-                        @endforeach
-                    </select>
+    <div class="form-card p-3 bg-white" style="border-radius: 12px; border: 1px solid #e5e7eb;">
+        <div class="row">
+            <!-- FOTO PRODUK -->
+            <div class="col-md-2 mb-2 text-center">
+                <label class="form-label" style="font-size:11px; margin-bottom: 4px;">Foto Produk</label>
+                <div class="upload-box mx-auto position-relative" style="height: 120px; width: 120px; border-radius: 10px; padding: 10px;" onclick="document.getElementById('foto_produk').click()">
+                    <!-- Default State -->
+                    <div id="uploadPlaceholder" class="d-flex flex-column align-items-center justify-content-center h-100 w-100">
+                        <i class="fa-regular fa-image" style="font-size: 24px; margin-bottom: 5px;"></i>
+                        <span style="font-size: 10px;">Upload Foto</span>
+                    </div>
+                    
+                    <!-- Preview Image -->
+                    <img id="imagePreview" src="" alt="Preview" style="display: none; width: 100%; height: 100%; object-fit: cover; border-radius: 8px; position: absolute; top: 0; left: 0;">
+                    
+                    <input type="file" name="foto_produk" id="foto_produk" style="display: none;" accept="image/*" onchange="previewImage(event)">
                 </div>
-                <div class="col-md-6">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <label class="form-label mb-0">SKU</label>
-                        <div class="form-check form-switch mb-0">
-                            <input class="form-check-input" type="checkbox" id="skuAutoToggle" name="sku_auto" checked>
-                            <label class="form-check-label toggle-label" for="skuAutoToggle">Otomatis</label>
+            </div>
+
+            <!-- ALL INFO -->
+            <div class="col-md-10">
+                <!-- Baris 1: Nama, Kategori, SKU -->
+                <div class="row mb-2">
+                    <div class="col-md-5 mb-2">
+                        <label class="form-label" style="font-size: 11px; margin-bottom: 4px;">Nama Produk <span class="required-star">*</span></label>
+                        <input type="text" name="nama_produk" class="form-control form-control-sm" placeholder="Contoh: Samsung Galaxy S24 Ultra" value="{{ old('nama_produk') }}" required>
+                    </div>
+                    
+                    <div class="col-md-4 mb-2">
+                        <label class="form-label" style="font-size: 11px; margin-bottom: 4px;">Kategori</label>
+                        <select name="id_kategori" class="form-select form-select-sm">
+                            <option value="">Pilih Kategori</option>
+                            @foreach($kategoris as $kat)
+                                <option value="{{ $kat->id_kategori }}" {{ old('id_kategori') == $kat->id_kategori ? 'selected' : '' }}>
+                                    {{ $kat->nama_kategori }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="col-md-3 mb-2">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <label class="form-label mb-0" style="font-size: 11px;">SKU</label>
+                            <div class="form-check form-switch mb-0" style="min-height: auto; padding-left: 2.2em;">
+                                <input class="form-check-input" type="checkbox" id="skuAutoToggle" name="sku_auto" checked style="width: 1.8em; height: 1em; margin-top: 0.1em;">
+                                <label class="form-check-label toggle-label" for="skuAutoToggle" style="font-size: 10px; margin-left: 2px;">Otomatis</label>
+                            </div>
+                        </div>
+                        <input type="text" name="sku" id="skuInput" class="form-control form-control-sm" placeholder="Otomatis sistem" disabled>
+                    </div>
+                </div>
+
+                <!-- Baris 2: Barcode, Harga Beli, Harga Jual -->
+                <div class="row mb-2">
+                    <div class="col-md-5 mb-2">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <label class="form-label mb-0" style="font-size: 11px;">Barcode / IMEI</label>
+                            <div class="form-check form-switch mb-0" style="min-height: auto; padding-left: 2.2em;">
+                                <input class="form-check-input" type="checkbox" id="barcodeAutoToggle" name="barcode_auto" checked style="width: 1.8em; height: 1em; margin-top: 0.1em;">
+                                <label class="form-check-label toggle-label" for="barcodeAutoToggle" style="font-size: 10px; margin-left: 2px;">Otomatis</label>
+                            </div>
+                        </div>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text"><i class="fa-solid fa-barcode"></i></span>
+                            <input type="text" name="barcode_imei" id="barcodeInput" class="form-control form-control-sm" placeholder="Scan atau input" disabled>
+                            <button class="btn btn-scan btn-sm px-2" type="button" id="btnScan" disabled><i class="fa-solid fa-qrcode"></i></button>
                         </div>
                     </div>
-                    <input type="text" name="sku" id="skuInput" class="form-control" placeholder="Otomatis dibuat oleh sistem" disabled>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <!-- DIVIDER -->
-    <hr class="my-4" style="border-color: #e5e7eb;">
-
-    <!-- SECOND SECTION: BARCODE & HARGA -->
-    <div class="form-section row g-4">
-        <div class="col-md-12 mb-2">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-                <label class="form-label mb-0">Barcode / IMEI</label>
-                <div class="form-check form-switch mb-0">
-                    <input class="form-check-input" type="checkbox" id="barcodeAutoToggle" name="barcode_auto" checked>
-                    <label class="form-check-label toggle-label" for="barcodeAutoToggle">Otomatis</label>
-                </div>
-            </div>
-            <div class="input-group">
-                <span class="input-group-text"><i class="fa-solid fa-barcode"></i></span>
-                <input type="text" name="barcode_imei" id="barcodeInput" class="form-control" placeholder="Scan atau input nomor barcode" disabled>
-                <button class="btn btn-scan" type="button" id="btnScan" disabled><i class="fa-solid fa-qrcode me-1"></i> Scan</button>
-            </div>
-        </div>
-
-        <div class="col-md-6">
-            <label class="form-label">Harga Beli</label>
-            <div class="input-group">
-                <span class="input-group-text">Rp</span>
-                <input type="number" name="harga_beli" class="form-control" placeholder="0" value="{{ old('harga_beli', 0) }}" required min="0">
-            </div>
-        </div>
-        
-        <div class="col-md-6">
-            <label class="form-label">Harga Jual</label>
-            <div class="input-group">
-                <span class="input-group-text">Rp</span>
-                <input type="number" name="harga_jual" class="form-control {{ auth()->user()->role === 'admin cabang' ? 'bg-light text-muted' : '' }}" placeholder="0" value="{{ old('harga_jual', 0) }}" required min="0" {{ auth()->user()->role === 'admin cabang' ? 'readonly tabindex="-1"' : '' }}>
-            </div>
-            @if(auth()->user()->role === 'admin cabang')
-                <small class="text-danger mt-1" style="font-size: 11px;">*Hanya Super Admin yang dapat menentukan/mengubah Harga Jual</small>
-            @endif
-        </div>
-    </div>
-
-    <!-- THIRD SECTION: HARGA & STOK (PER CABANG) -->
-    <div class="d-flex justify-content-between align-items-center mb-3 mt-5">
-        <h6 class="text-uppercase fw-bold m-0" style="font-size:13px; letter-spacing:0.5px;">Harga & Stok</h6>
-        <div class="badge-total">Total Stok: <span id="totalStokLabel">0</span></div>
-    </div>
-
-    <div class="table-responsive table-stok">
-        <table class="table mb-0">
-            <thead>
-                <tr>
-                    <th style="width: 70%;">Nama Cabang</th>
-                    <th style="width: 30%;">Jumlah Stok</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($cabangs as $cabang)
-                <tr>
-                    <td>{{ $cabang->nama_cabang }}</td>
-                    <td>
-                        <div class="qty-input-group">
-                            <button type="button" class="qty-btn btn-minus" onclick="decreaseQty('stok_{{ $cabang->id_cabang }}')"><i class="fa-solid fa-minus"></i></button>
-                            <input type="number" name="stok_cabang[{{ $cabang->id_cabang }}]" id="stok_{{ $cabang->id_cabang }}" class="qty-input stok-input" value="0" min="0" onchange="calculateTotal()">
-                            <button type="button" class="qty-btn btn-plus" onclick="increaseQty('stok_{{ $cabang->id_cabang }}')"><i class="fa-solid fa-plus"></i></button>
+                    <div class="col-md-3 mb-2">
+                        <label class="form-label" style="font-size: 11px; margin-bottom: 4px;">Harga Beli</label>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text">Rp</span>
+                            <input type="number" name="harga_beli" class="form-control form-control-sm" placeholder="0" value="{{ old('harga_beli', 0) }}" required min="0">
                         </div>
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
+                    </div>
+                    
+                    <div class="col-md-4 mb-2">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <label class="form-label" style="font-size: 11px; margin-bottom: 4px;">Harga Jual</label>
+                            @if(auth()->user()->role === 'admin cabang')
+                                <small class="text-danger" style="font-size: 9px;">*Hanya Super Admin</small>
+                            @endif
+                        </div>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text">Rp</span>
+                            <input type="number" name="harga_jual" class="form-control form-control-sm {{ auth()->user()->role === 'admin cabang' ? 'bg-light text-muted' : '' }}" placeholder="0" value="{{ old('harga_jual', 0) }}" required min="0" {{ auth()->user()->role === 'admin cabang' ? 'readonly tabindex="-1"' : '' }}>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr class="my-2" style="border-color: #f3f4f6;">
+
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h6 class="text-uppercase fw-bold m-0" style="font-size:11px; color: #1a5ca6; letter-spacing:0.5px;">Stok Awal Cabang</h6>
+            <div class="badge-total" style="background-color: #f0f7ff; color: #1a5ca6; padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 600;">
+                Total: <span id="totalStokLabel">0</span>
+            </div>
+        </div>
+
+        <div class="row">
+            @foreach($cabangs as $cabang)
+            <div class="col-md-2 col-sm-4 col-6 mb-2">
+                <label class="form-label text-muted d-block text-truncate" style="font-size:10px; margin-bottom: 3px;" title="{{ $cabang->nama_cabang }}">{{ $cabang->nama_cabang }}</label>
+                <div class="qty-input-group d-flex w-100" style="border: 1px solid #d1d5db; border-radius: 4px; overflow: hidden; height: 28px;">
+                    <button type="button" class="qty-btn btn-minus bg-light border-0 px-2" onclick="decreaseQty('stok_{{ $cabang->id_cabang }}')"><i class="fa-solid fa-minus" style="font-size: 9px;"></i></button>
+                    <input type="number" name="stok_cabang[{{ $cabang->id_cabang }}]" id="stok_{{ $cabang->id_cabang }}" class="qty-input stok-input border-0 text-center w-100" value="0" min="0" onchange="calculateTotal()" style="outline: none; background: white; font-size: 11px;">
+                    <button type="button" class="qty-btn btn-plus bg-light border-0 px-2" onclick="increaseQty('stok_{{ $cabang->id_cabang }}')"><i class="fa-solid fa-plus" style="font-size: 9px;"></i></button>
+                </div>
+            </div>
+            @endforeach
+        </div>
     </div>
 </form>
 
@@ -362,6 +360,23 @@
 
 @section('scripts')
 <script>
+    // Preview Image Logic
+    function previewImage(event) {
+        var input = event.target;
+        var preview = document.getElementById('imagePreview');
+        var placeholder = document.getElementById('uploadPlaceholder');
+        
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+                placeholder.style.display = 'none';
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
     // Logic untuk Toggle SKU
     const skuToggle = document.getElementById('skuAutoToggle');
     const skuInput = document.getElementById('skuInput');

@@ -146,6 +146,7 @@ class StokController extends Controller
             DB::beginTransaction();
 
             $totalKasKeluar = 0;
+            $detailRestock = [];
 
             foreach ($request->items as $item) {
                 $produk = Produk::findOrFail($item['id_produk']);
@@ -190,6 +191,7 @@ class StokController extends Controller
 
                 // 4. Hitung kas keluar
                 $totalKasKeluar += $item['qty_tambah'] * $item['harga_beli'];
+                $detailRestock[] = $item['qty_tambah'] . 'x ' . $produk->nama_produk;
             }
 
             // 5. Catat ke Kas Keluar
@@ -199,11 +201,16 @@ class StokController extends Controller
                                                 ->where('status', 'buka')
                                                 ->first();
 
+                $keteranganStr = 'Pembelian Stok Barang (Restock): ' . implode(', ', $detailRestock);
+                if (strlen($keteranganStr) > 255) {
+                    $keteranganStr = substr($keteranganStr, 0, 252) . '...';
+                }
+
                 \App\Models\KasKeluar::create([
                     'id_shift' => $activeShift ? $activeShift->id_shift : null,
                     'id_cabang' => $id_cabang,
                     'jumlah_pengeluaran' => $totalKasKeluar,
-                    'keterangan' => 'Pembelian Stok Barang (Restock)',
+                    'keterangan' => $keteranganStr,
                     'tanggal' => date('Y-m-d H:i:s')
                 ]);
             }

@@ -48,6 +48,7 @@ class PosRepository
                 'id_produk' => $item->produk->id_produk,
                 'nama_produk' => $item->produk->nama_produk,
                 'kategori' => $item->produk->kategori->nama_kategori ?? '-',
+                'harga_beli' => $item->produk->harga_beli,
                 'harga_jual' => $item->produk->harga_jual,
                 'stok_sekarang' => $item->stok_sekarang,
                 'sku' => $item->produk->sku,

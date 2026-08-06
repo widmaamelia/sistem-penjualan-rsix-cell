@@ -12,11 +12,11 @@ return new class extends Migration
             $table->id('id_produk');
             $table->unsignedBigInteger('id_kategori');
             $table->string('foto_produk')->nullable();
-            $table->string('sku')->unique();
-            $table->string('nama_produk');
+            $table->string('sku', 50)->unique();
+            $table->string('nama_produk', 150);
             $table->double('harga_beli', 15, 2);
             $table->double('harga_jual', 15, 2);
-            $table->string('barcode_imei')->nullable()->unique();
+            $table->string('barcode_imei', 50)->nullable()->unique();
             $table->enum('status', ['aktif', 'nonaktif'])->default('aktif');
             $table->timestamps();
 

@@ -2,6 +2,28 @@
 
 @section('title', 'Master Shift')
 
+@section('styles')
+<style>
+    .form-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 8px;
+    }
+    .form-control, .form-select {
+        border-radius: 8px;
+        border: 1px solid #d1d5db;
+        padding: 10px 15px;
+        font-size: 14px;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .form-control:focus, .form-select:focus {
+        border-color: #1a5ca6;
+        box-shadow: 0 0 0 3px rgba(26,92,166,0.1);
+    }
+</style>
+@endsection
+
 @section('content')
 
 @if(session('success'))
@@ -19,9 +41,9 @@
 @endif
 
 <div class="d-flex justify-content-end align-items-center mb-3">
-    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalTambah" style="background-color: #1a5ca6;">
+    <a href="{{ route('master_shift.create') }}" class="btn btn-primary" style="background-color: #1a5ca6; border-color: #1a5ca6; border-radius: 6px; font-weight: 500; padding: 6px 14px; font-size: 13.5px;">
         <i class="fa-solid fa-plus me-1"></i> Tambah Master Shift
-    </button>
+    </a>
 </div>
 
 <div class="card shadow-sm border-0 rounded-3">
@@ -44,54 +66,19 @@
                         <td class="px-4"><span class="badge bg-primary bg-opacity-10 text-primary px-2 py-1">{{ substr($shift->jam_mulai, 0, 5) }}</span></td>
                         <td class="px-4"><span class="badge bg-danger bg-opacity-10 text-danger px-2 py-1">{{ substr($shift->jam_selesai, 0, 5) }}</span></td>
                         <td class="px-4">
-                            <button class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="modal" data-bs-target="#modalEdit{{ $shift->id_master_shift }}">
+                            <a href="{{ route('master_shift.edit', $shift->id_master_shift) }}" class="btn btn-sm btn-outline-primary me-1">
                                 <i class="fa-solid fa-pen-to-square"></i>
+                            </a>
+                            <button type="button" class="btn btn-sm btn-outline-danger btn-delete-shift" 
+                                data-id="{{ $shift->id_master_shift }}" 
+                                data-nama="{{ $shift->nama_shift }}"
+                                title="Hapus">
+                                <i class="fa-solid fa-trash-can"></i>
                             </button>
-                            <form action="{{ route('master_shift.destroy', $shift->id_master_shift) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus master shift ini?');">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-outline-danger">
-                                    <i class="fa-solid fa-trash-can"></i>
-                                </button>
-                            </form>
                         </td>
                     </tr>
 
-                    <!-- Modal Edit -->
-                    <div class="modal fade" id="modalEdit{{ $shift->id_master_shift }}" tabindex="-1" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered">
-                            <div class="modal-content border-0 shadow" style="border-radius: 12px;">
-                                <form action="{{ route('master_shift.update', $shift->id_master_shift) }}" method="POST">
-                                    @csrf
-                                    @method('PUT')
-                                    <div class="modal-header border-bottom-0 pb-0 pt-4 px-4">
-                                        <h5 class="fw-bold mb-0">Edit Master Shift</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body p-4">
-                                        <div class="mb-3">
-                                            <label class="form-label fw-medium text-muted" style="font-size: 13px;">Nama Shift</label>
-                                            <input type="text" name="nama_shift" class="form-control" value="{{ $shift->nama_shift }}" required>
-                                        </div>
-                                        <div class="row g-3">
-                                            <div class="col-6">
-                                                <label class="form-label fw-medium text-muted" style="font-size: 13px;">Jam Mulai</label>
-                                                <input type="time" name="jam_mulai" class="form-control" value="{{ $shift->jam_mulai }}" required>
-                                            </div>
-                                            <div class="col-6">
-                                                <label class="form-label fw-medium text-muted" style="font-size: 13px;">Jam Selesai</label>
-                                                <input type="time" name="jam_selesai" class="form-control" value="{{ $shift->jam_selesai }}" required>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer border-top-0 pt-0 pb-4 px-4">
-                                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
-                                        <button type="submit" class="btn btn-primary" style="background-color: #1a5ca6;">Simpan Perubahan</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
+
                 @empty
                     <tr>
                         <td colspan="5" class="text-center py-4 text-muted">Belum ada data master shift.</td>
@@ -102,38 +89,46 @@
     </div>
 </div>
 
-<!-- Modal Tambah -->
-<div class="modal fade" id="modalTambah" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow" style="border-radius: 12px;">
-            <form action="{{ route('master_shift.store') }}" method="POST">
-                @csrf
-                <div class="modal-header border-bottom-0 pb-0 pt-4 px-4">
-                    <h5 class="fw-bold mb-0">Tambah Master Shift</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<!-- Modal Hapus -->
+<div class="modal fade" id="modalHapus" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content" style="border-radius: 12px; border: none;">
+            <div class="modal-body text-center p-4">
+                <div class="mb-3">
+                    <i class="fa-solid fa-triangle-exclamation text-danger" style="font-size: 40px;"></i>
                 </div>
-                <div class="modal-body p-4">
-                    <div class="mb-3">
-                        <label class="form-label fw-medium text-muted" style="font-size: 13px;">Nama Shift (Contoh: Shift Pagi)</label>
-                        <input type="text" name="nama_shift" class="form-control" required>
-                    </div>
-                    <div class="row g-3">
-                        <div class="col-6">
-                            <label class="form-label fw-medium text-muted" style="font-size: 13px;">Jam Mulai</label>
-                            <input type="time" name="jam_mulai" class="form-control" required>
-                        </div>
-                        <div class="col-6">
-                            <label class="form-label fw-medium text-muted" style="font-size: 13px;">Jam Selesai</label>
-                            <input type="time" name="jam_selesai" class="form-control" required>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer border-top-0 pt-0 pb-4 px-4">
-                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary" style="background-color: #1a5ca6;">Simpan Shift</button>
-                </div>
-            </form>
+                <h5 class="fw-bold mb-2">Hapus Master Shift?</h5>
+                <p class="text-muted" style="font-size: 13px; margin-bottom: 0;">Apakah Anda yakin ingin menghapus master shift <strong id="deleteNamaShift"></strong>?</p>
+            </div>
+            <div class="modal-footer justify-content-center border-0 pt-0 pb-4">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" style="border-radius: 8px; font-weight: 500;">Batal</button>
+                <form id="formDelete" method="POST" style="display: inline;">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger" style="border-radius: 8px; font-weight: 500;">Ya, Hapus</button>
+                </form>
+            </div>
         </div>
     </div>
 </div>
+
+@endsection
+
+@section('scripts')
+<script>
+    document.querySelectorAll('.btn-delete-shift').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const id = this.getAttribute('data-id');
+            const nama = this.getAttribute('data-nama');
+            
+            document.getElementById('deleteNamaShift').innerText = nama;
+            
+            const formDelete = document.getElementById('formDelete');
+            formDelete.action = "{{ url('/master_shift') }}/" + id;
+            
+            const modalHapus = new bootstrap.Modal(document.getElementById('modalHapus'));
+            modalHapus.show();
+        });
+    });
+</script>
 @endsection

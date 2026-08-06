@@ -33,6 +33,10 @@ class LaporanController extends Controller
             $query->whereYear('tanggal_transaksi', $request->tahun);
         }
 
+        if ($request->filled('id_user')) {
+            $query->where('id_user', $request->id_user);
+        }
+
         return $query;
     }
 
@@ -68,7 +72,56 @@ class LaporanController extends Controller
             $query->whereYear('tanggal', $request->tahun);
         }
 
+        if ($request->filled('id_user')) {
+            $query->whereHas('shift', function ($sq) use ($request) {
+                $sq->where('id_user', $request->id_user);
+            });
+        }
+
         return $query;
+    }
+
+    /**
+     * Memisahkan uang keluar menjadi pembelian barang stok dan pengeluaran
+     * operasional. Polanya sama dengan badge "Tipe Pengeluaran" di halaman
+     * Kas Keluar, supaya angkanya konsisten di semua halaman dan export.
+     */
+    private function kasKeluarTerpisah(Request $request)
+    {
+        $filterPembelian = function ($q) {
+            $q->where('keterangan', 'like', '%restock%')
+              ->orWhere('keterangan', 'like', '%opname%');
+        };
+
+        $pembelianStoks = $this->buildKasKeluarQuery($request)
+            ->where($filterPembelian)->orderBy('tanggal', 'desc')->get();
+
+        $operasionals = $this->buildKasKeluarQuery($request)
+            ->whereNot($filterPembelian)->orderBy('tanggal', 'desc')->get();
+
+        return [
+            'pembelianStoks' => $pembelianStoks,
+            'operasionals' => $operasionals,
+            'totalPembelianStok' => $pembelianStoks->sum('jumlah_pengeluaran'),
+            'totalOperasional' => $operasionals->sum('jumlah_pengeluaran'),
+        ];
+    }
+
+    /**
+     * Menghitung laba kotor dari sekumpulan transaksi.
+     * Memakai harga beli yang tersimpan saat transaksi terjadi.
+     */
+    private function hitungLabaKotor($transaksis)
+    {
+        $laba = 0;
+
+        foreach ($transaksis as $t) {
+            foreach ($t->detailTransaksis as $d) {
+                $laba += ($d->harga_jual_realtime - $d->harga_beli_realtime) * $d->qty;
+            }
+        }
+
+        return $laba;
     }
 
     public function index(Request $request)
@@ -134,13 +187,7 @@ class LaporanController extends Controller
 
         $totalOmzet = $allTrans->sum('total_harga');
         $totalTransaksi = $allTrans->count();
-        
-        $labaKotor = 0;
-        foreach ($allTrans as $t) {
-            foreach ($t->detailTransaksis as $d) {
-                $labaKotor += ($d->harga_jual_realtime - $d->harga_beli_realtime) * $d->qty;
-            }
-        }
+        $labaKotor = $this->hitungLabaKotor($allTrans);
 
         // Kas keluar local cabang
         $totalKasKeluar = $this->buildKasKeluarQuery($request)->sum('jumlah_pengeluaran');
@@ -149,16 +196,26 @@ class LaporanController extends Controller
 
         $kasKeluars = $this->buildKasKeluarQuery($request)->orderBy('tanggal', 'desc')->get();
 
-        $transaksis = $query->orderBy('tanggal_transaksi', 'desc')->paginate(15)->withQueryString();
+        $transaksis = $query->orderBy('tanggal_transaksi', 'desc')->paginate(10)->withQueryString();
         
         $cabangSpesifik = null;
+        $id_cabang_filter = $user->id_cabang;
         if ($user->role === 'super' && $request->filled('id_cabang')) {
             $cabangSpesifik = Cabang::find($request->id_cabang);
+            $id_cabang_filter = $request->id_cabang;
+        }
+        
+        $karyawans = collect();
+        if ($id_cabang_filter) {
+            $karyawans = \App\Models\User::where('id_cabang', $id_cabang_filter)->get();
         }
 
-        return view('admin.laporan.index', compact(
-            'transaksis', 'totalOmzet', 'totalTransaksi', 'labaKotor', 'cabangSpesifik',
-            'totalKasKeluar', 'totalUangMasuk', 'totalUangKeluar', 'kasKeluars'
+        return view('admin.laporan.index', array_merge(
+            compact(
+                'transaksis', 'totalOmzet', 'totalTransaksi', 'labaKotor', 'cabangSpesifik',
+                'totalKasKeluar', 'totalUangMasuk', 'totalUangKeluar', 'kasKeluars', 'karyawans'
+            ),
+            $this->kasKeluarTerpisah($request)
         ));
     }
 
@@ -174,20 +231,17 @@ class LaporanController extends Controller
         return view('admin.laporan.show', compact('transaksi'));
     }
 
-    public function print(Request $request)
+    /**
+     * Data yang dipakai bersama oleh halaman print dan export PDF,
+     * isinya sama persis dengan yang tampil di halaman laporan.
+     */
+    private function dataCetak(Request $request)
     {
-        $query = $this->buildQuery($request);
-        $transaksis = $query->orderBy('tanggal_transaksi', 'desc')->get();
+        $transaksis = $this->buildQuery($request)->orderBy('tanggal_transaksi', 'desc')->get();
 
         $totalOmzet = $transaksis->sum('total_harga');
         $totalTransaksi = $transaksis->count();
-        
-        $labaKotor = 0;
-        foreach ($transaksis as $t) {
-            foreach ($t->detailTransaksis as $d) {
-                $labaKotor += ($d->harga_jual_realtime - $d->harga_beli_realtime) * $d->qty;
-            }
-        }
+        $labaKotor = $this->hitungLabaKotor($transaksis);
 
         $totalKasKeluar = $this->buildKasKeluarQuery($request)->sum('jumlah_pengeluaran');
         $totalUangMasuk = $totalOmzet;
@@ -195,45 +249,31 @@ class LaporanController extends Controller
 
         $kasKeluars = $this->buildKasKeluarQuery($request)->orderBy('tanggal', 'desc')->get();
 
-        return view('admin.laporan.print', compact(
-            'transaksis', 'totalOmzet', 'totalTransaksi', 'labaKotor',
-            'totalKasKeluar', 'totalUangMasuk', 'totalUangKeluar', 'kasKeluars'
-        ));
+        return array_merge(
+            compact(
+                'transaksis', 'totalOmzet', 'totalTransaksi', 'labaKotor',
+                'totalKasKeluar', 'totalUangMasuk', 'totalUangKeluar', 'kasKeluars'
+            ),
+            $this->kasKeluarTerpisah($request)
+        );
+    }
+
+    public function print(Request $request)
+    {
+        return view('admin.laporan.print', $this->dataCetak($request));
     }
 
     public function exportPdf(Request $request)
     {
-        $query = $this->buildQuery($request);
-        $transaksis = $query->orderBy('tanggal_transaksi', 'desc')->get();
-
-        $totalOmzet = $transaksis->sum('total_harga');
-        $totalTransaksi = $transaksis->count();
-        
-        $labaKotor = 0;
-        foreach ($transaksis as $t) {
-            foreach ($t->detailTransaksis as $d) {
-                $labaKotor += ($d->harga_jual_realtime - $d->harga_beli_realtime) * $d->qty;
-            }
-        }
-
-        $totalKasKeluar = $this->buildKasKeluarQuery($request)->sum('jumlah_pengeluaran');
-        $totalUangMasuk = $totalOmzet;
-        $totalUangKeluar = $totalKasKeluar;
-
-        $kasKeluars = $this->buildKasKeluarQuery($request)->orderBy('tanggal', 'desc')->get();
-        
-        $pdf = Pdf::loadView('admin.laporan.pdf', compact(
-            'transaksis', 'totalOmzet', 'totalTransaksi', 'labaKotor',
-            'totalKasKeluar', 'totalUangMasuk', 'totalUangKeluar', 'kasKeluars'
-        ))->setPaper('a4', 'landscape');
+        $pdf = Pdf::loadView('admin.laporan.pdf', $this->dataCetak($request))
+            ->setPaper('a4', 'portrait');
 
         return $pdf->download('laporan_transaksi_'.date('Ymd').'.pdf');
     }
 
     public function exportExcel(Request $request)
     {
-        $query = $this->buildQuery($request);
-        $transaksis = $query->orderBy('tanggal_transaksi', 'desc')->get();
+        $data = $this->dataCetak($request);
 
         $filename = "laporan_transaksi_" . date('Ymd') . ".csv";
 
@@ -245,24 +285,104 @@ class LaporanController extends Controller
             "Expires"             => "0"
         ];
 
-        $columns = ['ID Transaksi', 'No Transaksi', 'Tanggal', 'Cabang', 'Kasir', 'Metode Bayar', 'Total Harga'];
-
-        $callback = function() use($transaksis, $columns) {
+        $callback = function () use ($data) {
             $file = fopen('php://output', 'w');
-            fputcsv($file, $columns);
 
-            foreach ($transaksis as $t) {
-                fputcsv($file, [
-                    $t->id_transaksi,
+            // BOM UTF-8 supaya huruf beraksen tidak berantakan saat dibuka Excel.
+            fwrite($file, "\xEF\xBB\xBF");
+
+            // Excel dengan pengaturan regional Indonesia memakai titik koma sebagai
+            // pemisah kolom. Baris "sep=;" memberi tahu Excel pemisah yang dipakai,
+            // sehingga file terbuka rapi per kolom di komputer mana pun.
+            fwrite($file, "sep=;\n");
+
+            $tulis = function (array $baris = []) use ($file) {
+                fputcsv($file, $baris, ';');
+            };
+
+            // 1. Ringkasan
+            $tulis(['RINGKASAN LAPORAN']);
+            $tulis(['Total Transaksi', $data['totalTransaksi']]);
+            $tulis(['Total Uang Masuk', $data['totalOmzet']]);
+            $tulis(['Total Modal Barang Terjual', $data['totalOmzet'] - $data['labaKotor']]);
+            $tulis(['Total Laba Kotor', $data['labaKotor']]);
+            $tulis(['Pengeluaran Operasional', $data['totalOperasional']]);
+            $tulis(['Pembelian Barang Stok', $data['totalPembelianStok']]);
+            $tulis(['Total Uang Keluar', $data['totalUangKeluar']]);
+            $tulis([]);
+
+            // 2. Riwayat transaksi
+            $tulis(['RIWAYAT TRANSAKSI (UANG MASUK)']);
+            $tulis([
+                'No Transaksi', 'Tanggal', 'Cabang', 'Kasir', 'Metode Bayar',
+                'Modal', 'Laba', 'Total'
+            ]);
+
+            foreach ($data['transaksis'] as $t) {
+                $modal = 0;
+                foreach ($t->detailTransaksis as $d) {
+                    $modal += $d->harga_beli_realtime * $d->qty;
+                }
+
+                $tulis([
                     $t->no_transaksi,
                     $t->tanggal_transaksi,
                     $t->cabang->nama_cabang ?? '-',
                     $t->user->name ?? '-',
                     $t->metode_bayar,
-                    $t->total_harga
+                    $modal,
+                    $t->total_harga - $modal,
+                    $t->total_harga,
                 ]);
             }
 
+            $tulis([
+                'TOTAL', '', '', '', '',
+                $data['totalOmzet'] - $data['labaKotor'],
+                $data['labaKotor'],
+                $data['totalOmzet'],
+            ]);
+            $tulis([]);
+
+            // 3. Rincian per barang, supaya laba tiap produk terlihat
+            $tulis(['RINCIAN PER BARANG']);
+            $tulis([
+                'No Transaksi', 'Tanggal', 'Produk / Item', 'Qty',
+                'Harga Beli', 'Harga Jual', 'Laba per Unit', 'Subtotal', 'Laba'
+            ]);
+
+            foreach ($data['transaksis'] as $t) {
+                foreach ($t->detailTransaksis as $d) {
+                    $tulis([
+                        $t->no_transaksi,
+                        $t->tanggal_transaksi,
+                        $d->produk->nama_produk ?? $d->nama_item_manual ?? 'Produk',
+                        $d->qty,
+                        $d->harga_beli_realtime,
+                        $d->harga_jual_realtime,
+                        $d->harga_jual_realtime - $d->harga_beli_realtime,
+                        $d->sub_total,
+                        ($d->harga_jual_realtime - $d->harga_beli_realtime) * $d->qty,
+                    ]);
+                }
+            }
+            $tulis([]);
+
+            // 4. Uang keluar, dipisah sesuai tampilan laporan
+            $tulis(['PENGELUARAN OPERASIONAL']);
+            $tulis(['Tanggal', 'Keterangan', 'Nominal']);
+            foreach ($data['operasionals'] as $kk) {
+                $tulis([$kk->tanggal, $kk->keterangan, $kk->jumlah_pengeluaran]);
+            }
+            $tulis(['TOTAL OPERASIONAL', '', $data['totalOperasional']]);
+            $tulis([]);
+
+            $tulis(['PEMBELIAN BARANG STOK']);
+            $tulis(['Tanggal', 'Keterangan', 'Nominal']);
+            foreach ($data['pembelianStoks'] as $kk) {
+                $tulis([$kk->tanggal, $kk->keterangan, $kk->jumlah_pengeluaran]);
+            }
+            $tulis(['TOTAL PEMBELIAN STOK', '', $data['totalPembelianStok']]);
 
             fclose($file);
         };

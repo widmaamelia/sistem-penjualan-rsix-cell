@@ -4,80 +4,52 @@
 
 @section('styles')
 <style>
-    .header-action {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
-    }
-
-    .page-title {
-        font-size: 24px;
-        font-weight: 700;
-        color: #1f2937;
-        margin: 0;
-        display: flex;
-        align-items: center;
-        gap: 15px;
-    }
-
-    .back-btn {
-        color: #6b7280;
-        text-decoration: none;
-        transition: color 0.2s;
-    }
-
-    .back-btn:hover {
-        color: #1a5ca6;
-    }
-
     .profile-card {
         background: white;
         border-radius: 12px;
         border: 1px solid #e5e7eb;
-        padding: 40px 30px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        padding: 20px;
         display: flex;
-        gap: 40px;
+        gap: 20px;
     }
 
     .profile-avatar-large {
-        width: 120px;
-        height: 120px;
+        width: 80px;
+        height: 80px;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 40px;
+        font-size: 28px;
         font-weight: 700;
         flex-shrink: 0;
-        border: 4px solid #fff;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        border: 3px solid #fff;
+        box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1);
     }
 
     .info-group {
-        margin-bottom: 20px;
+        margin-bottom: 12px;
     }
 
     .info-label {
-        font-size: 12px;
+        font-size: 11px;
         text-transform: uppercase;
         font-weight: 600;
         color: #6b7280;
-        margin-bottom: 5px;
+        margin-bottom: 3px;
     }
 
     .info-value {
-        font-size: 15px;
+        font-size: 13px;
         font-weight: 500;
         color: #111827;
     }
     
     .badge-status {
-        padding: 6px 16px;
+        padding: 4px 12px;
         border-radius: 20px;
         font-weight: 600;
-        font-size: 13px;
+        font-size: 11px;
         display: inline-block;
     }
     
@@ -88,17 +60,14 @@
 
 @section('content')
 
-<!-- Header Action -->
-<div class="header-action">
-    <h1 class="page-title">
-        <a href="{{ route('pengguna.index') }}" class="back-btn"><i class="fa-solid fa-arrow-left"></i></a>
-        Profil Karyawan
-    </h1>
-    <div>
-        <a href="{{ route('pengguna.edit', $pengguna->id_user) }}" class="btn btn-primary" style="border-radius: 8px; font-weight: 500; background-color: #1a5ca6; border-color: #1a5ca6;">
-            <i class="fa-solid fa-pen-to-square me-2"></i>Edit Data
-        </a>
-    </div>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <a href="{{ route('pengguna.index') }}" class="btn btn-light bg-white" style="border-radius: 8px; border: 1px solid #e5e7eb; color: #4b5563; padding: 8px 14px; box-shadow: 0 1px 2px rgba(0,0,0,0.02);" title="Kembali">
+        <i class="fa-solid fa-arrow-left"></i>
+    </a>
+    
+    <a href="{{ route('pengguna.edit', $pengguna->id_user) }}" class="btn btn-primary btn-sm" style="background-color: #1a5ca6; border-color: #1a5ca6; border-radius: 6px; font-weight: 500;">
+        <i class="fa-solid fa-pen-to-square me-1"></i> Edit Data
+    </a>
 </div>
 
 <div class="profile-card">
@@ -126,12 +95,12 @@
     </div>
 
     <div style="flex: 1;">
-        <h2 class="fw-bold text-dark mb-1">{{ $pengguna->name }}</h2>
-        <p class="text-muted mb-4 fs-5"><i class="fa-solid fa-envelope me-2"></i> {{ $pengguna->email }}</p>
+        <h2 class="fw-bold text-dark mb-1" style="font-size: 18px;">{{ $pengguna->name }}</h2>
+        <p class="text-muted mb-3" style="font-size: 13px;"><i class="fa-solid fa-envelope me-1"></i> {{ $pengguna->email }}</p>
         
-        <hr class="mb-4">
+        <hr class="mb-3">
 
-        <div class="row g-4">
+        <div class="row g-3">
             <div class="col-md-6">
                 <div class="info-group">
                     <div class="info-label">Posisi / Peran</div>

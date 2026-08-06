@@ -14,180 +14,144 @@
             height: 100%;
             margin: 0;
             font-family: 'Inter', sans-serif;
-            background-color: #ffffff;
+            background-color: #1a5ca6; /* Dark blue background for mobile */
         }
 
         .split-screen {
             display: flex;
             height: 100vh;
-        }
-
-        /* Bagian Kiri (Biru) */
-        .left-side {
-            background-color: #1a5ca6; /* Biru pekat sesuai desain */
-            color: white;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding: 50px;
-            position: relative;
             overflow: hidden;
         }
 
-        .brand-container {
-            position: absolute;
-            top: 40px;
-            left: 50px;
-            z-index: 2;
-        }
-
-        .brand-container h2 {
-            font-weight: 700;
-            margin-bottom: 5px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .brand-icon {
-            background: white;
+        /* Bagian Kiri (Putih) */
+        .left-side {
+            background-color: #ffffff;
             color: #1a5ca6;
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-size: 20px;
-        }
-
-        .brand-container p {
-            font-size: 14px;
-            color: rgba(255, 255, 255, 0.8);
-        }
-
-        .illustration-container {
-            margin: auto;
-            position: relative;
-            z-index: 1;
-            /* Efek Glassmorphism di sekitar gambar */
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 20px;
-            padding: 15px;
-            max-width: 55%; /* Diperkecil agar gambar tidak mendominasi */
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-        }
-
-        .illustration-container img {
-            width: 100%;
-            border-radius: 15px;
-            mix-blend-mode: luminosity; /* Memberikan efek kebiruan yang menyatu dengan background */
-            opacity: 0.9;
-        }
-
-        /* Pagination Dots */
-        .dots {
-            position: absolute;
-            bottom: 40px;
-            left: 50px;
-            display: flex;
-            gap: 8px;
-        }
-        .dot {
-            width: 20px;
-            height: 3px;
-            background: rgba(255,255,255,0.4);
-            border-radius: 2px;
-        }
-        .dot.active {
-            width: 40px;
-            background: white;
-        }
-
-
-        /* Bagian Kanan (Form Login) */
-        .right-side {
-            flex: 1;
+            flex: 1.15;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            padding: 50px 10%;
-            background-color: #ffffff;
+            align-items: center;
+            padding: 50px;
             position: relative;
+            z-index: 2;
+            clip-path: polygon(0 0, 100% 0, calc(100% - 150px) 100%, 0 100%);
         }
 
-        .login-box {
-            max-width: 400px;
-            margin: 0 auto;
-            width: 100%;
+
+
+        .brand-center {
+            text-align: center;
+            z-index: 5;
+            transform: translateX(-50px); /* Geser ke kiri untuk menyeimbangkan potongan miring di kanan */
         }
 
-        .login-box h3 {
-            font-weight: 700;
-            color: #111827;
+        .brand-center img {
+            width: 140px;
+            height: 140px;
+            object-fit: contain;
+            margin-bottom: 20px;
+            mix-blend-mode: darken;
+        }
+
+        .brand-center h2 {
+            font-weight: 800;
+            font-size: 32px;
+            letter-spacing: 1.5px;
             margin-bottom: 5px;
+            color: #1a5ca6;
         }
 
-        .login-box p {
-            color: #6b7280;
-            font-size: 14px;
-            margin-bottom: 30px;
-        }
-
-        .form-label {
-            font-size: 13px;
-            font-weight: 600;
+        .brand-center p {
+            font-size: 15px;
+            font-weight: 500;
             color: #4b5563;
         }
 
+        /* Bagian Kanan (Biru Gelap) */
+        .right-side {
+            flex: 1.25;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 50px 8%;
+            background-color: #1a5ca6;
+            color: #ffffff;
+            position: relative;
+            z-index: 1;
+        }
+
+        .login-box {
+            max-width: 360px;
+            margin: 0 auto;
+            width: 100%;
+            z-index: 5;
+        }
+
+        /* Form Labels & Text */
+        .form-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #ffffff;
+            letter-spacing: 0.3px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+            border-radius: 6px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
         .input-group-text {
-            background-color: transparent;
-            border-right: none;
+            background-color: #ffffff;
+            border: none;
             color: #6b7280;
+            padding: 10px 14px;
+            border-radius: 6px 0 0 6px;
         }
 
         .form-control {
-            border-left: none;
+            border: none;
+            padding: 10px 14px;
+            background-color: #ffffff;
+            color: #111827;
+            border-radius: 0 6px 6px 0;
+            box-shadow: none !important;
         }
 
-        .form-control:focus {
-            box-shadow: none;
-            border-color: #dee2e6;
+        .form-control::placeholder {
+            color: #9ca3af;
+            font-size: 13px;
         }
         
-        /* Memastikan border input group tetap konsisten saat focus */
-        .input-group:focus-within .input-group-text,
-        .input-group:focus-within .form-control {
-            border-color: #1a5ca6;
+        .input-group .input-group-text:last-child {
+            border-radius: 0 6px 6px 0;
+            border-left: 1px solid #f3f4f6;
+        }
+        .input-group .form-control:not(:last-child) {
+            border-radius: 0;
         }
 
+        /* Button */
         .btn-login {
-            background-color: #1a5ca6;
-            border-color: #1a5ca6;
-            color: white;
-            font-weight: 600;
-            padding: 12px;
+            background-color: #0b2559; /* Biru Sangat Gelap */
+            border: none;
+            color: #ffffff; /* Teks Putih */
+            font-weight: 700;
+            padding: 11px;
             width: 100%;
-            border-radius: 8px;
-            margin-top: 15px;
+            border-radius: 6px;
+            margin-top: 5px;
             transition: all 0.3s ease;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
         }
 
         .btn-login:hover {
-            background-color: #154a85;
+            background-color: #051438;
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(26, 92, 166, 0.3);
-        }
-
-        .forgot-link {
-            color: #1a5ca6;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 13px;
-        }
-
-        .forgot-link:hover {
-            text-decoration: underline;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            color: #ffffff;
         }
 
         .version-text {
@@ -195,115 +159,135 @@
             bottom: 20px;
             right: 30px;
             font-size: 12px;
-            color: #9ca3af;
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .forgot-link {
+            color: #1a5ca6;
+            text-decoration: none;
+            font-size: 13px;
+        }
+
+        .forgot-link:hover {
+            color: #0F3A6B;
         }
 
         /* Responsive */
         @media (max-width: 768px) {
             .split-screen {
                 flex-direction: column;
+                overflow: auto;
             }
             .left-side {
-                display: none; /* Sembunyikan gambar di layar kecil agar fokus ke login */
+                padding: 50px 20px;
+                flex: none;
+                border-bottom-left-radius: 30px;
+                border-bottom-right-radius: 30px;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+                z-index: 10;
+                clip-path: none;
+            }
+            .brand-center {
+                transform: none;
+            }
+            .brand-center img {
+                width: 100px;
+                height: 100px;
+            }
+            .brand-center h2 {
+                font-size: 26px;
             }
             .right-side {
-                padding: 30px;
+                padding: 50px 20px;
+                flex: 1;
             }
+            .mobile-splash.active {
+                display: flex;
+                opacity: 1;
+                visibility: visible;
+            }
+            .mobile-splash.fade-out {
+                opacity: 0;
+                visibility: hidden;
+            }
+        }
+
+        /* Splash Screen Mobile Style */
+        .mobile-splash {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #1a5ca6;
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.6s ease-out, visibility 0.6s ease-out;
+        }
+
+        .mobile-splash img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
     </style>
 </head>
 <body>
 
+<!-- Splash Screen Khusus Mobile -->
+<div class="mobile-splash active" id="splashScreen">
+    <img src="{{ asset('upload.png') }}" alt="Splash Screen Rsix Cell">
+</div>
+
 <div class="split-screen">
     
     <!-- Bagian Kiri -->
     <div class="left-side">
-        <div class="brand-container">
-            <h2>
-                <div class="brand-icon"><i class="fa-solid fa-tower-cell"></i></div>
-                Rsix Cell
-            </h2>
-            <p>Sistem Manajemen Toko Terpadu</p>
-        </div>
-
-        <div class="illustration-container">
-            <!-- TEMPAT GAMBAR MILIK ANDA -->
-            <!-- Ganti 'images/login-illustration.png' dengan path gambar asli Anda nantinya -->
-            <!-- Atau bisa juga langsung pakai link gambar online -->
-            <img src="https://images.unsplash.com/photo-1611791484670-ce19b801d192?q=80&w=600&auto=format&fit=crop" alt="Rsix Cell Illustration" onerror="this.src='https://via.placeholder.com/600x600/1a5ca6/ffffff?text=Gambar+Anda+Disini'">
-        </div>
-
-        <div class="dots">
-            <div class="dot active"></div>
-            <div class="dot"></div>
-            <div class="dot"></div>
+        <div class="brand-center">
+            <img src="{{ asset('logo.jpeg') }}" alt="Logo Rsix Cell">
+            <h2 class="text-uppercase">RSIX CELL</h2>
+            <p class="fst-italic">Sistem Manajemen Toko Terpadu</p>
         </div>
     </div>
 
     <!-- Bagian Kanan -->
     <div class="right-side">
         <div class="login-box">
-            <h3>Masuk ke Sistem</h3>
-            <p>Silakan masukkan akun Anda untuk melanjutkan akses.</p>
-
-            <!-- Form bawaan Laravel Breeze -->
             <form method="POST" action="{{ route('login') }}">
                 @csrf
 
                 <!-- Pesan Error Global -->
                 @if ($errors->any())
-                    <div class="alert alert-danger" style="font-size: 13px; padding: 10px;">
-                        <ul class="mb-0 ps-3">
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
+                    <p class="text-white mb-3 p-2 rounded" style="font-size: 13.5px; font-weight: 500; background-color: rgba(239, 68, 68, 0.9);">
+                        <i class="fa-solid fa-circle-exclamation me-1"></i> Username atau Password yang Anda masukkan salah.
+                    </p>
                 @endif
 
                 <!-- Email -->
-                <div class="mb-3">
+                <div>
                     <label class="form-label">Email atau Username</label>
                     <div class="input-group">
-                        <span class="input-group-text"><i class="fa-regular fa-user"></i></span>
-                        <input type="email" name="email" class="form-control" placeholder="nama@email.com" value="{{ old('email') }}" required autofocus autocomplete="username">
+                        <input type="email" name="email" class="form-control" style="border-radius: 6px;" placeholder="Masukkan email atau username" value="{{ old('email') }}" required autofocus autocomplete="username" oninvalid="this.setCustomValidity('Kolom ini wajib diisi')" oninput="this.setCustomValidity('')">
                     </div>
                 </div>
 
                 <!-- Password -->
-                <div class="mb-3">
+                <div>
                     <label class="form-label">Password</label>
                     <div class="input-group">
-                        <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
-                        <input type="password" name="password" id="passwordInput" class="form-control" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" required autocomplete="current-password">
-                        <span class="input-group-text" style="cursor: pointer; border-left: none; border-right: 1px solid #dee2e6;" onclick="togglePassword()">
+                        <input type="password" name="password" id="passwordInput" class="form-control" placeholder="Masukkan password" required autocomplete="current-password" oninvalid="this.setCustomValidity('Kolom ini wajib diisi')" oninput="this.setCustomValidity('')">
+                        <span class="input-group-text" style="cursor: pointer;" onclick="togglePassword()">
                             <i class="fa-regular fa-eye" id="eyeIcon"></i>
                         </span>
                     </div>
                 </div>
-
-                <!-- Remember Me & Forgot Password -->
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="remember" id="rememberMe">
-                        <label class="form-check-label" for="rememberMe" style="font-size: 13px; color: #4b5563;">
-                            Ingat Saya
-                        </label>
-                    </div>
-                    @if (Route::has('password.request'))
-                        <a href="{{ route('password.request') }}" class="forgot-link">Lupa Password?</a>
-                    @endif
-                </div>
-
+                
                 <!-- Tombol Login -->
-                <button type="submit" class="btn btn-login">
-                    Masuk <i class="fa-solid fa-arrow-right-to-bracket ms-1"></i>
+                <button type="submit" class="btn btn-login mt-2">
+                    MASUK
                 </button>
-
-                <!-- Bantuan -->
-                <div class="text-center mt-4">
-                    <span style="font-size: 13px; color: #6b7280;">Belum punya akun? <a href="#" style="color: #1a5ca6; text-decoration: none;">Hubungi Admin</a></span>
-                </div>
             </form>
         </div>
 
@@ -329,6 +313,25 @@
             eyeIcon.classList.add('fa-eye');
         }
     }
+
+    // Animasi Splash Screen Khusus Mobile
+    document.addEventListener("DOMContentLoaded", function() {
+        const splashScreen = document.getElementById('splashScreen');
+        
+        if (splashScreen) {
+            // Jalankan timer tanpa syarat, agar jika user me-resize layar ke mobile di inspect element,
+            // splash screen tidak menyangkut (stuck) selamanya.
+            setTimeout(() => {
+                splashScreen.classList.remove('active');
+                splashScreen.classList.add('fade-out');
+                
+                // Hapus total dari pandangan setelah animasi pudar selesai
+                setTimeout(() => {
+                    splashScreen.style.display = 'none';
+                }, 600); 
+            }, 2500); // Waktu tampil 2.5 detik
+        }
+    });
 </script>
 </body>
 </html>

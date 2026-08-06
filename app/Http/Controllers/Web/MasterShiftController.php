@@ -17,6 +17,14 @@ class MasterShiftController extends Controller
         return view('admin.master_shift.index', compact('masterShifts'));
     }
 
+    public function create()
+    {
+        if (auth()->user()->role !== 'super') {
+            return redirect()->route('dashboard')->with('error', 'Akses ditolak.');
+        }
+        return view('admin.master_shift.create');
+    }
+
     public function store(Request $request)
     {
         if (auth()->user()->role !== 'super') return abort(403);
@@ -30,6 +38,15 @@ class MasterShiftController extends Controller
         MasterShift::create($request->all());
 
         return redirect()->route('master_shift.index')->with('success', 'Master Shift berhasil ditambahkan.');
+    }
+
+    public function edit($id)
+    {
+        if (auth()->user()->role !== 'super') {
+            return redirect()->route('dashboard')->with('error', 'Akses ditolak.');
+        }
+        $shift = MasterShift::findOrFail($id);
+        return view('admin.master_shift.edit', compact('shift'));
     }
 
     public function update(Request $request, $id)

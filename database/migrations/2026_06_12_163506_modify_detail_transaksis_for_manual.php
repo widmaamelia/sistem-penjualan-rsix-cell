@@ -19,7 +19,7 @@ return new class extends Migration
             $table->foreign('id_produk')->references('id_produk')->on('produks')->onDelete('restrict');
 
             // Add new column for manual item name
-            $table->string('nama_item_manual')->nullable()->after('id_produk');
+            $table->string('nama_item_manual', 100)->nullable()->after('id_produk');
         });
     }
 

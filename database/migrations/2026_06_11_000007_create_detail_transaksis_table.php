@@ -16,8 +16,8 @@ return new class extends Migration
             $table->double('harga_beli_realtime', 15, 2)->nullable(); // Harga modal saat transaksi
             $table->double('harga_jual_realtime', 15, 2); // Harga saat transaksi terjadi
             $table->double('sub_total', 15, 2);
-            $table->string('nomor_tujuan')->nullable(); // Untuk transaksi pulsa/PPOB
-            $table->string('kategori_layanan')->nullable(); // Fisik, Pulsa, Token, dll
+            $table->string('nomor_tujuan', 30)->nullable(); // Untuk transaksi pulsa/PPOB
+            $table->string('kategori_layanan', 50)->nullable(); // Fisik, Pulsa, Token, dll
             $table->timestamps();
 
             $table->foreign('id_transaksi')->references('id_transaksi')->on('transaksis')->onDelete('cascade');

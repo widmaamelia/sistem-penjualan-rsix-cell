@@ -13,7 +13,7 @@ return new class extends Migration
             $table->unsignedBigInteger('id_user');
             $table->unsignedBigInteger('id_cabang');
             $table->unsignedBigInteger('id_shift');
-            $table->string('no_transaksi')->unique();
+            $table->string('no_transaksi', 50)->unique();
             $table->dateTime('tanggal_transaksi');
             $table->double('total_harga', 15, 2);
             $table->enum('metode_bayar', ['tunai', 'qris', 'transfer'])->default('tunai');

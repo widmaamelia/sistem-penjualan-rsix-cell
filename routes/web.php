@@ -24,7 +24,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::resource('pengguna', \App\Http\Controllers\Web\PenggunaController::class);
 
         // Master Shift (Super Admin)
-        Route::resource('master_shift', \App\Http\Controllers\Web\MasterShiftController::class)->except(['create', 'show', 'edit']);
+        Route::resource('master_shift', \App\Http\Controllers\Web\MasterShiftController::class)->except(['show']);
 
         // Master Kategori
         Route::resource('kategori', \App\Http\Controllers\Web\KategoriController::class)->except(['show']);
@@ -38,7 +38,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::resource('produk', ProdukController::class);
 
         // Kas Keluar
-        Route::resource('kas_keluar', \App\Http\Controllers\Web\KasKeluarController::class)->only(['index', 'store', 'destroy']);
+        Route::resource('kas_keluar', \App\Http\Controllers\Web\KasKeluarController::class)->only(['index', 'create', 'store', 'destroy', 'show']);
 
         // Manajemen Stok
         Route::get('/stok/tambah', [\App\Http\Controllers\Web\StokController::class, 'tambahForm'])->name('stok.tambah-form');
