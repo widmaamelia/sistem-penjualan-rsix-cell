@@ -129,7 +129,7 @@
             <label for="layout-select" style="font-weight: bold; font-size: 14px;">Pilih Ukuran Kertas:</label>
             <select id="layout-select" onchange="changeLayout(this.value)" style="padding: 5px; border-radius: 4px;">
                 <option value="layout-thermal-2">Thermal 2 Kolom (Cocok untuk Xprinter label)</option>
-                <option value="layout-thermal-1">Thermal 1 Kolom (Label Kecil)</option>
+                <option value="layout-thermal-1">Kertas Kecil 58mm (Printer Bluetooth)</option>
                 <option value="layout-a4">Kertas A4 Biasa (3 Kolom)</option>
             </select>
         </div>

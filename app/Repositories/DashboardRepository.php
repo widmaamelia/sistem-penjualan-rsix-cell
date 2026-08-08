@@ -70,17 +70,33 @@ class DashboardRepository
                       ->whereDate('tanggal_transaksi', $today);
             })->sum('qty');
 
-        // 3. Aktivitas Terbaru (3 transaksi terakhir di cabang ini)
-        $aktivitasTerbaru = Transaksi::where('id_cabang', $id_cabang)
+        // 3. Aktivitas Terbaru (5 transaksi terakhir di cabang ini)
+        $aktivitasTerbaru = Transaksi::with(['detailTransaksis.produk'])
+            ->where('id_cabang', $id_cabang)
             ->orderBy('tanggal_transaksi', 'desc')
-            ->take(3)
+            ->take(5)
             ->get()
             ->map(function ($trx) {
+                $firstDetail = $trx->detailTransaksis->first();
+                $namaProduk = 'Tidak ada item';
+                if ($firstDetail) {
+                    $isFisik = $firstDetail->id_produk !== null;
+                    $namaProduk = $isFisik ? ($firstDetail->produk->nama_produk ?? 'Barang Fisik') : $firstDetail->nama_item_manual;
+                    $count = $trx->detailTransaksis->count();
+                    if ($count > 1) {
+                        $namaProduk .= ' (+ ' . ($count - 1) . ' produk)';
+                    }
+                }
+
                 return [
+                    'id_transaksi' => $trx->id_transaksi,
                     'no_transaksi' => $trx->no_transaksi,
+                    'nama_produk' => $namaProduk,
+                    'waktu' => date('H:i', strtotime($trx->tanggal_transaksi)),
+                    'tanggal_lengkap' => date('d M Y, H:i', strtotime($trx->tanggal_transaksi)),
+                    'tanggal_raw' => date('Y-m-d', strtotime($trx->tanggal_transaksi)),
                     'metode_bayar' => ucfirst($trx->metode_bayar),
-                    'waktu' => Carbon::parse($trx->tanggal_transaksi)->format('H:i') . ' WIB',
-                    'total' => $trx->total_harga
+                    'total_harga' => $trx->total_harga
                 ];
             });
 
