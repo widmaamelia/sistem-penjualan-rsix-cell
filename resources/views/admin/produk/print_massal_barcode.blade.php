@@ -75,16 +75,17 @@
             border-bottom: 1px dashed #ccc;
         }
         .layout-thermal-1 .product-name {
-            font-size: 24px;
+            font-size: 32px;
             white-space: normal;
         }
         .layout-thermal-1 .product-price {
-            font-size: 24px;
+            font-size: 32px;
             font-weight: bold;
         }
-        /* Hapus svg width 100% agar barcode tidak overscale, gunakan render asli jsbarcode */
-        .layout-thermal-1 svg.barcode {
+        .layout-thermal-1 img.barcode {
+            width: 85%;
             margin: 5px 0;
+            image-rendering: pixelated;
         }
         
         .barcode-item {
@@ -147,16 +148,15 @@
                 border-bottom: 1px dashed #ccc !important;
             }
             .layout-thermal-1 .product-name {
-                font-size: 26px !important;
+                font-size: 32px !important;
                 margin-top: 5px;
             }
             .layout-thermal-1 .product-price {
-                font-size: 26px !important;
+                font-size: 32px !important;
                 margin-bottom: 10px;
             }
-            .layout-thermal-1 svg.barcode {
+            .layout-thermal-1 img.barcode {
                 max-width: 100% !important;
-                /* biarkan height asli */
             }
         }
     </style>
@@ -180,7 +180,7 @@
             @foreach($produks as $produk)
                 <div class="barcode-item">
                     <div class="product-name">{{ $produk->nama_produk }}</div>
-                    <svg class="barcode" data-value="{{ $produk->barcode_imei ?? $produk->sku }}"></svg>
+                    <img class="barcode" data-value="{{ $produk->barcode_imei ?? $produk->sku }}" alt="Barcode">
                     <div class="product-price">Rp {{ number_format($produk->harga_jual, 0, ',', '.') }}</div>
                 </div>
             @endforeach
@@ -208,25 +208,25 @@
 
         function renderBarcodes(layoutClass) {
             const barcodes = document.querySelectorAll('.barcode');
-            barcodes.forEach(function(svg) {
-                const value = svg.getAttribute('data-value');
+            barcodes.forEach(function(img) {
+                const value = img.getAttribute('data-value');
                 if (value) {
                     try {
-                        svg.innerHTML = ''; // Kosongkan isi SVG sebelumnya
-                        JsBarcode(svg, value, {
+                        let displayVal = layoutClass === 'layout-thermal-1' ? false : true;
+                        JsBarcode(img, value, {
                             format: "CODE128",
                             lineColor: "#000",
-                            width: layoutClass === 'layout-thermal-1' ? 3 : 1.5,
-                            height: layoutClass === 'layout-thermal-1' ? 90 : 40,
-                            displayValue: true,
-                            fontSize: layoutClass === 'layout-thermal-1' ? 24 : 12,
+                            width: layoutClass === 'layout-thermal-1' ? 4 : 1.5,
+                            height: layoutClass === 'layout-thermal-1' ? 120 : 40,
+                            displayValue: displayVal,
+                            fontSize: 12,
                             margin: 0
                         });
                     } catch (e) {
-                        svg.outerHTML = "<p style='color:red; font-size:10px; margin:0;'>Invalid Barcode Format</p>";
+                        img.outerHTML = "<p style='color:red; font-size:10px; margin:0;'>Invalid Barcode Format</p>";
                     }
                 } else {
-                    svg.outerHTML = "<p style='color:red; font-size:10px; margin:0;'>No Barcode/SKU</p>";
+                    img.outerHTML = "<p style='color:red; font-size:10px; margin:0;'>No Barcode/SKU</p>";
                 }
             });
         }

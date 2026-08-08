@@ -55,19 +55,20 @@
             box-sizing: border-box;
         }
         .layout-thermal-58 .product-name {
-            font-size: 24px;
+            font-size: 32px;
             font-weight: bold;
             margin-bottom: 8px;
             white-space: normal;
         }
         .layout-thermal-58 .product-price {
-            font-size: 24px;
+            font-size: 32px;
             margin-top: 8px;
             font-weight: bold;
         }
-        /* Hapus svg width 100% agar barcode tidak terlalu raksasa, gunakan ukuran asli JsBarcode */
-        .layout-thermal-58 svg#barcode {
+        .layout-thermal-58 img#barcode {
+            width: 85%;
             margin: 5px 0;
+            image-rendering: pixelated;
         }
 
         /* Standar A4 / Normal */
@@ -123,16 +124,15 @@
                 page-break-inside: avoid;
             }
             .layout-thermal-58 .product-name {
-                font-size: 26px !important;
+                font-size: 32px !important;
                 margin-top: 5px;
             }
             .layout-thermal-58 .product-price {
-                font-size: 26px !important;
+                font-size: 32px !important;
                 margin-bottom: 10px;
             }
-            .layout-thermal-58 svg#barcode {
+            .layout-thermal-58 img#barcode {
                 max-width: 100% !important;
-                /* biarkan height asli */
             }
         }
     </style>
@@ -153,7 +153,7 @@
     <div class="page layout-thermal-58" id="print-page">
         <div class="barcode-container">
             <div class="product-name">{{ $produk->nama_produk }}</div>
-            <svg id="barcode"></svg>
+            <img id="barcode" alt="Barcode">
             <div class="product-price">Rp {{ number_format($produk->harga_jual, 0, ',', '.') }}</div>
         </div>
     </div>
@@ -170,16 +170,11 @@
         function renderBarcode(layoutClass) {
             const barcodeValue = "{{ $produk->barcode_imei ?? $produk->sku }}";
             const svg = document.querySelector("#barcode");
-            
             if (barcodeValue) {
                 // Sesuaikan ketebalan dan ukuran berdasarkan layout
-                // Ketebalan 3 pixel agar lebih lebar di kertas thermal
-                let width = layoutClass === 'layout-thermal-58' ? 3 : 2;
-                let height = layoutClass === 'layout-thermal-58' ? 90 : 50;
-                let fontSize = layoutClass === 'layout-thermal-58' ? 24 : 14;
-
-                // Kosongkan isi SVG sebelumnya
-                svg.innerHTML = '';
+                let width = layoutClass === 'layout-thermal-58' ? 4 : 2;
+                let height = layoutClass === 'layout-thermal-58' ? 120 : 50;
+                let displayVal = layoutClass === 'layout-thermal-58' ? false : true; // Hilangkan angka untuk thermal
                 
                 try {
                     JsBarcode("#barcode", barcodeValue, {
@@ -187,15 +182,15 @@
                         lineColor: "#000",
                         width: width,
                         height: height,
-                        displayValue: true,
-                        fontSize: fontSize,
+                        displayValue: displayVal,
+                        fontSize: 14,
                         margin: 0
                     });
                 } catch (e) {
-                    svg.outerHTML = "<p style='color:red; font-size:12px;'>Invalid Barcode</p>";
+                    document.querySelector("#barcode").outerHTML = "<p style='color:red; font-size:12px;'>Invalid Barcode</p>";
                 }
             } else {
-                svg.outerHTML = "<p style='color:red; font-size:12px;'>Produk ini tidak memiliki SKU/Barcode</p>";
+                document.querySelector("#barcode").outerHTML = "<p style='color:red; font-size:12px;'>Produk ini tidak memiliki SKU/Barcode</p>";
             }
         }
 
