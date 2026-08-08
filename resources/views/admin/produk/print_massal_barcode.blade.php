@@ -79,12 +79,11 @@
             white-space: normal;
         }
         .layout-thermal-1 .product-price {
-            font-size: 14px;
+            font-size: 16px;
         }
+        /* Hapus svg width 100% agar barcode tidak overscale, gunakan render asli jsbarcode */
         .layout-thermal-1 svg.barcode {
-            width: 90%;
-            height: auto;
-            max-height: 80px;
+            margin: 5px 0;
         }
         
         .barcode-item {
@@ -147,16 +146,16 @@
                 border-bottom: 1px dashed #ccc !important;
             }
             .layout-thermal-1 .product-name {
-                font-size: 16px !important;
+                font-size: 18px !important;
                 margin-top: 5px;
             }
             .layout-thermal-1 .product-price {
-                font-size: 16px !important;
+                font-size: 18px !important;
                 margin-bottom: 10px;
             }
             .layout-thermal-1 svg.barcode {
-                width: 100% !important;
-                max-height: none !important;
+                max-width: 100% !important;
+                /* biarkan height asli */
             }
         }
     </style>
@@ -216,7 +215,7 @@
                         JsBarcode(svg, value, {
                             format: "CODE128",
                             lineColor: "#000",
-                            width: layoutClass === 'layout-thermal-1' ? 2.5 : 1.5,
+                            width: layoutClass === 'layout-thermal-1' ? 2 : 1.5,
                             height: layoutClass === 'layout-thermal-1' ? 60 : 40,
                             displayValue: true,
                             fontSize: layoutClass === 'layout-thermal-1' ? 16 : 12,

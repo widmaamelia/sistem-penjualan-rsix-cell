@@ -61,14 +61,13 @@
             white-space: normal;
         }
         .layout-thermal-58 .product-price {
-            font-size: 14px;
+            font-size: 16px;
             margin-top: 5px;
             font-weight: bold;
         }
+        /* Hapus svg width 100% agar barcode tidak terlalu raksasa, gunakan ukuran asli JsBarcode */
         .layout-thermal-58 svg#barcode {
-            width: 90%;
-            height: auto;
-            max-height: 80px;
+            margin: 5px 0;
         }
 
         /* Standar A4 / Normal */
@@ -125,15 +124,15 @@
             }
             .layout-thermal-58 .product-name {
                 font-size: 18px !important;
-                margin-top: 10px;
+                margin-top: 5px;
             }
             .layout-thermal-58 .product-price {
                 font-size: 18px !important;
                 margin-bottom: 10px;
             }
             .layout-thermal-58 svg#barcode {
-                width: 100% !important;
-                max-height: none !important;
+                max-width: 100% !important;
+                /* biarkan height asli */
             }
         }
     </style>
@@ -174,7 +173,8 @@
             
             if (barcodeValue) {
                 // Sesuaikan ketebalan dan ukuran berdasarkan layout
-                let width = layoutClass === 'layout-thermal-58' ? 2.5 : 2;
+                // Untuk Thermal, ketebalan 2 pixel dan tinggi 60 pixel adalah ukuran barcode standar POS
+                let width = layoutClass === 'layout-thermal-58' ? 2 : 2;
                 let height = layoutClass === 'layout-thermal-58' ? 60 : 50;
                 let fontSize = layoutClass === 'layout-thermal-58' ? 16 : 14;
 
