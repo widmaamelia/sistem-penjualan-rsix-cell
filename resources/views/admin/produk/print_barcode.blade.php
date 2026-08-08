@@ -66,9 +66,10 @@
             font-weight: bold;
         }
         .layout-thermal-58 img#barcode {
-            width: 85%;
+            /* Hapus width 85% agar tidak ada scaling CSS. Biarkan gambar asli pixel-perfect */
             margin: 5px 0;
             image-rendering: pixelated;
+            display: inline-block;
         }
 
         /* Standar A4 / Normal */
@@ -132,7 +133,8 @@
                 margin-bottom: 10px;
             }
             .layout-thermal-58 img#barcode {
-                max-width: 100% !important;
+                /* biarkan ukuran asli */
+                display: inline-block;
             }
         }
     </style>
@@ -171,9 +173,10 @@
             const barcodeValue = "{{ $produk->barcode_imei ?? $produk->sku }}";
             const svg = document.querySelector("#barcode");
             if (barcodeValue) {
-                // Sesuaikan ketebalan dan ukuran berdasarkan layout
-                let width = layoutClass === 'layout-thermal-58' ? 4 : 2;
-                let height = layoutClass === 'layout-thermal-58' ? 120 : 50;
+                // Jangan gunakan scale CSS, biarkan JsBarcode menggambar pixel secara native
+                // Width 2.5 sangat ideal untuk resolusi printer thermal (menghindari blur)
+                let width = layoutClass === 'layout-thermal-58' ? 2.5 : 2;
+                let height = layoutClass === 'layout-thermal-58' ? 100 : 50;
                 let displayVal = layoutClass === 'layout-thermal-58' ? false : true; // Hilangkan angka untuk thermal
                 
                 try {

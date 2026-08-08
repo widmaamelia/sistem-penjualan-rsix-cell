@@ -83,9 +83,10 @@
             font-weight: bold;
         }
         .layout-thermal-1 img.barcode {
-            width: 85%;
+            /* Hapus width 85% agar tidak ada scaling CSS. Biarkan gambar asli pixel-perfect */
             margin: 5px 0;
             image-rendering: pixelated;
+            display: inline-block;
         }
         
         .barcode-item {
@@ -156,7 +157,8 @@
                 margin-bottom: 10px;
             }
             .layout-thermal-1 img.barcode {
-                max-width: 100% !important;
+                /* biarkan ukuran asli */
+                display: inline-block;
             }
         }
     </style>
@@ -216,8 +218,8 @@
                         JsBarcode(img, value, {
                             format: "CODE128",
                             lineColor: "#000",
-                            width: layoutClass === 'layout-thermal-1' ? 4 : 1.5,
-                            height: layoutClass === 'layout-thermal-1' ? 120 : 40,
+                            width: layoutClass === 'layout-thermal-1' ? 2.5 : 1.5,
+                            height: layoutClass === 'layout-thermal-1' ? 100 : 40,
                             displayValue: displayVal,
                             fontSize: 12,
                             margin: 0
