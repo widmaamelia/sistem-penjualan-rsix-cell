@@ -63,7 +63,7 @@
         /* Thermal 1 Column (e.g. 50x30mm) */
         .layout-thermal-1 {
             width: 100%;
-            max-width: 58mm;
+            max-width: 100%;
             padding: 0;
             gap: 0;
             box-shadow: none;
@@ -123,6 +123,8 @@
             body {
                 background: none;
                 padding: 0;
+                margin: 0;
+                width: 100%;
             }
             .controls {
                 display: none;
@@ -130,10 +132,31 @@
             .page {
                 box-shadow: none;
                 margin: 0;
+                width: 100%;
             }
             .barcode-item {
-                border: 1px solid #ddd; /* Thermal printers need a slight border or no border */
+                border: 1px solid #ddd;
                 page-break-inside: avoid;
+            }
+            .layout-thermal-1 {
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+            .layout-thermal-1 .barcode-item {
+                border: none !important;
+                border-bottom: 1px dashed #ccc !important;
+            }
+            .layout-thermal-1 .product-name {
+                font-size: 16px !important;
+                margin-top: 5px;
+            }
+            .layout-thermal-1 .product-price {
+                font-size: 16px !important;
+                margin-bottom: 10px;
+            }
+            .layout-thermal-1 svg.barcode {
+                width: 100% !important;
+                max-height: none !important;
             }
         }
     </style>
@@ -177,23 +200,26 @@
                 page.classList.remove('layout-a4', 'layout-thermal-1', 'layout-thermal-2');
                 // Tambahkan layout terpilih
                 page.classList.add(layoutClass);
+                
+                // Render ulang barcode dengan ukuran yang sesuai
+                renderBarcodes(layoutClass);
             }
         }
 
-        document.addEventListener("DOMContentLoaded", function() {
+        function renderBarcodes(layoutClass) {
             const barcodes = document.querySelectorAll('.barcode');
-            
             barcodes.forEach(function(svg) {
                 const value = svg.getAttribute('data-value');
                 if (value) {
                     try {
+                        svg.innerHTML = ''; // Kosongkan isi SVG sebelumnya
                         JsBarcode(svg, value, {
                             format: "CODE128",
                             lineColor: "#000",
-                            width: 1.5,
-                            height: 40,
+                            width: layoutClass === 'layout-thermal-1' ? 2.5 : 1.5,
+                            height: layoutClass === 'layout-thermal-1' ? 60 : 40,
                             displayValue: true,
-                            fontSize: 12,
+                            fontSize: layoutClass === 'layout-thermal-1' ? 16 : 12,
                             margin: 0
                         });
                     } catch (e) {
@@ -203,6 +229,11 @@
                     svg.outerHTML = "<p style='color:red; font-size:10px; margin:0;'>No Barcode/SKU</p>";
                 }
             });
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            // Render pertama kali
+            renderBarcodes('layout-thermal-2');
 
             // Auto print if not empty
             @if($produks->count() > 0)

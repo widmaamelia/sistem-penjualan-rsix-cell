@@ -43,7 +43,7 @@
         /* Thermal 58mm (Kertas Kecil Bluetooth) */
         .layout-thermal-58 {
             width: 100%;
-            max-width: 58mm;
+            max-width: 100%;
             padding: 0;
             margin: 0 auto;
         }
@@ -101,6 +101,8 @@
             body {
                 background: none;
                 padding: 0;
+                margin: 0;
+                width: 100%;
                 align-items: flex-start;
             }
             .controls {
@@ -109,10 +111,29 @@
             .page {
                 box-shadow: none;
                 margin: 0;
+                width: 100%;
             }
-            .barcode-container {
+            .layout-thermal-58 {
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+            .layout-thermal-58 .barcode-container {
+                width: 100% !important;
                 border: none !important;
+                padding: 0;
                 page-break-inside: avoid;
+            }
+            .layout-thermal-58 .product-name {
+                font-size: 18px !important;
+                margin-top: 10px;
+            }
+            .layout-thermal-58 .product-price {
+                font-size: 18px !important;
+                margin-bottom: 10px;
+            }
+            .layout-thermal-58 svg#barcode {
+                width: 100% !important;
+                max-height: none !important;
             }
         }
     </style>
@@ -153,9 +174,9 @@
             
             if (barcodeValue) {
                 // Sesuaikan ketebalan dan ukuran berdasarkan layout
-                let width = layoutClass === 'layout-thermal-58' ? 1.2 : 2;
-                let height = layoutClass === 'layout-thermal-58' ? 35 : 50;
-                let fontSize = layoutClass === 'layout-thermal-58' ? 11 : 14;
+                let width = layoutClass === 'layout-thermal-58' ? 2.5 : 2;
+                let height = layoutClass === 'layout-thermal-58' ? 60 : 50;
+                let fontSize = layoutClass === 'layout-thermal-58' ? 16 : 14;
 
                 // Kosongkan isi SVG sebelumnya
                 svg.innerHTML = '';
