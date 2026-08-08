@@ -62,14 +62,29 @@
 
         /* Thermal 1 Column (e.g. 50x30mm) */
         .layout-thermal-1 {
-            width: 50mm;
-            padding: 2mm;
-            gap: 2mm;
-            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 58mm;
+            padding: 0;
+            gap: 0;
+            box-shadow: none;
         }
         .layout-thermal-1 .barcode-item {
             width: 100%;
-            height: 30mm;
+            padding: 15px 0;
+            border: none;
+            border-bottom: 1px dashed #ccc;
+        }
+        .layout-thermal-1 .product-name {
+            font-size: 14px;
+            white-space: normal;
+        }
+        .layout-thermal-1 .product-price {
+            font-size: 14px;
+        }
+        .layout-thermal-1 svg.barcode {
+            width: 90%;
+            height: auto;
+            max-height: 80px;
         }
         
         .barcode-item {

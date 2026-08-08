@@ -42,25 +42,33 @@
 
         /* Thermal 58mm (Kertas Kecil Bluetooth) */
         .layout-thermal-58 {
-            width: 58mm; /* Lebar kertas printer bluetooth */
-            padding: 2mm;
+            width: 100%;
+            max-width: 58mm;
+            padding: 0;
+            margin: 0 auto;
         }
         .layout-thermal-58 .barcode-container {
             width: 100%;
-            border: 1px dashed #ccc;
-            padding: 5px;
+            border: none;
+            padding: 10px 0;
             text-align: center;
             box-sizing: border-box;
         }
         .layout-thermal-58 .product-name {
-            font-size: 10px;
+            font-size: 14px;
             font-weight: bold;
-            margin-bottom: 3px;
+            margin-bottom: 5px;
+            white-space: normal;
         }
         .layout-thermal-58 .product-price {
-            font-size: 11px;
-            margin-top: 3px;
+            font-size: 14px;
+            margin-top: 5px;
             font-weight: bold;
+        }
+        .layout-thermal-58 svg#barcode {
+            width: 90%;
+            height: auto;
+            max-height: 80px;
         }
 
         /* Standar A4 / Normal */
