@@ -16,6 +16,7 @@
 
     .filter-group {
         display: flex;
+        flex-wrap: wrap;
         gap: 10px;
         flex: 1;
     }
@@ -254,7 +255,8 @@
 
 <!-- Table -->
 <div class="table-container">
-    <table class="table mb-0">
+    <div class="table-responsive" style="border-radius: 12px 12px 0 0;">
+        <table class="table mb-0">
         <thead>
             <tr>
                 <th style="padding-left: 20px;">Produk</th>
@@ -341,7 +343,8 @@
                 </tr>
             @endforelse
         </tbody>
-    </table>
+        </table>
+    </div>
 
     <!-- Pagination -->
     <div class="bg-white border-top py-3 px-4 d-flex justify-content-between align-items-center" style="font-size: 13px; color: #6b7280;">
