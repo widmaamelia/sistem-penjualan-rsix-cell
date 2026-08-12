@@ -3,6 +3,8 @@
 @section('title', 'Rekap Laporan Seluruh Cabang')
 
 @section('content')
+<!-- Flatpickr CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
 <!-- Ringkasan Dashboard Global -->
 <div class="row g-2 mb-3">
@@ -63,29 +65,9 @@
 <div class="card shadow-sm border-0 rounded-3 mb-4">
     <div class="card-body">
         <form action="{{ route('laporan.index') }}" method="GET" class="row g-3 align-items-end">
-            <div class="col-md-3">
-                <label class="form-label text-muted" style="font-size: 12px;">Filter Bulan</label>
-                <select name="bulan" class="form-select">
-                    <option value="">-- Semua Bulan --</option>
-                    @for($i=1; $i<=12; $i++)
-                        <option value="{{ str_pad($i, 2, '0', STR_PAD_LEFT) }}" {{ request('bulan') == str_pad($i, 2, '0', STR_PAD_LEFT) ? 'selected' : '' }}>
-                            {{ date('F', mktime(0, 0, 0, $i, 10)) }}
-                        </option>
-                    @endfor
-                </select>
-            </div>
-            <div class="col-md-3">
-                <label class="form-label text-muted" style="font-size: 12px;">Filter Tahun</label>
-                <select name="tahun" class="form-select">
-                    <option value="">-- Semua Tahun --</option>
-                    @for($i=date('Y'); $i>=date('Y')-5; $i--)
-                        <option value="{{ $i }}" {{ request('tahun') == $i ? 'selected' : '' }}>{{ $i }}</option>
-                    @endfor
-                </select>
-            </div>
-            <div class="col-md-4">
-                <label class="form-label text-muted" style="font-size: 12px;">Atau Tanggal Spesifik</label>
-                <input type="date" name="tanggal" class="form-control" value="{{ request('tanggal') }}">
+            <div class="col-md-10">
+                <label class="form-label text-muted" style="font-size: 12px;">Filter Rentang Tanggal</label>
+                <input type="text" name="date_range" id="date_range" class="form-control" placeholder="Pilih tanggal mulai s/d tanggal akhir" value="{{ request('date_range') }}">
             </div>
             <div class="col-md-2 d-grid gap-2">
                 <button type="submit" class="btn btn-primary" style="background-color: #1a5ca6;">Terapkan Filter</button>
@@ -136,4 +118,19 @@
         </table>
     </div>
 </div>
+@endsection
+
+@section('scripts')
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        flatpickr("#date_range", {
+            mode: "range",
+            dateFormat: "Y-m-d",
+            altInput: true,
+            altFormat: "d M Y",
+            placeholder: "Pilih rentang tanggal (Mulai - Sampai)"
+        });
+    });
+</script>
 @endsection

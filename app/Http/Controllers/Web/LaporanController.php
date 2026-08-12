@@ -22,15 +22,16 @@ class LaporanController extends Controller
             $query->where('id_cabang', $request->id_cabang);
         }
 
-        if ($request->filled('tanggal')) {
-            $query->whereDate('tanggal_transaksi', $request->tanggal);
-        }
-
-        if ($request->filled('bulan') && $request->filled('tahun')) {
-            $query->whereMonth('tanggal_transaksi', $request->bulan)
-                  ->whereYear('tanggal_transaksi', $request->tahun);
-        } elseif ($request->filled('tahun')) {
-            $query->whereYear('tanggal_transaksi', $request->tahun);
+        if ($request->filled('date_range')) {
+            $dates = explode(' to ', $request->date_range);
+            if (count($dates) === 2) {
+                // Range tanggal (dari - sampai)
+                $query->whereDate('tanggal_transaksi', '>=', trim($dates[0]))
+                      ->whereDate('tanggal_transaksi', '<=', trim($dates[1]));
+            } elseif (count($dates) === 1) {
+                // Hanya 1 tanggal dipilih
+                $query->whereDate('tanggal_transaksi', trim($dates[0]));
+            }
         }
 
         if ($request->filled('id_user')) {
@@ -61,15 +62,14 @@ class LaporanController extends Controller
             });
         }
 
-        if ($request->filled('tanggal')) {
-            $query->whereDate('tanggal', $request->tanggal);
-        }
-
-        if ($request->filled('bulan') && $request->filled('tahun')) {
-            $query->whereMonth('tanggal', $request->bulan)
-                  ->whereYear('tanggal', $request->tahun);
-        } elseif ($request->filled('tahun')) {
-            $query->whereYear('tanggal', $request->tahun);
+        if ($request->filled('date_range')) {
+            $dates = explode(' to ', $request->date_range);
+            if (count($dates) === 2) {
+                $query->whereDate('tanggal', '>=', trim($dates[0]))
+                      ->whereDate('tanggal', '<=', trim($dates[1]));
+            } elseif (count($dates) === 1) {
+                $query->whereDate('tanggal', trim($dates[0]));
+            }
         }
 
         if ($request->filled('id_user')) {

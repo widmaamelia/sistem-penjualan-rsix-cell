@@ -3,6 +3,8 @@
 @section('title', isset($cabangSpesifik) ? 'Detail Laporan: ' . $cabangSpesifik->nama_cabang : 'Laporan Penjualan')
 
 @section('content')
+<!-- Flatpickr CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
 @if(isset($cabangSpesifik))
 <div class="mb-4">
@@ -89,24 +91,7 @@
             <input type="hidden" name="id_cabang" value="{{ $cabangSpesifik->id_cabang }}">
         @endif
         
-        <select name="bulan" class="form-select" style="width: 160px; border-radius: 6px; font-size: 13.5px; padding: 6px 32px 6px 12px;">
-            <option value="">-- Semua Bulan --</option>
-            @for($i=1; $i<=12; $i++)
-                <option value="{{ str_pad($i, 2, '0', STR_PAD_LEFT) }}" {{ request('bulan') == str_pad($i, 2, '0', STR_PAD_LEFT) ? 'selected' : '' }}>
-                    {{ date('F', mktime(0, 0, 0, $i, 10)) }}
-                </option>
-            @endfor
-        </select>
-
-        <select name="tahun" class="form-select" style="width: 150px; border-radius: 6px; font-size: 13.5px; padding: 6px 32px 6px 12px;">
-            <option value="">-- Semua Tahun --</option>
-            @for($i=date('Y'); $i>=date('Y')-5; $i--)
-                <option value="{{ $i }}" {{ request('tahun') == $i ? 'selected' : '' }}>{{ $i }}</option>
-            @endfor
-        </select>
-
-        <input type="date" name="tanggal" class="form-control" style="width: 145px; border-radius: 6px; font-size: 13.5px; padding: 6px 12px;"
-               value="{{ request('tanggal') }}" title="Tanggal spesifik">
+        <input type="text" name="date_range" id="date_range" class="form-control" style="width: 250px; border-radius: 6px; font-size: 13.5px; padding: 6px 12px;" placeholder="Rentang Tanggal" value="{{ request('date_range') }}">
 
         @if(isset($karyawans) && $karyawans->count() > 0)
         <select name="id_user" class="form-select" style="width: 160px; border-radius: 6px; font-size: 13.5px; padding: 6px 32px 6px 12px;" title="Filter berdasarkan Karyawan">
@@ -120,7 +105,7 @@
         @endif
 
         <button type="submit" class="btn btn-outline-secondary" style="border-radius: 6px; font-weight: 500; padding: 6px 14px; font-size: 13.5px;">Filter</button>
-        @if(request()->hasAny(['bulan', 'tahun', 'tanggal', 'id_user']))
+        @if(request()->hasAny(['date_range', 'id_user']))
             <a href="{{ route('laporan.index', isset($cabangSpesifik) ? ['id_cabang' => $cabangSpesifik->id_cabang] : []) }}" class="btn btn-light border" style="border-radius: 6px; font-weight: 500; padding: 6px 14px; font-size: 13.5px;">Reset</a>
         @endif
     </form>
@@ -336,4 +321,19 @@
         </div>
     </div>
 </div>
+@endsection
+
+@section('scripts')
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        flatpickr("#date_range", {
+            mode: "range",
+            dateFormat: "Y-m-d",
+            altInput: true,
+            altFormat: "d M Y",
+            placeholder: "Mulai s/d Akhir"
+        });
+    });
+</script>
 @endsection
