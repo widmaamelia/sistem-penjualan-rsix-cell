@@ -261,13 +261,13 @@
                 <!-- Pesan Error Global -->
                 @if ($errors->any())
                     <p class="text-white mb-3 p-2 rounded" style="font-size: 13.5px; font-weight: 500; background-color: rgba(239, 68, 68, 0.9);">
-                        <i class="fa-solid fa-circle-exclamation me-1"></i> Username atau Password yang Anda masukkan salah.
+                        <i class="fa-solid fa-circle-exclamation me-1"></i> Email  atau Password yang Anda masukkan salah.
                     </p>
                 @endif
 
                 <!-- Email -->
                 <div>
-                    <label class="form-label">Email atau Username</label>
+                    <label class="form-label">Email</label>
                     <div class="input-group">
                         <input type="email" name="email" class="form-control" style="border-radius: 6px;" placeholder="Masukkan email atau username" value="{{ old('email') }}" required autofocus autocomplete="username" oninvalid="this.setCustomValidity('Kolom ini wajib diisi')" oninput="this.setCustomValidity('')">
                     </div>
