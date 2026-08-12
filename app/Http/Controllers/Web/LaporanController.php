@@ -129,10 +129,15 @@ class LaporanController extends Controller
         $user = auth()->user();
 
         // Default Filter: Bulan Ini (agar tidak meload semua data sepanjang masa jika dibuka kosong)
-        if (empty($request->query()) && !$request->has('id_cabang')) {
+        // Berlaku jika tidak ada filter date_range sama sekali
+        if (!$request->has('date_range')) {
             $start = now()->startOfMonth()->format('Y-m-d');
             $end = now()->endOfMonth()->format('Y-m-d');
-            return redirect()->route('laporan.index', ['date_range' => "$start to $end"]);
+            
+            $params = $request->all();
+            $params['date_range'] = "$start to $end";
+            
+            return redirect()->route('laporan.index', $params);
         }
 
         // Jika Super Admin dan tidak sedang membuka detail cabang spesifik
