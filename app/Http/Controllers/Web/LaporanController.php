@@ -128,22 +128,28 @@ class LaporanController extends Controller
     {
         $user = auth()->user();
 
+        // Default Filter: Bulan Ini (agar tidak meload semua data sepanjang masa jika dibuka kosong)
+        if (empty($request->query()) && !$request->has('id_cabang')) {
+            $start = now()->startOfMonth()->format('Y-m-d');
+            $end = now()->endOfMonth()->format('Y-m-d');
+            return redirect()->route('laporan.index', ['date_range' => "$start to $end"]);
+        }
+
         // Jika Super Admin dan tidak sedang membuka detail cabang spesifik
         if ($user->role === 'super' && !$request->filled('id_cabang')) {
             $cabangs = Cabang::all();
             
-            // Hitung global total
+            // Hitung global total menggunakan Aggregate Database (tanpa meload model)
             $globalQuery = $this->buildQuery($request);
-            $allTransGlobal = $globalQuery->get();
-            $globalOmzet = $allTransGlobal->sum('total_harga');
-            $globalTransaksi = $allTransGlobal->count();
             
-            $globalLaba = 0;
-            foreach ($allTransGlobal as $t) {
-                foreach ($t->detailTransaksis as $d) {
-                    $globalLaba += ($d->harga_jual_realtime - $d->harga_beli_realtime) * $d->qty;
-                }
-            }
+            $globalTransaksi = $globalQuery->count();
+            $globalOmzet = $globalQuery->sum('total_harga');
+            
+            // Hitung laba kotor lewat join (sangat cepat untuk jutaan data)
+            $labaQuery = clone $globalQuery;
+            $globalLaba = $labaQuery->join('detail_transaksis', 'transaksis.id_transaksi', '=', 'detail_transaksis.id_transaksi')
+                ->selectRaw('SUM((detail_transaksis.harga_jual_realtime - detail_transaksis.harga_beli_realtime) * detail_transaksis.qty) as total_laba')
+                ->value('total_laba') ?? 0;
 
             // Hitung global kas keluar
             $globalKasKeluar = $this->buildKasKeluarQuery($request)->sum('jumlah_pengeluaran');
@@ -155,18 +161,14 @@ class LaporanController extends Controller
                 $cabangReq = clone $request;
                 $cabangReq->merge(['id_cabang' => $cabang->id_cabang]);
                 $cQuery = $this->buildQuery($cabangReq);
-                $cTrans = $cQuery->get();
 
-                $cabang->total_transaksi = $cTrans->count();
-                $cabang->total_omzet = $cTrans->sum('total_harga');
+                $cabang->total_transaksi = $cQuery->count();
+                $cabang->total_omzet = $cQuery->sum('total_harga');
                 
-                $cLaba = 0;
-                foreach ($cTrans as $t) {
-                    foreach ($t->detailTransaksis as $d) {
-                        $cLaba += ($d->harga_jual_realtime - $d->harga_beli_realtime) * $d->qty;
-                    }
-                }
-                $cabang->total_laba = $cLaba;
+                $cLabaQuery = clone $cQuery;
+                $cabang->total_laba = $cLabaQuery->join('detail_transaksis', 'transaksis.id_transaksi', '=', 'detail_transaksis.id_transaksi')
+                    ->selectRaw('SUM((detail_transaksis.harga_jual_realtime - detail_transaksis.harga_beli_realtime) * detail_transaksis.qty) as total_laba')
+                    ->value('total_laba') ?? 0;
 
                 $cabang->total_kas_keluar = $this->buildKasKeluarQuery($cabangReq)->sum('jumlah_pengeluaran');
                 $cabang->total_uang_masuk = $cabang->total_omzet;
@@ -183,11 +185,14 @@ class LaporanController extends Controller
         $query = $this->buildQuery($request);
         
         $summaryQuery = clone $query;
-        $allTrans = $summaryQuery->get();
-
-        $totalOmzet = $allTrans->sum('total_harga');
-        $totalTransaksi = $allTrans->count();
-        $labaKotor = $this->hitungLabaKotor($allTrans);
+        
+        $totalTransaksi = $summaryQuery->count();
+        $totalOmzet = $summaryQuery->sum('total_harga');
+        
+        $labaQuery = clone $query;
+        $labaKotor = $labaQuery->join('detail_transaksis', 'transaksis.id_transaksi', '=', 'detail_transaksis.id_transaksi')
+            ->selectRaw('SUM((detail_transaksis.harga_jual_realtime - detail_transaksis.harga_beli_realtime) * detail_transaksis.qty) as total_laba')
+            ->value('total_laba') ?? 0;
 
         // Kas keluar local cabang
         $totalKasKeluar = $this->buildKasKeluarQuery($request)->sum('jumlah_pengeluaran');
