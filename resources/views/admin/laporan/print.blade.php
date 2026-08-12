@@ -95,10 +95,24 @@
         .fw-bold { font-weight: bold !important; }
 
         /* Ringkasan Keuangan Box */
-        .summary-box {
-            width: 50%;
-            border: 1.5px solid #000;
+        .summary-container {
+            width: 100%;
             margin-bottom: 30px;
+        }
+        .clearfix::after {
+            content: "";
+            clear: both;
+            display: table;
+        }
+        .summary-box {
+            width: 48%;
+            border: 1.5px solid #000;
+        }
+        .summary-box.left {
+            float: left;
+        }
+        .summary-box.right {
+            float: right;
         }
         .summary-box table {
             width: 100%;
@@ -319,34 +333,49 @@
     </table>
 
     <!-- 4. Ringkasan Keuangan Formal -->
-    <div class="section-title">Ikhtisar Keuangan</div>
-    <div class="summary-box">
-        <table>
-            <tr>
-                <td>Total Uang Masuk (Penjualan)</td>
-                <td class="text-end fw-bold" style="color: green;">Rp {{ number_format($totalUangMasuk, 0, ',', '.') }}</td>
-            </tr>
-            <tr>
-                <td>Modal Barang Terjual (HPP)</td>
-                <td class="text-end">- Rp {{ number_format($totalOmzet - $labaKotor, 0, ',', '.') }}</td>
-            </tr>
-            <tr class="fw-bold">
-                <td>Laba Kotor Penjualan</td>
-                <td class="text-end">Rp {{ number_format($labaKotor, 0, ',', '.') }}</td>
-            </tr>
-            <tr>
-                <td>Pengeluaran Operasional</td>
-                <td class="text-end" style="color: red;">- Rp {{ number_format($totalOperasional, 0, ',', '.') }}</td>
-            </tr>
-            <tr>
-                <td>Pembelian Barang Stok</td>
-                <td class="text-end" style="color: red;">- Rp {{ number_format($totalPembelianStok, 0, ',', '.') }}</td>
-            </tr>
-            <tr class="fw-bold">
-                <td>Total Uang Keluar</td>
-                <td class="text-end" style="color: red;">Rp {{ number_format($totalUangKeluar, 0, ',', '.') }}</td>
-            </tr>
-        </table>
+    <div class="section-title">Ringkasan Keuangan</div>
+    <div class="summary-container clearfix">
+        <!-- Box Kiri: Laba Kotor -->
+        <div class="summary-box left">
+            <table>
+                <tr>
+                    <td colspan="2" class="fw-bold text-center" style="background-color: #e0e0e0; font-size: 11px;">Rincian Laba Kotor</td>
+                </tr>
+                <tr>
+                    <td>Total Uang Masuk (Penjualan)</td>
+                    <td class="text-end fw-bold" style="color: green;">Rp {{ number_format($totalUangMasuk, 0, ',', '.') }}</td>
+                </tr>
+                <tr>
+                    <td>Modal Barang Terjual (HPP)</td>
+                    <td class="text-end">- Rp {{ number_format($totalOmzet - $labaKotor, 0, ',', '.') }}</td>
+                </tr>
+                <tr class="fw-bold">
+                    <td>Laba Kotor Penjualan</td>
+                    <td class="text-end">Rp {{ number_format($labaKotor, 0, ',', '.') }}</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Box Kanan: Uang Keluar -->
+        <div class="summary-box right">
+            <table>
+                <tr>
+                    <td colspan="2" class="fw-bold text-center" style="background-color: #e0e0e0; font-size: 11px;">Rincian Uang Keluar</td>
+                </tr>
+                <tr>
+                    <td>Pengeluaran Operasional</td>
+                    <td class="text-end" style="color: red;">Rp {{ number_format($totalOperasional, 0, ',', '.') }}</td>
+                </tr>
+                <tr>
+                    <td>Pembelian Barang Stok</td>
+                    <td class="text-end" style="color: red;">Rp {{ number_format($totalPembelianStok, 0, ',', '.') }}</td>
+                </tr>
+                <tr class="fw-bold">
+                    <td>Total Uang Keluar</td>
+                    <td class="text-end" style="color: red;">Rp {{ number_format($totalUangKeluar, 0, ',', '.') }}</td>
+                </tr>
+            </table>
+        </div>
     </div>
 
     <!-- 4. Lembar Pengesahan -->
