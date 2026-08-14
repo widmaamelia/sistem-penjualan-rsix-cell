@@ -238,7 +238,7 @@
 
 <!-- Splash Screen Khusus Mobile -->
 <div class="mobile-splash active" id="splashScreen">
-    <img src="{{ asset('upload.png') }}" alt="Splash Screen Rsix Cell">
+    <img src="<?php echo e(asset('upload.png')); ?>" alt="Splash Screen Rsix Cell">
 </div>
 
 <div class="split-screen">
@@ -246,7 +246,7 @@
     <!-- Bagian Kiri -->
     <div class="left-side">
         <div class="brand-center">
-            <img src="{{ asset('logo.jpeg') }}" alt="Logo Rsix Cell">
+            <img src="<?php echo e(asset('logo.jpeg')); ?>" alt="Logo Rsix Cell">
             <h2 class="text-uppercase">RSIX CELL</h2>
             <p class="fst-italic">Sistem Manajemen Toko Terpadu</p>
         </div>
@@ -255,21 +255,21 @@
     <!-- Bagian Kanan -->
     <div class="right-side">
         <div class="login-box">
-            <form method="POST" action="{{ route('login') }}">
-                @csrf
+            <form method="POST" action="<?php echo e(route('login')); ?>">
+                <?php echo csrf_field(); ?>
 
                 <!-- Pesan Error Global -->
-                @if ($errors->any())
+                <?php if($errors->any()): ?>
                     <p class="text-white mb-3 p-2 rounded" style="font-size: 13.5px; font-weight: 500; background-color: rgba(239, 68, 68, 0.9);">
                         <i class="fa-solid fa-circle-exclamation me-1"></i> Email  atau Password yang Anda masukkan salah.
                     </p>
-                @endif
+                <?php endif; ?>
 
                 <!-- Email -->
                 <div>
                     <label class="form-label">Email</label>
                     <div class="input-group">
-                        <input type="email" name="email" class="form-control" style="border-radius: 6px;" placeholder="Masukkan email atau username" value="{{ old('email') }}" required autofocus autocomplete="username" oninvalid="this.setCustomValidity('Kolom ini wajib diisi')" oninput="this.setCustomValidity('')">
+                        <input type="email" name="email" class="form-control" style="border-radius: 6px;" placeholder="Masukkan email atau username" value="<?php echo e(old('email')); ?>" required autofocus autocomplete="username" oninvalid="this.setCustomValidity('Kolom ini wajib diisi')" oninput="this.setCustomValidity('')">
                     </div>
                 </div>
 
@@ -277,7 +277,7 @@
                 <div class="mb-3">
                     <div class="d-flex justify-content-between align-items-center">
                         <label class="form-label mb-0">Password</label>
-                        <a href="{{ route('password.request') }}" class="forgot-link text-decoration-none" style="font-size: 12px; font-weight: 600;">Lupa Password?</a>
+                        <a href="<?php echo e(route('password.request')); ?>" class="forgot-link text-decoration-none" style="font-size: 12px; font-weight: 600;">Lupa Password?</a>
                     </div>
                     <div class="input-group mt-1">
                         <input type="password" name="password" id="passwordInput" class="form-control" placeholder="Masukkan password" required autocomplete="current-password" oninvalid="this.setCustomValidity('Kolom ini wajib diisi')" oninput="this.setCustomValidity('')">
@@ -339,3 +339,4 @@
 </script>
 </body>
 </html>
+<?php /**PATH D:\Semester_6\TUGAS AKHIR NGODING\sistem-penjualan-rsix-cell\resources\views/auth/login.blade.php ENDPATH**/ ?>

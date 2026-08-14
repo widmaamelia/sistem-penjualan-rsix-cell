@@ -90,14 +90,14 @@
 
 <div class="reset-container">
     <div class="reset-card">
-        <img src="{{ asset('logo.jpeg') }}" alt="Logo Rsix Cell" class="brand-logo">
+        <img src="<?php echo e(asset('logo.jpeg')); ?>" alt="Logo Rsix Cell" class="brand-logo">
         <h4 class="mb-2" style="font-weight: 700; color: #111827;">Buat Password Baru</h4>
         <p class="mb-4" style="font-size: 13.5px; color: #6b7280; line-height: 1.5;">
             Silakan masukkan email Anda beserta password baru yang ingin Anda gunakan.
         </p>
 
-        <form method="POST" action="{{ route('password.store') }}" class="text-start">
-            @csrf
+        <form method="POST" action="<?php echo e(route('password.store')); ?>" class="text-start">
+            <?php echo csrf_field(); ?>
             
             <!-- Password Reset Token -->
             <!-- Token tidak diperlukan lagi karena kita pakai OTP via Cache -->
@@ -105,28 +105,28 @@
             <!-- Email Address -->
             <div class="mb-3">
                 <label for="email" class="form-label">Email Anda</label>
-                <input type="email" name="email" id="email" class="form-control" value="{{ old('email', session('email') ?? $request->email) }}" required readonly style="background-color: #f3f4f6;">
-                @if($errors->has('email'))
-                    <span class="error-message"><i class="fa-solid fa-circle-exclamation"></i> {{ $errors->first('email') }}</span>
-                @endif
+                <input type="email" name="email" id="email" class="form-control" value="<?php echo e(old('email', session('email') ?? $request->email)); ?>" required readonly style="background-color: #f3f4f6;">
+                <?php if($errors->has('email')): ?>
+                    <span class="error-message"><i class="fa-solid fa-circle-exclamation"></i> <?php echo e($errors->first('email')); ?></span>
+                <?php endif; ?>
             </div>
 
             <!-- OTP -->
             <div class="mb-3">
                 <label for="otp" class="form-label">Kode OTP (Cek Email Anda)</label>
                 <input type="text" name="otp" id="otp" class="form-control" required autofocus autocomplete="off" placeholder="Masukkan 6 digit angka OTP" maxlength="6" style="letter-spacing: 2px; font-weight: bold; text-align: center; font-size: 18px;">
-                @if($errors->has('otp'))
-                    <span class="error-message"><i class="fa-solid fa-circle-exclamation"></i> {{ $errors->first('otp') }}</span>
-                @endif
+                <?php if($errors->has('otp')): ?>
+                    <span class="error-message"><i class="fa-solid fa-circle-exclamation"></i> <?php echo e($errors->first('otp')); ?></span>
+                <?php endif; ?>
             </div>
 
             <!-- Password Baru -->
             <div class="mb-3">
                 <label for="password" class="form-label">Password Baru</label>
                 <input type="password" name="password" id="password" class="form-control" required autofocus autocomplete="new-password">
-                @if($errors->has('password'))
-                    <span class="error-message"><i class="fa-solid fa-circle-exclamation"></i> {{ $errors->first('password') }}</span>
-                @endif
+                <?php if($errors->has('password')): ?>
+                    <span class="error-message"><i class="fa-solid fa-circle-exclamation"></i> <?php echo e($errors->first('password')); ?></span>
+                <?php endif; ?>
             </div>
 
             <!-- Konfirmasi Password -->
@@ -144,3 +144,4 @@
 
 </body>
 </html>
+<?php /**PATH D:\Semester_6\TUGAS AKHIR NGODING\sistem-penjualan-rsix-cell\resources\views/auth/reset-password.blade.php ENDPATH**/ ?>

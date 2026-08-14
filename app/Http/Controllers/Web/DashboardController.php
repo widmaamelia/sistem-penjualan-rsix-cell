@@ -56,7 +56,7 @@ class DashboardController extends Controller
         ];
 
         // 2. Data Transaksi Terbaru
-        $transaksiTerbaruQuery = Transaksi::with(['cabang', 'user', 'detailTransaksis']);
+        $transaksiTerbaruQuery = Transaksi::with(['cabang', 'user', 'detailTransaksis.produk']);
         if (!$isSuper) {
             $transaksiTerbaruQuery->where('id_cabang', $id_cabang);
         }

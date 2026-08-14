@@ -95,31 +95,32 @@
 
 <div class="reset-container">
     <div class="reset-card">
-        <img src="{{ asset('logo.jpeg') }}" alt="Logo Rsix Cell" class="brand-logo">
+        <img src="<?php echo e(asset('logo.jpeg')); ?>" alt="Logo Rsix Cell" class="brand-logo">
         <h4 class="mb-2" style="font-weight: 700; color: #111827;">Lupa Password?</h4>
         <p class="mb-4" style="font-size: 13.5px; color: #6b7280; line-height: 1.5;">
             Jangan khawatir. Masukkan email Anda dan kami akan mengirimkan <b>6 Digit Kode OTP</b> untuk mereset password Anda.
         </p>
 
         <!-- Session Status -->
-        @if (session('status'))
+        <?php if(session('status')): ?>
             <div class="alert alert-success mb-4" style="font-size: 13px; font-weight: 500;">
-                {{ session('status') }}
-            </div>
-        @endif
+                <?php echo e(session('status')); ?>
 
-        <form method="POST" action="{{ route('password.email') }}" class="text-start">
-            @csrf
+            </div>
+        <?php endif; ?>
+
+        <form method="POST" action="<?php echo e(route('password.email')); ?>" class="text-start">
+            <?php echo csrf_field(); ?>
             
-            @if ($errors->any())
+            <?php if($errors->any()): ?>
                 <div class="alert alert-danger mb-3 p-2" style="font-size: 13px;">
                     Email tidak ditemukan dalam sistem.
                 </div>
-            @endif
+            <?php endif; ?>
 
             <div class="mb-3">
                 <label for="email" class="form-label">Alamat Email</label>
-                <input type="email" name="email" id="email" class="form-control" value="{{ old('email') }}" placeholder="Contoh: admin@rsixcell.com" required autofocus>
+                <input type="email" name="email" id="email" class="form-control" value="<?php echo e(old('email')); ?>" placeholder="Contoh: admin@rsixcell.com" required autofocus>
             </div>
 
             <button type="submit" class="btn btn-primary">
@@ -127,7 +128,7 @@
             </button>
         </form>
 
-        <a href="{{ route('login') }}" class="back-link">
+        <a href="<?php echo e(route('login')); ?>" class="back-link">
             <i class="fa-solid fa-arrow-left me-1"></i> Kembali ke Halaman Login
         </a>
     </div>
@@ -135,3 +136,4 @@
 
 </body>
 </html>
+<?php /**PATH D:\Semester_6\TUGAS AKHIR NGODING\sistem-penjualan-rsix-cell\resources\views/auth/forgot-password.blade.php ENDPATH**/ ?>

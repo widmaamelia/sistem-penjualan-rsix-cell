@@ -1,8 +1,6 @@
-@extends('layouts.admin')
+<?php $__env->startSection('title', 'Dashboard'); ?>
 
-@section('title', 'Dashboard')
-
-@section('styles')
+<?php $__env->startSection('styles'); ?>
 <style>
     /* Summary Cards Styling */
     .summary-card {
@@ -111,9 +109,9 @@
         margin-right: 8px;
     }
 </style>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 <!-- Row 1: Summary Cards -->
 <div class="row g-3 mb-4">
     <!-- Card 1 -->
@@ -122,7 +120,7 @@
             <div class="card-body p-3 d-flex align-items-center justify-content-between">
                 <div>
                     <h6 class="text-muted text-uppercase fw-bold mb-1" style="font-size: 11px;">Total Pendapatan Hari Ini</h6>
-                    <h5 class="m-0 fw-bold" style="font-size: 18px; color: #1a5ca6;">Rp {{ number_format($statistik['pendapatan'], 0, ',', '.') }}</h5>
+                    <h5 class="m-0 fw-bold" style="font-size: 18px; color: #1a5ca6;">Rp <?php echo e(number_format($statistik['pendapatan'], 0, ',', '.')); ?></h5>
                 </div>
                 <div class="summary-icon icon-blue fs-4" style="width: 45px; height: 45px; flex-shrink: 0; border-radius: 12px;">
                     <i class="fa-solid fa-money-bill-wave"></i>
@@ -137,7 +135,7 @@
             <div class="card-body p-3 d-flex align-items-center justify-content-between">
                 <div>
                     <h6 class="text-muted text-uppercase fw-bold mb-1" style="font-size: 11px;">Total Transaksi Hari Ini</h6>
-                    <h5 class="m-0 fw-bold" style="font-size: 18px; color: #1a5ca6;">{{ $statistik['total_transaksi'] }}</h5>
+                    <h5 class="m-0 fw-bold" style="font-size: 18px; color: #1a5ca6;"><?php echo e($statistik['total_transaksi']); ?></h5>
                 </div>
                 <div class="summary-icon icon-purple fs-4" style="width: 45px; height: 45px; flex-shrink: 0; border-radius: 12px;">
                     <i class="fa-solid fa-receipt"></i>
@@ -151,11 +149,11 @@
         <div class="card border-0 shadow-sm rounded-3 h-100">
             <div class="card-body p-3 d-flex align-items-center justify-content-between">
                 <div>
-                    <h6 class="text-muted text-uppercase fw-bold mb-1" style="font-size: 11px;">{{ $statistik['label_cabang'] }}</h6>
-                    <h5 class="m-0 fw-bold" style="font-size: 18px; color: #1a5ca6;">{{ $statistik['nilai_cabang'] }}</h5>
+                    <h6 class="text-muted text-uppercase fw-bold mb-1" style="font-size: 11px;"><?php echo e($statistik['label_cabang']); ?></h6>
+                    <h5 class="m-0 fw-bold" style="font-size: 18px; color: #1a5ca6;"><?php echo e($statistik['nilai_cabang']); ?></h5>
                 </div>
                 <div class="summary-icon icon-orange fs-4" style="width: 45px; height: 45px; flex-shrink: 0; border-radius: 12px;">
-                    <i class="{{ auth()->user()->role === 'super' ? 'fa-solid fa-store' : 'fa-solid fa-triangle-exclamation' }}"></i>
+                    <i class="<?php echo e(auth()->user()->role === 'super' ? 'fa-solid fa-store' : 'fa-solid fa-triangle-exclamation'); ?>"></i>
                 </div>
             </div>
         </div>
@@ -167,7 +165,7 @@
             <div class="card-body p-3 d-flex align-items-center justify-content-between">
                 <div>
                     <h6 class="text-muted text-uppercase fw-bold mb-1" style="font-size: 11px;">Karyawan Bertugas</h6>
-                    <h5 class="m-0 fw-bold" style="font-size: 18px; color: #1a5ca6;">{{ $statistik['karyawan'] }}</h5>
+                    <h5 class="m-0 fw-bold" style="font-size: 18px; color: #1a5ca6;"><?php echo e($statistik['karyawan']); ?></h5>
                 </div>
                 <div class="summary-icon icon-indigo fs-4" style="width: 45px; height: 45px; flex-shrink: 0; border-radius: 12px;">
                     <i class="fa-solid fa-user-tie"></i>
@@ -180,11 +178,11 @@
 <!-- Row 2: Charts -->
 <div class="row g-4 mb-4">
     <!-- Bar Chart -->
-    <div class="{{ auth()->user()->role === 'super' ? 'col-md-8' : 'col-12' }}">
+    <div class="<?php echo e(auth()->user()->role === 'super' ? 'col-md-8' : 'col-12'); ?>">
         <div class="card h-100 border-0 shadow-sm">
             <div class="card-header border-0 bg-white pt-4 pb-0 d-flex justify-content-between align-items-center">
                 <h6 class="mb-0 fw-bold" style="font-size: 15px;">Penjualan 7 Hari Terakhir</h6>
-                <a href="{{ route('laporan.index') }}" class="btn btn-outline-secondary" style="border-radius: 6px; font-weight: 500; padding: 4px 10px; font-size: 11.5px;">Lihat Laporan Lengkap</a>
+                <a href="<?php echo e(route('laporan.index')); ?>" class="btn btn-outline-secondary" style="border-radius: 6px; font-weight: 500; padding: 4px 10px; font-size: 11.5px;">Lihat Laporan Lengkap</a>
             </div>
             <div class="card-body pb-0 d-flex flex-column justify-content-center">
                 <div id="barChart"></div>
@@ -193,44 +191,44 @@
     </div>
 
     <!-- Donut Chart -->
-    @if(auth()->user()->role === 'super')
+    <?php if(auth()->user()->role === 'super'): ?>
     <div class="col-md-4">
         <div class="card h-100 border-0 shadow-sm">
             <div class="card-header border-0 bg-white pt-4 pb-0">
                 <h6 class="mb-0 fw-bold" style="font-size: 15px;">Kontribusi Per Cabang</h6>
             </div>
             <div class="card-body d-flex flex-column justify-content-center">
-                @if($totalPendapatanGlobal > 0)
+                <?php if($totalPendapatanGlobal > 0): ?>
                     <div id="donutChart" class="d-flex justify-content-center mb-4"></div>
                     
                     <!-- Custom Legend Dynamic -->
                     <div class="px-3">
-                        @foreach($donutChartLabels as $index => $label)
+                        <?php $__currentLoopData = $donutChartLabels; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <div class="legend-item">
-                                <div><span class="legend-color" style="background-color: {{ $colorsToPass[$index] }};"></span> {{ $label }}</div>
-                                <span class="fw-bold text-dark">{{ number_format(($donutChartData[$index] / $totalPendapatanGlobal) * 100, 1) }}%</span>
+                                <div><span class="legend-color" style="background-color: <?php echo e($colorsToPass[$index]); ?>;"></span> <?php echo e($label); ?></div>
+                                <span class="fw-bold text-dark"><?php echo e(number_format(($donutChartData[$index] / $totalPendapatanGlobal) * 100, 1)); ?>%</span>
                             </div>
-                        @endforeach
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </div>
-                @else
+                <?php else: ?>
                     <div class="text-center text-muted my-5">
                         <i class="fa-solid fa-chart-pie mb-3" style="font-size: 40px; color: #d1d5db;"></i>
                         <p class="mb-0">Belum ada data pendapatan cabang untuk ditampilkan.</p>
                     </div>
-                @endif
+                <?php endif; ?>
             </div>
         </div>
     </div>
-    @endif
+    <?php endif; ?>
 </div>
 
 <!-- Row 3: Table & Price Log -->
 <div class="row g-4">
-    <div class="{{ auth()->user()->role === 'super' ? 'col-md-8' : 'col-12' }}">
+    <div class="<?php echo e(auth()->user()->role === 'super' ? 'col-md-8' : 'col-12'); ?>">
         <div class="card border-0 shadow-sm h-100">
             <div class="card-header border-0 bg-white py-3 d-flex justify-content-between align-items-center">
                 <h6 class="mb-0 fw-bold" style="font-size: 15px;">Transaksi Terbaru</h6>
-                <a href="{{ route('laporan.index') }}" class="btn-link-action text-decoration-none" style="font-size: 12px; color: #1a5ca6;">Lihat Semua <i class="fa-solid fa-arrow-right ms-1"></i></a>
+                <a href="<?php echo e(route('laporan.index')); ?>" class="btn-link-action text-decoration-none" style="font-size: 12px; color: #1a5ca6;">Lihat Semua <i class="fa-solid fa-arrow-right ms-1"></i></a>
             </div>
             <div class="table-container">
                 <table class="table mb-0 align-middle table-hover">
@@ -247,46 +245,46 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($transaksi_terbaru as $index => $trx)
+                        <?php $__empty_1 = true; $__currentLoopData = $transaksi_terbaru; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $trx): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                         <tr>
-                            <td>{{ $index + 1 }}</td>
+                            <td><?php echo e($index + 1); ?></td>
                             <td class="tx-id">
-                                @foreach($trx->detailTransaksis as $dt)
-                                    <div>{{ $dt->produk->nama_produk ?? 'Produk Dihapus' }} <span class="text-muted" style="font-size: 11px;">(x{{ $dt->qty }})</span></div>
-                                @endforeach
+                                <?php $__currentLoopData = $trx->detailTransaksis; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $dt): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <div><?php echo e($dt->produk->nama_produk ?? 'Produk Dihapus'); ?> <span class="text-muted" style="font-size: 11px;">(x<?php echo e($dt->qty); ?>)</span></div>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </td>
-                            <td>{{ $trx->cabang->nama_cabang ?? 'Pusat' }}</td>
-                            <td>{{ $trx->user->name ?? 'Admin' }}</td>
-                            <td>{{ $trx->detailTransaksis->sum('qty') }}</td>
-                            <td class="fw-bold">Rp {{ number_format($trx->total_harga, 0, ',', '.') }}</td>
+                            <td><?php echo e($trx->cabang->nama_cabang ?? 'Pusat'); ?></td>
+                            <td><?php echo e($trx->user->name ?? 'Admin'); ?></td>
+                            <td><?php echo e($trx->detailTransaksis->sum('qty')); ?></td>
+                            <td class="fw-bold">Rp <?php echo e(number_format($trx->total_harga, 0, ',', '.')); ?></td>
                             <td>
-                                @if(strtolower($trx->metode_bayar) === 'tunai')
-                                    <span class="badge bg-success bg-opacity-10 text-success" style="font-size: 10px; padding: 4px 8px;">{{ ucfirst($trx->metode_bayar) }}</span>
-                                @else
-                                    <span class="badge bg-primary bg-opacity-10 text-primary" style="font-size: 10px; padding: 4px 8px;">{{ ucfirst($trx->metode_bayar) }}</span>
-                                @endif
+                                <?php if(strtolower($trx->metode_bayar) === 'tunai'): ?>
+                                    <span class="badge bg-success bg-opacity-10 text-success" style="font-size: 10px; padding: 4px 8px;"><?php echo e(ucfirst($trx->metode_bayar)); ?></span>
+                                <?php else: ?>
+                                    <span class="badge bg-primary bg-opacity-10 text-primary" style="font-size: 10px; padding: 4px 8px;"><?php echo e(ucfirst($trx->metode_bayar)); ?></span>
+                                <?php endif; ?>
                             </td>
-                            <td>{{ \Carbon\Carbon::parse($trx->tanggal_transaksi)->format('d M, H:i') }}</td>
+                            <td><?php echo e(\Carbon\Carbon::parse($trx->tanggal_transaksi)->format('d M, H:i')); ?></td>
                         </tr>
-                        @empty
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                         <tr>
                             <td colspan="8" class="text-center py-5 text-muted">
                                 Belum ada transaksi terbaru hari ini.
                             </td>
                         </tr>
-                        @endforelse
+                        <?php endif; ?>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    @if(auth()->user()->role === 'super')
+    <?php if(auth()->user()->role === 'super'): ?>
     <div class="col-md-4">
         <div class="card border-0 shadow-sm h-100">
             <div class="card-header border-0 bg-white py-3 d-flex justify-content-between align-items-center">
                 <h6 class="mb-0 fw-bold" style="font-size: 15px;">Log Perubahan Harga Beli</h6>
-                <a href="{{ route('produk.index') }}" class="btn-link-action text-decoration-none" style="font-size: 11px; color: #1a5ca6;">Semua Produk <i class="fa-solid fa-arrow-right ms-1"></i></a>
+                <a href="<?php echo e(route('produk.index')); ?>" class="btn-link-action text-decoration-none" style="font-size: 11px; color: #1a5ca6;">Semua Produk <i class="fa-solid fa-arrow-right ms-1"></i></a>
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
@@ -299,48 +297,48 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($perubahan_harga as $log)
+                            <?php $__empty_1 = true; $__currentLoopData = $perubahan_harga; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $log): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                                 <tr>
                                     <td style="padding: 12px 15px; font-size: 12px;">
-                                        <span class="fw-bold text-dark">{{ Str::limit($log->produk->nama_produk ?? 'Produk', 20) }}</span>
+                                        <span class="fw-bold text-dark"><?php echo e(Str::limit($log->produk->nama_produk ?? 'Produk', 20)); ?></span>
                                     </td>
                                     <td style="padding: 12px 15px; font-size: 12px;">
-                                        <span class="text-muted text-decoration-line-through text-nowrap" style="font-size: 11px;">Rp {{ number_format($log->harga_beli_lama, 0, ',', '.') }}</span>
+                                        <span class="text-muted text-decoration-line-through text-nowrap" style="font-size: 11px;">Rp <?php echo e(number_format($log->harga_beli_lama, 0, ',', '.')); ?></span>
                                         <br>
                                         <i class="fa-solid fa-arrow-right text-success" style="font-size: 10px;"></i>
-                                        <span class="fw-bold text-success text-nowrap">Rp {{ number_format($log->harga_beli_baru, 0, ',', '.') }}</span>
+                                        <span class="fw-bold text-success text-nowrap">Rp <?php echo e(number_format($log->harga_beli_baru, 0, ',', '.')); ?></span>
                                     </td>
                                     <td style="padding: 12px 15px; font-size: 11px;">
-                                        <div class="fw-semibold text-secondary">{{ $log->user->name ?? '-' }}</div>
-                                        <small class="text-muted">{{ \Carbon\Carbon::parse($log->tanggal)->format('d/m, H:i') }}</small>
+                                        <div class="fw-semibold text-secondary"><?php echo e($log->user->name ?? '-'); ?></div>
+                                        <small class="text-muted"><?php echo e(\Carbon\Carbon::parse($log->tanggal)->format('d/m, H:i')); ?></small>
                                     </td>
                                 </tr>
-                            @empty
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                                 <tr>
                                     <td colspan="3" class="text-center py-5 text-muted" style="font-size: 12px;">
                                         <i class="fa-solid fa-clock-rotate-left mb-2 fs-4 text-muted opacity-50"></i>
                                         <div>Belum ada riwayat perubahan harga beli.</div>
                                     </td>
                                 </tr>
-                            @endforelse
+                            <?php endif; ?>
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
     </div>
-    @endif
+    <?php endif; ?>
 </div>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@section('scripts')
+<?php $__env->startSection('scripts'); ?>
 <script>
 document.addEventListener("DOMContentLoaded", function() {
     // 1. Bar Chart (Penjualan 7 Hari Terakhir)
     var barOptions = {
         series: [{
             name: 'Pendapatan',
-            data: @json($barChartData)
+            data: <?php echo json_encode($barChartData, 15, 512) ?>
         }],
         chart: {
             type: 'bar',
@@ -381,7 +379,7 @@ document.addEventListener("DOMContentLoaded", function() {
             colors: ['transparent']
         },
         xaxis: {
-            categories: @json($barChartLabels),
+            categories: <?php echo json_encode($barChartLabels, 15, 512) ?>,
             labels: {
                 style: { colors: '#6b7280', fontSize: '12px', fontWeight: 600 }
             },
@@ -418,16 +416,16 @@ document.addEventListener("DOMContentLoaded", function() {
     barChart.render();
 
     // 2. Donut Chart (Kontribusi Cabang)
-    @if(auth()->user()->role === 'super' && $totalPendapatanGlobal > 0)
+    <?php if(auth()->user()->role === 'super' && $totalPendapatanGlobal > 0): ?>
     var donutOptions = {
-        series: @json($donutChartData),
+        series: <?php echo json_encode($donutChartData, 15, 512) ?>,
         chart: {
             type: 'donut',
             height: 190,
             fontFamily: 'Inter, sans-serif'
         },
-        labels: @json($donutChartLabels),
-        colors: @json($colorsToPass),
+        labels: <?php echo json_encode($donutChartLabels, 15, 512) ?>,
+        colors: <?php echo json_encode($colorsToPass, 15, 512) ?>,
         plotOptions: {
             pie: {
                 donut: {
@@ -455,7 +453,9 @@ document.addEventListener("DOMContentLoaded", function() {
 
     var donutChart = new ApexCharts(document.querySelector("#donutChart"), donutOptions);
     donutChart.render();
-    @endif
+    <?php endif; ?>
 });
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.admin', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\Semester_6\TUGAS AKHIR NGODING\sistem-penjualan-rsix-cell\resources\views/admin/dashboard.blade.php ENDPATH**/ ?>

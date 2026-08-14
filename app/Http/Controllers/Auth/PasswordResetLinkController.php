@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Password;
-use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Mail;
+use App\Models\User;
+use App\Mail\OtpMail;
 use Illuminate\View\View;
 
 class PasswordResetLinkController extends Controller
@@ -20,9 +22,7 @@ class PasswordResetLinkController extends Controller
     }
 
     /**
-     * Handle an incoming password reset link request.
-     *
-     * @throws ValidationException
+     * Handle an incoming password reset link request (Generate & Send OTP).
      */
     public function store(Request $request): RedirectResponse
     {
@@ -30,16 +30,33 @@ class PasswordResetLinkController extends Controller
             'email' => ['required', 'email'],
         ]);
 
-        // We will send the password reset link to this user. Once we have attempted
-        // to send the link, we will examine the response then see the message we
-        // need to show to the user. Finally, we'll send out a proper response.
-        $status = Password::sendResetLink(
-            $request->only('email')
-        );
+        $user = User::where('email', $request->email)->first();
 
-        return $status == Password::RESET_LINK_SENT
-                    ? back()->with('status', __($status))
-                    : back()->withInput($request->only('email'))
-                        ->withErrors(['email' => __($status)]);
+        if (!$user) {
+            // Biarkan pura-pura sukses demi keamanan (mencegah enumerasi email)
+            // Atau berikan error jika ingin user tau emailnya salah. Kita kasih error saja.
+            return back()->withInput($request->only('email'))
+                         ->withErrors(['email' => 'Email tidak ditemukan dalam sistem.']);
+        }
+
+        // Generate 6 digit OTP
+        $otp = rand(100000, 999999);
+
+        // Simpan OTP di Cache selama 15 menit, dengan key email
+        Cache::put('otp_reset_' . $user->email, $otp, now()->addMinutes(15));
+
+        // Kirim Email OTP
+        try {
+            Mail::to($user->email)->send(new OtpMail($otp));
+        } catch (\Exception $e) {
+            return back()->withInput($request->only('email'))
+                         ->withErrors(['email' => 'Gagal mengirim email OTP. Pastikan SMTP dikonfigurasi dengan benar.']);
+        }
+
+        // Arahkan ke halaman reset password dengan membawa email
+        return redirect()->route('password.reset', [
+            'token' => 'otp', 
+            'email' => $request->email
+        ])->with('status', 'Kode OTP telah dikirim ke email Anda.');
     }
 }
