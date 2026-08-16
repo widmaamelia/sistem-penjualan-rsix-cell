@@ -246,7 +246,7 @@
     <!-- Bagian Kiri -->
     <div class="left-side">
         <div class="brand-center">
-            <img src="{{ asset('logo.jpeg') }}" alt="Logo Rsix Cell">
+            <img src="{{ asset('logo_rsix.png') }}" alt="Logo Rsix Cell">
             <h2 class="text-uppercase">RSIX CELL</h2>
             <p class="fst-italic">Sistem Manajemen Toko Terpadu</p>
         </div>
@@ -295,7 +295,7 @@
             </form>
         </div>
 
-        <div class="version-text">v1.0.0</div>
+        <div class="version-text">Widma Amelia</div>
     </div>
 
 </div>

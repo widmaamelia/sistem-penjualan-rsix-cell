@@ -90,7 +90,7 @@
 
 <div class="reset-container">
     <div class="reset-card">
-        <img src="{{ asset('logo.jpeg') }}" alt="Logo Rsix Cell" class="brand-logo">
+        <img src="{{ asset('logo_rsix.png') }}" alt="Logo Rsix Cell" class="brand-logo">
         <h4 class="mb-2" style="font-weight: 700; color: #111827;">Buat Password Baru</h4>
         <p class="mb-4" style="font-size: 13.5px; color: #6b7280; line-height: 1.5;">
             Silakan masukkan email Anda beserta password baru yang ingin Anda gunakan.
