@@ -1,8 +1,6 @@
-@extends('layouts.admin')
+<?php $__env->startSection('title', 'Kas Keluar'); ?>
 
-@section('title', 'Kas Keluar')
-
-@section('styles')
+<?php $__env->startSection('styles'); ?>
 <style>
     .action-bar {
         display: flex;
@@ -184,84 +182,100 @@
         .summary-panel .summary-bar { grid-area: bar; }
     }
 </style>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 
 <!-- Notifikasi -->
-@if(session('success'))
+<?php if(session('success')): ?>
     <div class="alert alert-success alert-dismissible fade show" role="alert" style="font-size: 14px;">
-        {{ session('success') }}
+        <?php echo e(session('success')); ?>
+
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
-@endif
+<?php endif; ?>
 
-@if(session('error'))
+<?php if(session('error')): ?>
     <div class="alert alert-danger alert-dismissible fade show" role="alert" style="font-size: 14px;">
-        {{ session('error') }}
+        <?php echo e(session('error')); ?>
+
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
-@endif
+<?php endif; ?>
 
-@if ($errors->any())
+<?php if($errors->any()): ?>
     <div class="alert alert-danger alert-dismissible fade show" style="font-size: 14px;">
         <ul class="mb-0">
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
+            <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <li><?php echo e($error); ?></li>
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </ul>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
-@endif
+<?php endif; ?>
 
 <!-- Header -->
 <div class="d-flex justify-content-end align-items-center mb-3">
-    @if(auth()->user()->role === 'admin cabang' || auth()->user()->role === 'super')
-    <a href="{{ route('kas_keluar.create') }}" class="btn btn-primary" style="background-color: #1a5ca6; border-color: #1a5ca6; border-radius: 6px; font-weight: 500; padding: 6px 14px; font-size: 13.5px;">
+    <?php if(auth()->user()->role === 'admin cabang' || auth()->user()->role === 'super'): ?>
+    <a href="<?php echo e(route('kas_keluar.create')); ?>" class="btn btn-primary" style="background-color: #1a5ca6; border-color: #1a5ca6; border-radius: 6px; font-weight: 500; padding: 6px 14px; font-size: 13.5px;">
         <i class="fa-solid fa-plus me-1"></i> Catat Kas Keluar
     </a>
-    @endif
+    <?php endif; ?>
 </div>
-
-<!-- Flatpickr CSS -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
 <!-- Filter Card -->
 <div class="card shadow-sm border-0 rounded-3 mb-4">
     <div class="card-body">
-        <form action="{{ route('kas_keluar.index') }}" method="GET" class="row g-3 align-items-end" id="filterForm">
-            <div class="col-md-4">
+        <form action="<?php echo e(route('kas_keluar.index')); ?>" method="GET" class="row g-3 align-items-end" id="filterForm">
+            <div class="col-md-3">
                 <label class="form-label text-muted" style="font-size: 12px;">Pencarian</label>
                 <div class="position-relative">
                     <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #9ca3af; font-size: 13px;"></i>
-                    <input type="text" name="search" class="form-control" placeholder="Cari keterangan..." value="{{ request('search') }}" style="border-radius: 6px; padding: 6px 12px 6px 32px; font-size: 13.5px;" onchange="document.getElementById('filterForm').submit()">
+                    <input type="text" name="search" class="form-control" placeholder="Cari keterangan..." value="<?php echo e(request('search')); ?>" style="border-radius: 6px; padding: 6px 12px 6px 32px; font-size: 13.5px;" onchange="document.getElementById('filterForm').submit()">
                 </div>
             </div>
             
-            @if(auth()->user()->role === 'super')
-            <div class="col-md-3">
+            <?php if(auth()->user()->role === 'super'): ?>
+            <div class="col-md-2">
                 <label class="form-label text-muted" style="font-size: 12px;">Filter Cabang</label>
                 <select name="id_cabang" class="form-select" style="border-radius: 6px; font-size: 13.5px; padding: 6px 32px 6px 12px;" onchange="document.getElementById('filterForm').submit()">
                     <option value="">Semua Cabang</option>
-                    @foreach($cabangs as $cabang)
-                        <option value="{{ $cabang->id_cabang }}" {{ request('id_cabang') == $cabang->id_cabang ? 'selected' : '' }}>{{ $cabang->nama_cabang }}</option>
-                    @endforeach
+                    <?php $__currentLoopData = $cabangs; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $cabang): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <option value="<?php echo e($cabang->id_cabang); ?>" <?php echo e(request('id_cabang') == $cabang->id_cabang ? 'selected' : ''); ?>><?php echo e($cabang->nama_cabang); ?></option>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </select>
             </div>
-            @endif
+            <?php endif; ?>
 
-            <div class="col-md-4">
-                <label class="form-label text-muted" style="font-size: 12px;">Filter Rentang Tanggal</label>
-                <div class="position-relative">
-                    <i class="fa-regular fa-calendar" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #9ca3af; font-size: 13px;"></i>
-                    <input type="text" name="date_range" id="date_range" class="form-control bg-white" placeholder="Pilih Rentang Tanggal" value="{{ request('date_range') }}" style="border-radius: 6px; font-size: 13.5px; padding: 6px 12px 6px 32px; cursor: pointer;">
-                </div>
+            <div class="col-md-2">
+                <label class="form-label text-muted" style="font-size: 12px;">Pilih Bulan</label>
+                <select name="bulan" class="form-select" style="border-radius: 6px; font-size: 13.5px; padding: 6px 32px 6px 12px;" onchange="document.getElementById('filterForm').submit()">
+                    <option value="">Semua Bulan</option>
+                    <?php $__currentLoopData = ['01' => 'Januari', '02' => 'Februari', '03' => 'Maret', '04' => 'April', '05' => 'Mei', '06' => 'Juni', '07' => 'Juli', '08' => 'Agustus', '09' => 'September', '10' => 'Oktober', '11' => 'November', '12' => 'Desember']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $angka => $nama): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <option value="<?php echo e($angka); ?>" <?php echo e(request('bulan') === $angka ? 'selected' : ''); ?>><?php echo e($nama); ?></option>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                </select>
+            </div>
+
+            <div class="col-md-2">
+                <label class="form-label text-muted" style="font-size: 12px;">Pilih Tahun</label>
+                <select name="tahun" class="form-select" style="border-radius: 6px; font-size: 13.5px; padding: 6px 32px 6px 12px;" onchange="document.getElementById('filterForm').submit()">
+                    <option value="">Semua Tahun</option>
+                    <?php for($i = date('Y'); $i >= date('Y') - 5; $i--): ?>
+                        <option value="<?php echo e($i); ?>" <?php echo e(request('tahun') == $i ? 'selected' : ''); ?>><?php echo e($i); ?></option>
+                    <?php endfor; ?>
+                </select>
+            </div>
+
+            <div class="col-md-2">
+                <label class="form-label text-muted" style="font-size: 12px;">Tanggal Spesifik</label>
+                <input type="date" name="tanggal" class="form-control" style="border-radius: 6px; font-size: 13.5px; padding: 6px 12px;" value="<?php echo e(request('tanggal')); ?>" title="Tanggal spesifik" onchange="document.getElementById('filterForm').submit()">
             </div>
 
             <div class="col-md-auto ms-auto d-flex gap-2">
-                @if(request()->hasAny(['search', 'id_cabang', 'date_range']) && array_filter(request()->only(['search', 'id_cabang', 'date_range'])))
-                    <a href="{{ route('kas_keluar.index') }}" class="btn btn-light border" style="border-radius: 6px; font-weight: 500; padding: 6px 14px; font-size: 13.5px;">Reset</a>
-                @endif
+                <?php if(request()->hasAny(['search', 'id_cabang', 'bulan', 'tahun', 'tanggal']) && array_filter(request()->only(['search', 'id_cabang', 'bulan', 'tahun', 'tanggal']))): ?>
+                    <a href="<?php echo e(route('kas_keluar.index')); ?>" class="btn btn-light border" style="border-radius: 6px; font-weight: 500; padding: 6px 14px; font-size: 13.5px;">Reset</a>
+                <?php endif; ?>
                 <button type="submit" class="btn btn-primary" style="background-color: #1a5ca6; border-color: #1a5ca6; border-radius: 6px; font-weight: 500; padding: 6px 14px; font-size: 13.5px;">
                     Filter
                 </button>
@@ -269,24 +283,6 @@
         </form>
     </div>
 </div>
-
-<!-- Flatpickr JS -->
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        flatpickr("#date_range", {
-            mode: "range",
-            dateFormat: "Y-m-d",
-            placeholder: "Pilih Rentang Tanggal",
-            onChange: function(selectedDates, dateStr, instance) {
-                // Submit form otomatis setelah rentang tanggal dipilih lengkap (2 tanggal)
-                if (selectedDates.length === 2) {
-                    document.getElementById('filterForm').submit();
-                }
-            }
-        });
-    });
-</script>
 
 <!-- Table -->
 <div class="table-container shadow-sm">
@@ -298,71 +294,72 @@
                 <th>Cabang</th>
                 <th>Jumlah Pengeluaran</th>
                 <th>Tipe Pengeluaran</th>
-                @if(auth()->user()->role === 'admin cabang' || auth()->user()->role === 'super')
+                <?php if(auth()->user()->role === 'admin cabang' || auth()->user()->role === 'super'): ?>
                 <th style="width: 80px;">Aksi</th>
-                @endif
+                <?php endif; ?>
             </tr>
         </thead>
         <tbody>
-            @forelse($kasKeluars as $index => $item)
-                @php
+            <?php $__empty_1 = true; $__currentLoopData = $kasKeluars; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                <?php
                     $isAutoRestock = str_contains(strtolower($item->keterangan), 'restock');
                     $isAutoOpname = str_contains(strtolower($item->keterangan), 'opname');
                     $isManual = !$isAutoRestock && !$isAutoOpname;
                     $cabangName = $item->cabang->nama_cabang ?? ($item->shift->cabang->nama_cabang ?? 'Cabang Dihapus');
-                @endphp
+                ?>
                 <tr>
-                    <td class="text-muted" style="padding-left: 20px;">{{ $kasKeluars->firstItem() + $index }}</td>
+                    <td class="text-muted" style="padding-left: 20px;"><?php echo e($kasKeluars->firstItem() + $index); ?></td>
                     <td class="fw-medium text-dark">
-                        {{ \Carbon\Carbon::parse($item->tanggal)->format('d M Y, H:i') }} WIB
+                        <?php echo e(\Carbon\Carbon::parse($item->tanggal)->format('d M Y, H:i')); ?> WIB
                     </td>
                     <td>
-                        <span class="text-primary fw-medium">{{ $cabangName }}</span>
+                        <span class="text-primary fw-medium"><?php echo e($cabangName); ?></span>
                     </td>
                     <td class="fw-bold text-danger">
-                        Rp {{ number_format($item->jumlah_pengeluaran, 0, ',', '.') }}
+                        Rp <?php echo e(number_format($item->jumlah_pengeluaran, 0, ',', '.')); ?>
+
                     </td>
                     <td>
-                        @if($isAutoRestock)
+                        <?php if($isAutoRestock): ?>
                             <span class="badge bg-info bg-opacity-10 text-info px-2 py-1" style="font-size: 11px;">Sistem (Restock)</span>
-                        @elseif($isAutoOpname)
+                        <?php elseif($isAutoOpname): ?>
                             <span class="badge bg-warning bg-opacity-10 text-warning px-2 py-1" style="font-size: 11px;">Sistem (Opname)</span>
-                        @else
+                        <?php else: ?>
                             <span class="badge bg-success bg-opacity-10 text-success px-2 py-1" style="font-size: 11px;">Manual (Operasional)</span>
-                        @endif
+                        <?php endif; ?>
                     </td>
-                    @if(auth()->user()->role === 'admin cabang' || auth()->user()->role === 'super')
+                    <?php if(auth()->user()->role === 'admin cabang' || auth()->user()->role === 'super'): ?>
                     <td>
                         <div class="action-icons align-items-center">
-                            <a href="{{ route('kas_keluar.show', $item->id_kas_keluar) }}" class="text-primary" title="Detail">
+                            <a href="<?php echo e(route('kas_keluar.show', $item->id_kas_keluar)); ?>" class="text-primary" title="Detail">
                                 <i class="fa-regular fa-eye"></i>
                             </a>
 
-                            @if($isManual)
-                                <form action="{{ route('kas_keluar.destroy', $item->id_kas_keluar) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus catatan pengeluaran ini?')">
-                                    @csrf
-                                    @method('DELETE')
+                            <?php if($isManual): ?>
+                                <form action="<?php echo e(route('kas_keluar.destroy', $item->id_kas_keluar)); ?>" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus catatan pengeluaran ini?')">
+                                    <?php echo csrf_field(); ?>
+                                    <?php echo method_field('DELETE'); ?>
                                     <button type="submit" class="text-danger" title="Hapus">
                                         <i class="fa-regular fa-trash-can"></i>
                                     </button>
                                 </form>
-                            @else
+                            <?php else: ?>
                                 <span class="text-muted ms-1" style="font-size: 11px;" title="Terkunci (Sistem)"><i class="fa-solid fa-lock"></i></span>
-                            @endif
+                            <?php endif; ?>
                         </div>
                     </td>
-                    @endif
+                    <?php endif; ?>
                 </tr>
-            @empty
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                 <tr>
                     <td colspan="6" class="text-center py-4 text-muted">Belum ada catatan pengeluaran kas.</td>
                 </tr>
-            @endforelse
+            <?php endif; ?>
         </tbody>
     </table>
 
-    @if($ringkasan['jumlah_semua'] > 0)
-    @php
+    <?php if($ringkasan['jumlah_semua'] > 0): ?>
+    <?php
         $namaBulan = ['01' => 'Januari', '02' => 'Februari', '03' => 'Maret', '04' => 'April',
                       '05' => 'Mei', '06' => 'Juni', '07' => 'Juli', '08' => 'Agustus',
                       '09' => 'September', '10' => 'Oktober', '11' => 'November', '12' => 'Desember'];
@@ -381,37 +378,39 @@
 
         $persenOtomatis = $ringkasan['total'] > 0 ? round($ringkasan['otomatis'] / $ringkasan['total'] * 100) : 0;
         $persenManual = $ringkasan['total'] > 0 ? 100 - $persenOtomatis : 0;
-    @endphp
+    ?>
 
     <div class="bg-light border-top p-3 d-flex justify-content-between align-items-center" style="font-size: 13px;">
         <div>
-            <span class="text-muted">Total Pengeluaran ({{ $periode }}):</span>
-            <strong class="text-danger ms-1 fs-6">Rp {{ number_format($ringkasan['total'], 0, ',', '.') }}</strong>
-            <span class="text-muted ms-2">({{ number_format($ringkasan['jumlah_semua'], 0, ',', '.') }} catatan)</span>
+            <span class="text-muted">Total Pengeluaran (<?php echo e($periode); ?>):</span>
+            <strong class="text-danger ms-1 fs-6">Rp <?php echo e(number_format($ringkasan['total'], 0, ',', '.')); ?></strong>
+            <span class="text-muted ms-2">(<?php echo e(number_format($ringkasan['jumlah_semua'], 0, ',', '.')); ?> catatan)</span>
             
-            @if(request()->filled('search'))
-                <span class="text-muted ms-1">&middot; Pencarian "{{ request('search') }}"</span>
-            @endif
+            <?php if(request()->filled('search')): ?>
+                <span class="text-muted ms-1">&middot; Pencarian "<?php echo e(request('search')); ?>"</span>
+            <?php endif; ?>
         </div>
         <div class="text-muted">
-            <span class="me-3"><i class="fa-solid fa-circle text-info" style="font-size: 8px; vertical-align: middle;"></i> Sistem: Rp {{ number_format($ringkasan['otomatis'], 0, ',', '.') }}</span>
-            <span><i class="fa-solid fa-circle text-success" style="font-size: 8px; vertical-align: middle;"></i> Manual: Rp {{ number_format($ringkasan['manual'], 0, ',', '.') }}</span>
+            <span class="me-3"><i class="fa-solid fa-circle text-info" style="font-size: 8px; vertical-align: middle;"></i> Sistem: Rp <?php echo e(number_format($ringkasan['otomatis'], 0, ',', '.')); ?></span>
+            <span><i class="fa-solid fa-circle text-success" style="font-size: 8px; vertical-align: middle;"></i> Manual: Rp <?php echo e(number_format($ringkasan['manual'], 0, ',', '.')); ?></span>
         </div>
     </div>
-    @endif
+    <?php endif; ?>
 
     <!-- Pagination -->
     <div class="bg-white border-top py-3 px-4 d-flex justify-content-between align-items-center" style="font-size: 13px; color: #6b7280;">
-        @if($kasKeluars->count() > 0)
-            <div>Menampilkan <strong>{{ $kasKeluars->firstItem() }}-{{ $kasKeluars->lastItem() }}</strong> dari <strong>{{ $kasKeluars->total() }}</strong> pengeluaran</div>
+        <?php if($kasKeluars->count() > 0): ?>
+            <div>Menampilkan <strong><?php echo e($kasKeluars->firstItem()); ?>-<?php echo e($kasKeluars->lastItem()); ?></strong> dari <strong><?php echo e($kasKeluars->total()); ?></strong> pengeluaran</div>
             <div>
-                {{ $kasKeluars->links('pagination::bootstrap-5') }}
+                <?php echo e($kasKeluars->links('pagination::bootstrap-5')); ?>
+
             </div>
-        @else
+        <?php else: ?>
             <div>Menampilkan 0 data</div>
-        @endif
+        <?php endif; ?>
     </div>
 </div>
 
 
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.admin', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\Semester_6\TUGAS AKHIR NGODING\sistem-penjualan-rsix-cell\resources\views/admin/kas_keluar/index.blade.php ENDPATH**/ ?>

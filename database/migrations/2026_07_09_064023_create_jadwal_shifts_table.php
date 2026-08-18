@@ -12,10 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('jadwal_shifts', function (Blueprint $table) {
-            $table->id('id_jadwal_shift');
-            $table->unsignedBigInteger('id_cabang');
-            $table->unsignedBigInteger('id_user');
-            $table->unsignedBigInteger('id_master_shift');
+            $table->increments('id_jadwal_shift');
+            $table->unsignedInteger('id_cabang');
+            $table->unsignedInteger('id_user');
+            $table->unsignedInteger('id_master_shift');
             $table->date('tanggal');
             $table->enum('status', ['terjadwal', 'berjalan', 'selesai', 'dibatalkan'])->default('terjadwal');
             $table->timestamps();

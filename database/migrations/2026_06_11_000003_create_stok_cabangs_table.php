@@ -9,9 +9,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('stok_cabangs', function (Blueprint $table) {
-            $table->id('id_stok_cabang');
-            $table->unsignedBigInteger('id_produk');
-            $table->unsignedBigInteger('id_cabang');
+            $table->increments('id_stok_cabang');
+            $table->unsignedInteger('id_produk');
+            $table->unsignedInteger('id_cabang');
             $table->integer('stok_sekarang')->default(0);
             $table->timestamps();
 

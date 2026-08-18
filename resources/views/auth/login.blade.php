@@ -273,25 +273,24 @@
                     </div>
                 </div>
 
-                <!-- Password -->
-                <div class="mb-3">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <label class="form-label mb-0">Password</label>
-                        <a href="{{ route('password.request') }}" class="forgot-link text-decoration-none" style="font-size: 12px; font-weight: 600;">Lupa Password?</a>
-                    </div>
-                    <div class="input-group mt-1">
-                        <input type="password" name="password" id="passwordInput" class="form-control" placeholder="Masukkan password" required autocomplete="current-password" oninvalid="this.setCustomValidity('Kolom ini wajib diisi')" oninput="this.setCustomValidity('')">
-                        <span class="input-group-text" style="cursor: pointer;" onclick="togglePassword()">
-                            <i class="fa-regular fa-eye" id="eyeIcon"></i>
-                        </span>
-                    </div>
-                </div>
-                
-                
-                <!-- Tombol Login -->
-                <button type="submit" class="btn btn-login mt-2">
-                    MASUK
-                </button>
+                                                    <!-- Password -->
+                  <div class="mb-4">
+                      <label class="form-label mb-1">Password</label>
+                      <div class="input-group">
+                          <input type="password" name="password" id="passwordInput" class="form-control" placeholder="Masukkan password" required autocomplete="current-password" oninvalid="this.setCustomValidity('Kolom ini wajib diisi')" oninput="this.setCustomValidity('')">
+                          <span class="input-group-text" style="cursor: pointer;" onclick="togglePassword()">
+                              <i class="fa-regular fa-eye" id="eyeIcon"></i>
+                          </span>
+                      </div>
+                      <div class="text-end mt-1">
+                          <a href="{{ route('password.request') }}" class="forgot-link text-decoration-none" style="font-size: 12.5px; font-weight: 500;">Lupa Password?</a>
+                      </div>
+                  </div>
+                  
+                  <!-- Tombol Login -->
+                  <button type="submit" class="btn btn-login">
+                      MASUK
+                  </button>
             </form>
         </div>
 

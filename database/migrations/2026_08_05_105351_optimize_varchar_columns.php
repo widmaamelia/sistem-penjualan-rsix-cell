@@ -15,22 +15,22 @@ return new class extends Migration
         
         // detail_transaksis
         DB::statement('ALTER TABLE detail_transaksis MODIFY nama_item_manual VARCHAR(100) NULL');
-        DB::statement('ALTER TABLE detail_transaksis MODIFY nomor_tujuan VARCHAR(30) NULL');
+        DB::statement('ALTER TABLE detail_transaksis MODIFY nomor_tujuan VARCHAR(20) NULL');
         DB::statement('ALTER TABLE detail_transaksis MODIFY kategori_layanan VARCHAR(50) NULL');
         
         // kategori_produks
         DB::statement('ALTER TABLE kategori_produks MODIFY nama_kategori VARCHAR(50) NOT NULL');
         
         // master_shifts
-        DB::statement('ALTER TABLE master_shifts MODIFY nama_shift VARCHAR(30) NOT NULL');
+        DB::statement('ALTER TABLE master_shifts MODIFY nama_shift VARCHAR(20) NOT NULL');
         
         // produks
-        DB::statement('ALTER TABLE produks MODIFY sku VARCHAR(50) NOT NULL');
-        DB::statement('ALTER TABLE produks MODIFY nama_produk VARCHAR(150) NOT NULL');
-        DB::statement('ALTER TABLE produks MODIFY barcode_imei VARCHAR(50) NULL');
+        DB::statement('ALTER TABLE produks MODIFY sku VARCHAR(30) NOT NULL');
+        DB::statement('ALTER TABLE produks MODIFY nama_produk VARCHAR(200) NOT NULL');
+        DB::statement('ALTER TABLE produks MODIFY barcode_imei VARCHAR(30) NULL');
         
         // transaksis
-        DB::statement('ALTER TABLE transaksis MODIFY no_transaksi VARCHAR(50) NOT NULL');
+        DB::statement('ALTER TABLE transaksis MODIFY no_transaksi VARCHAR(30) NOT NULL');
         
         // users
         DB::statement('ALTER TABLE users MODIFY name VARCHAR(100) NOT NULL');

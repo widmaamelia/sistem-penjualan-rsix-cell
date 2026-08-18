@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('kas_keluars', function (Blueprint $table) {
-            $table->unsignedBigInteger('id_shift')->nullable()->change();
-            $table->unsignedBigInteger('id_cabang')->nullable()->after('id_shift');
+            $table->unsignedInteger('id_shift')->nullable()->change();
+            $table->unsignedInteger('id_cabang')->nullable()->after('id_shift');
 
             $table->foreign('id_cabang')->references('id_cabang')->on('cabangs')->onDelete('cascade');
         });
@@ -24,7 +24,7 @@ return new class extends Migration
         Schema::table('kas_keluars', function (Blueprint $table) {
             $table->dropForeign(['id_cabang']);
             $table->dropColumn('id_cabang');
-            $table->unsignedBigInteger('id_shift')->nullable(false)->change();
+            $table->unsignedInteger('id_shift')->nullable(false)->change();
         });
     }
 };

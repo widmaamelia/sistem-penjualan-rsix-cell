@@ -13,7 +13,7 @@ return new class extends Migration
             $table->dropForeign(['id_produk']);
             
             // Modify column
-            $table->unsignedBigInteger('id_produk')->nullable()->change();
+            $table->unsignedInteger('id_produk')->nullable()->change();
             
             // Re-add constraint
             $table->foreign('id_produk')->references('id_produk')->on('produks')->onDelete('restrict');
@@ -31,7 +31,7 @@ return new class extends Migration
             // To revert, drop foreign key, make it not nullable (might fail if there's null data), and re-add constraint
             // This is just for completeness
             $table->dropForeign(['id_produk']);
-            $table->unsignedBigInteger('id_produk')->nullable(false)->change();
+            $table->unsignedInteger('id_produk')->nullable(false)->change();
             $table->foreign('id_produk')->references('id_produk')->on('produks')->onDelete('restrict');
         });
     }

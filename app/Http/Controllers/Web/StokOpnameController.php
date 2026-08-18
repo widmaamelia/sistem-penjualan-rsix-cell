@@ -21,10 +21,26 @@ class StokOpnameController extends Controller
 
         if ($user->role === 'admin cabang') {
             $query->where('id_cabang', $user->id_cabang);
+        } elseif ($user->role === 'super' && $request->filled('id_cabang')) {
+            $query->where('id_cabang', $request->id_cabang);
         }
 
-        $opnames = $query->paginate(10);
-        return view('admin.stok_opname.index', compact('opnames'));
+        if ($request->filled('date_range')) {
+            $dates = explode(' to ', $request->date_range);
+            if (count($dates) == 2) {
+                $query->whereBetween('tanggal_opname', [$dates[0], $dates[1]]);
+            } else {
+                $query->whereDate('tanggal_opname', $dates[0]);
+            }
+        } else {
+            // Default hanya tampilkan bulan ini
+            $query->whereMonth('tanggal_opname', date('m'))
+                  ->whereYear('tanggal_opname', date('Y'));
+        }
+
+        $opnames = $query->paginate(10)->withQueryString();
+        $cabangs = \App\Models\Cabang::where('status', 'aktif')->get();
+        return view('admin.stok_opname.index', compact('opnames', 'cabangs'));
     }
 
     public function create()

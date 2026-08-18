@@ -22,6 +22,7 @@ class StokController extends Controller
             $id_cabang = $request->input('id_cabang'); // Filter by branch
         }
         $search = $request->input('search');
+        $status_stok = $request->input('status_stok');
 
         // Query dasar dari Produk
         $query = Produk::with(['kategori', 'stokCabangs' => function ($q) use ($id_cabang) {
@@ -29,6 +30,36 @@ class StokController extends Controller
                 $q->where('id_cabang', $id_cabang);
             }
         }]);
+
+        // Filter Status Stok
+        if ($status_stok) {
+            if ($id_cabang) {
+                $query->whereHas('stokCabangs', function($q) use ($id_cabang, $status_stok) {
+                    $q->where('id_cabang', $id_cabang);
+                    if ($status_stok == 'habis') {
+                        $q->where('stok_sekarang', '<=', 0);
+                    } elseif ($status_stok == 'rendah') {
+                        $q->whereColumn('stok_sekarang', '<=', 'stok_minimum')->where('stok_sekarang', '>', 0);
+                    } elseif ($status_stok == 'aman') {
+                        $q->whereColumn('stok_sekarang', '>', 'stok_minimum');
+                    }
+                });
+            } else {
+                $query->whereIn('id_produk', function($q) use ($status_stok) {
+                    $q->select('id_produk')
+                      ->from('stok_cabangs')
+                      ->groupBy('id_produk');
+                      
+                    if ($status_stok == 'habis') {
+                        $q->havingRaw('SUM(stok_sekarang) <= 0');
+                    } elseif ($status_stok == 'rendah') {
+                        $q->havingRaw('SUM(stok_sekarang) > 0 AND SUM(stok_sekarang) <= MAX(stok_minimum)');
+                    } elseif ($status_stok == 'aman') {
+                        $q->havingRaw('SUM(stok_sekarang) > MAX(stok_minimum)');
+                    }
+                });
+            }
+        }
 
         // Filter search (SKU atau Nama)
         if ($search) {
@@ -72,7 +103,7 @@ class StokController extends Controller
             }
         }
 
-        return view('admin.stok.index', compact('produks', 'cabangs', 'id_cabang', 'totalProduk', 'stokRendah', 'stokHabis', 'search'));
+        return view('admin.stok.index', compact('produks', 'cabangs', 'id_cabang', 'totalProduk', 'stokRendah', 'stokHabis', 'search', 'status_stok'));
     }
 
     public function edit($id)

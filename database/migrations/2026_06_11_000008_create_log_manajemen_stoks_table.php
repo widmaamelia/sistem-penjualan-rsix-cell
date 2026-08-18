@@ -9,15 +9,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('log_manajemen_stoks', function (Blueprint $table) {
-            $table->id('id_log_stok');
-            $table->unsignedBigInteger('id_cabang');
-            $table->unsignedBigInteger('id_produk');
-            $table->unsignedBigInteger('id_user'); // Siapa yang merubah/transaksi
+            $table->increments('id_log_stok');
+            $table->unsignedInteger('id_cabang');
+            $table->unsignedInteger('id_produk');
+            $table->unsignedInteger('id_user'); // Siapa yang merubah/transaksi
             $table->integer('qty');
             $table->enum('jenis_transaksi', ['masuk', 'keluar', 'penjualan', 'retur']);
             $table->integer('stok_sebelum');
             $table->integer('stok_sesudah');
-            $table->string('keterangan')->nullable();
+            $table->text('keterangan')->nullable();
             $table->dateTime('tanggal');
             $table->timestamps();
 

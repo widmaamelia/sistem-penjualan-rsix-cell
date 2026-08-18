@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('jadwal_shifts', function (Blueprint $table) {
             $table->enum('tipe', ['biasa', 'lembur', 'izin'])->default('biasa')->after('tanggal');
-            $table->string('keterangan')->nullable()->after('tipe');
+            $table->text('keterangan')->nullable()->after('tipe');
         });
     }
 

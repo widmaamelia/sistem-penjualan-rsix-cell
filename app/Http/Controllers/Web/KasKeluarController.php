@@ -41,17 +41,18 @@ class KasKeluarController extends Controller
             $query->where('keterangan', 'like', '%' . $request->search . '%');
         }
 
-        // Filter tanggal spesifik. Jika diisi, filter bulan/tahun diabaikan.
-        if ($request->filled('tanggal')) {
-            $query->whereDate('tanggal', $request->tanggal);
+        // Filter rentang tanggal
+        if ($request->filled('date_range')) {
+            $dates = explode(' to ', $request->date_range);
+            if (count($dates) == 2) {
+                $query->whereBetween('tanggal', [$dates[0], $dates[1]]);
+            } else {
+                $query->whereDate('tanggal', $dates[0]);
+            }
         } else {
-            if ($request->filled('bulan')) {
-                $query->whereMonth('tanggal', $request->bulan);
-            }
-
-            if ($request->filled('tahun')) {
-                $query->whereYear('tanggal', $request->tahun);
-            }
+            // Default hanya tampilkan bulan ini jika filter kosong
+            $query->whereMonth('tanggal', date('m'))
+                  ->whereYear('tanggal', date('Y'));
         }
 
         // Dihitung sebelum paginate agar totalnya mencakup seluruh data

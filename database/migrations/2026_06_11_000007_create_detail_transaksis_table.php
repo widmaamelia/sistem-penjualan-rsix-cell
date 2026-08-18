@@ -9,14 +9,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('detail_transaksis', function (Blueprint $table) {
-            $table->id('id_detail_transaksi');
-            $table->unsignedBigInteger('id_transaksi');
-            $table->unsignedBigInteger('id_produk');
+            $table->increments('id_detail_transaksi');
+            $table->unsignedInteger('id_transaksi');
+            $table->unsignedInteger('id_produk');
             $table->integer('qty');
             $table->double('harga_beli_realtime', 15, 2)->nullable(); // Harga modal saat transaksi
             $table->double('harga_jual_realtime', 15, 2); // Harga saat transaksi terjadi
             $table->double('sub_total', 15, 2);
-            $table->string('nomor_tujuan', 30)->nullable(); // Untuk transaksi pulsa/PPOB
+            $table->string('nomor_tujuan', 20)->nullable(); // Untuk transaksi pulsa/PPOB
             $table->string('kategori_layanan', 50)->nullable(); // Fisik, Pulsa, Token, dll
             $table->timestamps();
 

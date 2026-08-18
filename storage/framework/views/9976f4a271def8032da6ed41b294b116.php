@@ -332,8 +332,8 @@
     <div class="sidebar">
         <div class="sidebar-brand">
             <!-- Ganti src di bawah dengan path gambar PNG Anda, misalnya asset('logo.png') jika ditaruh di folder public -->
-            <img src="<?php echo e(asset('logo.jpeg')); ?>" alt="Logo Rsix Cell" style="width: 35px; height: 35px; border-radius: 8px; object-fit: contain;">
-            <h5 class="mb-0 fw-bold" style="line-height: 1; padding-top: 2px;">Rsix Cell</h5>
+            <img src="<?php echo e(asset('logo_rsix.png')); ?>" alt="Logo Rsix Cell" style="width: 35px; height: 35px; border-radius: 8px; object-fit: contain;">
+            <span class="ms-2 fw-bold" style="font-size: 16px; letter-spacing: 0.5px;">Rsix Cell</span>
         </div>
 
         <div class="nav-menu">
