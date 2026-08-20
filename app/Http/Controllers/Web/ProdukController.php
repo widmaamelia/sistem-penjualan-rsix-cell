@@ -115,7 +115,8 @@ class ProdukController extends Controller
     public function create()
     {
         $kategoris = KategoriProduk::all();
-        $user = auth()->user();
+        /** @var \App\Models\User $user */
+        $user = \Illuminate\Support\Facades\Auth::user();
         if ($user->role === 'admin cabang') {
             $cabangs = Cabang::where('id_cabang', $user->id_cabang)->get();
         } else {
@@ -203,7 +204,8 @@ class ProdukController extends Controller
     {
         $produk = Produk::with('stokCabangs.cabang')->findOrFail($id);
         $kategoris = KategoriProduk::all();
-        $user = auth()->user();
+        /** @var \App\Models\User $user */
+        $user = \Illuminate\Support\Facades\Auth::user();
         if ($user->role === 'admin cabang') {
             $cabangs = Cabang::where('id_cabang', $user->id_cabang)->get();
         } else {
@@ -214,7 +216,8 @@ class ProdukController extends Controller
 
     public function update(Request $request, $id)
     {
-        $user = auth()->user();
+        /** @var \App\Models\User $user */
+        $user = \Illuminate\Support\Facades\Auth::user();
         if ($user->role === 'admin cabang') {
             $request->validate([
                 'harga_beli' => 'required|numeric|min:0',

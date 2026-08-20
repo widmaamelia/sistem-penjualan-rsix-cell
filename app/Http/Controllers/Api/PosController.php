@@ -26,7 +26,8 @@ class PosController extends Controller
     public function produk(Request $request)
     {
         try {
-            $user = $request->user();
+            /** @var \App\Models\User $user */
+        $user = $request->user();
             $search = $request->query('search');
             $kategori = $request->query('kategori');
 
@@ -54,7 +55,8 @@ class PosController extends Controller
     public function checkout(StoreCheckoutRequest $request)
     {
         try {
-            $user = $request->user();
+            /** @var \App\Models\User $user */
+        $user = $request->user();
             $data = $request->validated();
             
             $result = $this->posRepo->prosesCheckout($user, $data);

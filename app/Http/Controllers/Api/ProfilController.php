@@ -19,7 +19,8 @@ class ProfilController extends Controller
     public function updateProfil(UpdateProfilRequest $request)
     {
         try {
-            $user = $request->user();
+            /** @var \App\Models\User $user */
+        $user = $request->user();
             $data = $request->validated();
 
             $user->update([
@@ -39,7 +40,8 @@ class ProfilController extends Controller
     public function ubahPassword(UbahPasswordRequest $request)
     {
         try {
-            $user = $request->user();
+            /** @var \App\Models\User $user */
+        $user = $request->user();
             $data = $request->validated();
 
             // Cek apakah password lama sesuai

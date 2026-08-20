@@ -10,7 +10,7 @@ class MasterShiftController extends Controller
 {
     public function index()
     {
-        if (auth()->user()->role !== 'super') {
+        if (\Illuminate\Support\Facades\Auth::user()->role !== 'super') {
             return redirect()->route('dashboard')->with('error', 'Akses ditolak.');
         }
         $masterShifts = MasterShift::orderBy('jam_mulai')->get();
@@ -19,7 +19,7 @@ class MasterShiftController extends Controller
 
     public function create()
     {
-        if (auth()->user()->role !== 'super') {
+        if (\Illuminate\Support\Facades\Auth::user()->role !== 'super') {
             return redirect()->route('dashboard')->with('error', 'Akses ditolak.');
         }
         return view('admin.master_shift.create');
@@ -27,7 +27,7 @@ class MasterShiftController extends Controller
 
     public function store(Request $request)
     {
-        if (auth()->user()->role !== 'super') return abort(403);
+        if (\Illuminate\Support\Facades\Auth::user()->role !== 'super') return abort(403);
 
         $request->validate([
             'nama_shift' => 'required|string|max:100',
@@ -42,7 +42,7 @@ class MasterShiftController extends Controller
 
     public function edit($id)
     {
-        if (auth()->user()->role !== 'super') {
+        if (\Illuminate\Support\Facades\Auth::user()->role !== 'super') {
             return redirect()->route('dashboard')->with('error', 'Akses ditolak.');
         }
         $shift = MasterShift::findOrFail($id);
@@ -51,7 +51,7 @@ class MasterShiftController extends Controller
 
     public function update(Request $request, $id)
     {
-        if (auth()->user()->role !== 'super') return abort(403);
+        if (\Illuminate\Support\Facades\Auth::user()->role !== 'super') return abort(403);
 
         $request->validate([
             'nama_shift' => 'required|string|max:100',
@@ -67,7 +67,7 @@ class MasterShiftController extends Controller
 
     public function destroy($id)
     {
-        if (auth()->user()->role !== 'super') return abort(403);
+        if (\Illuminate\Support\Facades\Auth::user()->role !== 'super') return abort(403);
 
         try {
             $shift = MasterShift::findOrFail($id);

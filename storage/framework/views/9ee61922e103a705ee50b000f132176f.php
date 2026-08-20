@@ -223,11 +223,14 @@
     <?php endif; ?>
 </div>
 
+<!-- Flatpickr CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
 <!-- Filter Card -->
 <div class="card shadow-sm border-0 rounded-3 mb-4">
     <div class="card-body">
         <form action="<?php echo e(route('kas_keluar.index')); ?>" method="GET" class="row g-3 align-items-end" id="filterForm">
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <label class="form-label text-muted" style="font-size: 12px;">Pencarian</label>
                 <div class="position-relative">
                     <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #9ca3af; font-size: 13px;"></i>
@@ -236,7 +239,7 @@
             </div>
             
             <?php if(auth()->user()->role === 'super'): ?>
-            <div class="col-md-2">
+            <div class="col-md-3">
                 <label class="form-label text-muted" style="font-size: 12px;">Filter Cabang</label>
                 <select name="id_cabang" class="form-select" style="border-radius: 6px; font-size: 13.5px; padding: 6px 32px 6px 12px;" onchange="document.getElementById('filterForm').submit()">
                     <option value="">Semua Cabang</option>
@@ -247,33 +250,16 @@
             </div>
             <?php endif; ?>
 
-            <div class="col-md-2">
-                <label class="form-label text-muted" style="font-size: 12px;">Pilih Bulan</label>
-                <select name="bulan" class="form-select" style="border-radius: 6px; font-size: 13.5px; padding: 6px 32px 6px 12px;" onchange="document.getElementById('filterForm').submit()">
-                    <option value="">Semua Bulan</option>
-                    <?php $__currentLoopData = ['01' => 'Januari', '02' => 'Februari', '03' => 'Maret', '04' => 'April', '05' => 'Mei', '06' => 'Juni', '07' => 'Juli', '08' => 'Agustus', '09' => 'September', '10' => 'Oktober', '11' => 'November', '12' => 'Desember']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $angka => $nama): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                        <option value="<?php echo e($angka); ?>" <?php echo e(request('bulan') === $angka ? 'selected' : ''); ?>><?php echo e($nama); ?></option>
-                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                </select>
-            </div>
-
-            <div class="col-md-2">
-                <label class="form-label text-muted" style="font-size: 12px;">Pilih Tahun</label>
-                <select name="tahun" class="form-select" style="border-radius: 6px; font-size: 13.5px; padding: 6px 32px 6px 12px;" onchange="document.getElementById('filterForm').submit()">
-                    <option value="">Semua Tahun</option>
-                    <?php for($i = date('Y'); $i >= date('Y') - 5; $i--): ?>
-                        <option value="<?php echo e($i); ?>" <?php echo e(request('tahun') == $i ? 'selected' : ''); ?>><?php echo e($i); ?></option>
-                    <?php endfor; ?>
-                </select>
-            </div>
-
-            <div class="col-md-2">
-                <label class="form-label text-muted" style="font-size: 12px;">Tanggal Spesifik</label>
-                <input type="date" name="tanggal" class="form-control" style="border-radius: 6px; font-size: 13.5px; padding: 6px 12px;" value="<?php echo e(request('tanggal')); ?>" title="Tanggal spesifik" onchange="document.getElementById('filterForm').submit()">
+            <div class="col-md-4">
+                <label class="form-label text-muted" style="font-size: 12px;">Filter Rentang Tanggal</label>
+                <div class="position-relative">
+                    <i class="fa-regular fa-calendar" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #9ca3af; font-size: 13px;"></i>
+                    <input type="text" name="date_range" id="date_range" class="form-control bg-white" placeholder="Pilih Rentang Tanggal" value="<?php echo e(request('date_range')); ?>" style="border-radius: 6px; font-size: 13.5px; padding: 6px 12px 6px 32px; cursor: pointer;">
+                </div>
             </div>
 
             <div class="col-md-auto ms-auto d-flex gap-2">
-                <?php if(request()->hasAny(['search', 'id_cabang', 'bulan', 'tahun', 'tanggal']) && array_filter(request()->only(['search', 'id_cabang', 'bulan', 'tahun', 'tanggal']))): ?>
+                <?php if(request()->hasAny(['search', 'id_cabang', 'date_range']) && array_filter(request()->only(['search', 'id_cabang', 'date_range']))): ?>
                     <a href="<?php echo e(route('kas_keluar.index')); ?>" class="btn btn-light border" style="border-radius: 6px; font-weight: 500; padding: 6px 14px; font-size: 13.5px;">Reset</a>
                 <?php endif; ?>
                 <button type="submit" class="btn btn-primary" style="background-color: #1a5ca6; border-color: #1a5ca6; border-radius: 6px; font-weight: 500; padding: 6px 14px; font-size: 13.5px;">
@@ -283,6 +269,24 @@
         </form>
     </div>
 </div>
+
+<!-- Flatpickr JS -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        flatpickr("#date_range", {
+            mode: "range",
+            dateFormat: "Y-m-d",
+            placeholder: "Pilih Rentang Tanggal",
+            onChange: function(selectedDates, dateStr, instance) {
+                // Submit form otomatis setelah rentang tanggal dipilih lengkap (2 tanggal)
+                if (selectedDates.length === 2) {
+                    document.getElementById('filterForm').submit();
+                }
+            }
+        });
+    });
+</script>
 
 <!-- Table -->
 <div class="table-container shadow-sm">

@@ -120,7 +120,7 @@ class PenggunaController extends Controller
         $pengguna = User::findOrFail($id);
         
         // Proteksi jangan nonaktifkan diri sendiri
-        if (auth()->id() == $id) {
+        if (\Illuminate\Support\Facades\Auth::id() == $id) {
             return response()->json([
                 'success' => false,
                 'message' => 'Anda tidak bisa menonaktifkan akun Anda sendiri!'
@@ -142,7 +142,7 @@ class PenggunaController extends Controller
         $pengguna = User::findOrFail($id);
         
         // Proteksi agar tidak bisa menghapus diri sendiri
-        if (auth()->id() == $id) {
+        if (\Illuminate\Support\Facades\Auth::id() == $id) {
             return redirect()->route('pengguna.index')->with('error', 'Gagal dihapus! Anda tidak dapat menghapus akun Anda sendiri saat sedang login.');
         }
 

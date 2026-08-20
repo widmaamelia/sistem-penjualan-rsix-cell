@@ -325,9 +325,7 @@
                     </td>
                     <td>
                         <div class="action-icons">
-                            <?php if(!$isDigital): ?>
-                            <a href="<?php echo e(route('produk.barcode', $produk->id_produk)); ?>" target="_blank" title="Cetak Barcode" class="text-secondary"><i class="fa-solid fa-barcode"></i></a>
-                            <?php endif; ?>
+                            
                             <a href="<?php echo e(route('produk.show', $produk->id_produk)); ?>" title="Lihat"><i class="fa-regular fa-eye"></i></a>
                             <a href="<?php echo e(route('produk.edit', $produk->id_produk)); ?>" title="Edit" class="text-primary"><i class="fa-solid fa-pen-to-square"></i></a>
                             <button type="button" class="text-danger btn-delete-produk border-0 bg-transparent p-0" title="Hapus"

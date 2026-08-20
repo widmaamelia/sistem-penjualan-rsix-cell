@@ -26,7 +26,8 @@ class ShiftController extends Controller
     public function index(Request $request)
     {
         try {
-            $user = $request->user();
+            /** @var \App\Models\User $user */
+        $user = $request->user();
             $bulan = $request->query('bulan');
             $tahun = $request->query('tahun');
 
@@ -44,7 +45,8 @@ class ShiftController extends Controller
     public function buka(StoreBukaShiftRequest $request)
     {
         try {
-            $user = $request->user();
+            /** @var \App\Models\User $user */
+        $user = $request->user();
             $saldo_awal = $request->saldo_awal;
 
             $shift = $this->shiftRepo->bukaShift($user, $saldo_awal);
@@ -61,7 +63,8 @@ class ShiftController extends Controller
     public function ringkasanTutup(Request $request)
     {
         try {
-            $user = $request->user();
+            /** @var \App\Models\User $user */
+        $user = $request->user();
             $ringkasan = $this->shiftRepo->getRingkasanTutupShift($user);
 
             return $this->successResponse($ringkasan, "Ringkasan tutup shift berhasil dimuat");
@@ -76,7 +79,8 @@ class ShiftController extends Controller
     public function tutup(\App\Http\Requests\StoreTutupShiftRequest $request)
     {
         try {
-            $user = $request->user();
+            /** @var \App\Models\User $user */
+        $user = $request->user();
             $data = $request->validated();
             
             $shift = $this->shiftRepo->tutupShift($user, $data);

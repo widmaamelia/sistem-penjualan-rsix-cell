@@ -12,7 +12,8 @@ class KasKeluarController extends Controller
 {
     public function index(Request $request)
     {
-        $user = auth()->user();
+        /** @var \App\Models\User $user */
+        $user = \Illuminate\Support\Facades\Auth::user();
         
         if ($user->role === 'admin cabang') {
             $query = KasKeluar::with(['shift.user', 'cabang'])
@@ -91,7 +92,8 @@ class KasKeluarController extends Controller
     }
     public function create()
     {
-        $user = auth()->user();
+        /** @var \App\Models\User $user */
+        $user = \Illuminate\Support\Facades\Auth::user();
         if (!in_array($user->role, ['super', 'admin cabang'])) {
             return abort(403);
         }
@@ -105,7 +107,8 @@ class KasKeluarController extends Controller
 
     public function store(Request $request)
     {
-        $user = auth()->user();
+        /** @var \App\Models\User $user */
+        $user = \Illuminate\Support\Facades\Auth::user();
         
         $rules = [
             'jumlah_pengeluaran' => 'required|numeric|min:0',
@@ -134,7 +137,8 @@ class KasKeluarController extends Controller
     public function show($id)
     {
         $kasKeluar = KasKeluar::with(['shift.user', 'cabang'])->findOrFail($id);
-        $user = auth()->user();
+        /** @var \App\Models\User $user */
+        $user = \Illuminate\Support\Facades\Auth::user();
 
         // Validasi hak akses cabang
         if ($user->role === 'admin cabang') {
@@ -150,7 +154,8 @@ class KasKeluarController extends Controller
     public function destroy($id)
     {
         $kasKeluar = KasKeluar::findOrFail($id);
-        $user = auth()->user();
+        /** @var \App\Models\User $user */
+        $user = \Illuminate\Support\Facades\Auth::user();
 
         // Validasi hak akses cabang
         if ($user->role === 'admin cabang') {

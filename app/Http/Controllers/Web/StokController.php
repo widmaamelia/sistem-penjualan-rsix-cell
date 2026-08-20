@@ -14,7 +14,8 @@ class StokController extends Controller
     public function index(Request $request)
     {
         $cabangs = Cabang::where('status', 'aktif')->get();
-        $user = auth()->user();
+        /** @var \App\Models\User $user */
+        $user = \Illuminate\Support\Facades\Auth::user();
 
         if ($user->role === 'admin cabang') {
             $id_cabang = $user->id_cabang;
@@ -115,7 +116,8 @@ class StokController extends Controller
     public function history(Request $request, $id)
     {
         $produk = Produk::findOrFail($id);
-        $user = auth()->user();
+        /** @var \App\Models\User $user */
+        $user = \Illuminate\Support\Facades\Auth::user();
         
         $query = \App\Models\LogManajemenStok::with(['cabang', 'user'])
                     ->where('id_produk', $id)
@@ -136,7 +138,8 @@ class StokController extends Controller
 
     public function tambahForm()
     {
-        $user = auth()->user();
+        /** @var \App\Models\User $user */
+        $user = \Illuminate\Support\Facades\Auth::user();
         if (!in_array($user->role, ['super', 'admin cabang'])) {
             return redirect()->route('stok.index')->with('error', 'Akses ditolak.');
         }
@@ -153,7 +156,8 @@ class StokController extends Controller
 
     public function tambahProses(Request $request)
     {
-        $user = auth()->user();
+        /** @var \App\Models\User $user */
+        $user = \Illuminate\Support\Facades\Auth::user();
         if (!in_array($user->role, ['super', 'admin cabang'])) {
             return redirect()->route('stok.index')->with('error', 'Akses ditolak.');
         }

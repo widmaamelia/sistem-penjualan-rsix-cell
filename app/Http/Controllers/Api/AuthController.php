@@ -58,7 +58,8 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         try {
-            $user = $request->user();
+            /** @var \App\Models\User $user */
+        $user = $request->user();
 
             // Cek dulu apakah usernya ada dan punya token aktif
             if ($user && $user->currentAccessToken()) {

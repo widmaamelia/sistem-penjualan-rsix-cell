@@ -26,7 +26,8 @@ class KasKeluarController extends Controller
     public function index(Request $request)
     {
         try {
-            $user = $request->user();
+            /** @var \App\Models\User $user */
+        $user = $request->user();
             $data = $this->kasKeluarRepo->getHalamanKasKeluar($user);
 
             return $this->successResponse($data, "Data kas keluar berhasil dimuat");
@@ -41,7 +42,8 @@ class KasKeluarController extends Controller
     public function store(StoreKasKeluarRequest $request)
     {
         try {
-            $user = $request->user();
+            /** @var \App\Models\User $user */
+        $user = $request->user();
             $validatedData = $request->validated();
 
             $kasKeluarBaru = $this->kasKeluarRepo->tambahKasKeluar($user, $validatedData);

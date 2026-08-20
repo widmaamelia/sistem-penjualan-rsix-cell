@@ -13,7 +13,8 @@ class JadwalShiftController extends Controller
 {
     public function index(Request $request)
     {
-        $user = auth()->user();
+        /** @var \App\Models\User $user */
+        $user = \Illuminate\Support\Facades\Auth::user();
         $tanggal = $request->input('tanggal', Carbon::today()->format('Y-m-d'));
         
         $masterShifts = MasterShift::all();
@@ -60,7 +61,8 @@ class JadwalShiftController extends Controller
 
     public function store(Request $request)
     {
-        $user = auth()->user();
+        /** @var \App\Models\User $user */
+        $user = \Illuminate\Support\Facades\Auth::user();
         if ($user->role !== 'admin cabang') return abort(403);
 
         $request->validate([
@@ -101,7 +103,8 @@ class JadwalShiftController extends Controller
 
     public function setIzin(Request $request, $id)
     {
-        $user = auth()->user();
+        /** @var \App\Models\User $user */
+        $user = \Illuminate\Support\Facades\Auth::user();
         if ($user->role !== 'admin cabang') return abort(403);
 
         $request->validate([
@@ -123,7 +126,8 @@ class JadwalShiftController extends Controller
     public function destroy($id)
     {
         $jadwal = JadwalShift::findOrFail($id);
-        $user = auth()->user();
+        /** @var \App\Models\User $user */
+        $user = \Illuminate\Support\Facades\Auth::user();
 
         if ($user->role === 'admin cabang' && $jadwal->id_cabang !== $user->id_cabang) {
             return abort(403);

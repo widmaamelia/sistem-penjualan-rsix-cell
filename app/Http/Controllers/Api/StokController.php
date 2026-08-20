@@ -22,7 +22,8 @@ class StokController extends Controller
     public function index(Request $request)
     {
         try {
-            $user = $request->user();
+            /** @var \App\Models\User $user */
+        $user = $request->user();
             
             // Ambil parameter pencarian dan filter dari URL
             $search = $request->query('search', null);

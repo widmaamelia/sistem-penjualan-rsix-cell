@@ -15,7 +15,8 @@ class DashboardController extends Controller
     public function index()
     {
         $today = Carbon::today();
-        $user = auth()->user();
+        /** @var \App\Models\User $user */
+        $user = \Illuminate\Support\Facades\Auth::user();
         $isSuper = $user->role === 'super';
         $id_cabang = $isSuper ? null : $user->id_cabang;
 

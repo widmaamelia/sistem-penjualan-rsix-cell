@@ -13,7 +13,8 @@ class LaporanController extends Controller
 {
     private function buildQuery(Request $request)
     {
-        $user = auth()->user();
+        /** @var \App\Models\User $user */
+        $user = \Illuminate\Support\Facades\Auth::user();
         $query = Transaksi::with(['user', 'cabang', 'detailTransaksis.produk']);
 
         if ($user->role === 'admin cabang') {
@@ -43,7 +44,8 @@ class LaporanController extends Controller
 
     private function buildKasKeluarQuery(Request $request)
     {
-        $user = auth()->user();
+        /** @var \App\Models\User $user */
+        $user = \Illuminate\Support\Facades\Auth::user();
         $query = KasKeluar::with(['shift.cabang', 'shift.user']);
 
         if ($user->role === 'admin cabang') {
@@ -126,7 +128,8 @@ class LaporanController extends Controller
 
     public function index(Request $request)
     {
-        $user = auth()->user();
+        /** @var \App\Models\User $user */
+        $user = \Illuminate\Support\Facades\Auth::user();
 
         // Default Filter: Bulan Ini (agar tidak meload semua data sepanjang masa jika dibuka kosong)
         // Berlaku jika tidak ada filter date_range sama sekali
@@ -233,7 +236,8 @@ class LaporanController extends Controller
     {
         $transaksi = Transaksi::with(['user', 'cabang', 'detailTransaksis.produk'])->findOrFail($id);
         
-        $user = auth()->user();
+        /** @var \App\Models\User $user */
+        $user = \Illuminate\Support\Facades\Auth::user();
         if ($user->role === 'admin cabang' && $transaksi->id_cabang !== $user->id_cabang) {
             return abort(403);
         }

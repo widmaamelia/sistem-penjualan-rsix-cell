@@ -25,7 +25,8 @@ class RiwayatController extends Controller
     public function index(Request $request)
     {
         try {
-            $user = $request->user();
+            /** @var \App\Models\User $user */
+        $user = $request->user();
             
             // Ambil semua query parameters
             $filters = [
@@ -50,7 +51,8 @@ class RiwayatController extends Controller
     public function show(Request $request, $id)
     {
         try {
-            $user = $request->user();
+            /** @var \App\Models\User $user */
+        $user = $request->user();
             $data = $this->riwayatRepo->getDetailRiwayat($user, $id);
 
             return $this->successResponse($data, "Detail transaksi berhasil dimuat");
